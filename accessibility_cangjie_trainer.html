@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無障礙倉頡打字練習 (A11y Cangjie Trainer)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;700&family=Noto+Sans+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans HK', 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang HK', 'PMingLiU', 'MingLiU_HKSCS', sans-serif;
+        }
+        #target-key-char {
+            font-family: 'Noto Sans HK', 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang HK', 'PMingLiU', sans-serif;
+            font-variant-east-asian: traditional;
+            -webkit-locale: 'zh-Hant';
+        }
+        *:focus {
+            outline: 4px solid #f59e0b !important;
+            outline-offset: 4px;
+        }
+        body.high-contrast {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+        body.high-contrast div,
+        body.high-contrast main,
+        body.high-contrast header,
+        body.high-contrast footer,
+        body.high-contrast button,
+        body.high-contrast span,
+        body.high-contrast kbd,
+        body.high-contrast p,
+        body.high-contrast h1,
+        body.high-contrast h2,
+        body.high-contrast section,
+        body.high-contrast a {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border-color: #ffffff !important;
+        }
+        body.high-contrast #target-key-box {
+            background-color: #ffffff !important;
+            border-color: #ffffff !important;
+        }
+        body.high-contrast #target-key-char {
+            color: #000000 !important;
+        }
+        body.high-contrast #visual-keyboard span.key-highlight,
+        body.high-contrast #visual-keyboard span.bg-yellow-500 {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border-color: #ffffff !important;
+            outline: 3px solid #ffff00;
+            outline-offset: 2px;
+        }
+        body.high-contrast .text-yellow-400,
+        body.high-contrast .text-yellow-200,
+        body.high-contrast .text-[#f59e0b] {
+            color: #ffff00 !important;
+        }
+        body.high-contrast .text-green-400 { color: #00ff00 !important; }
+        body.high-contrast .text-red-500,
+        body.high-contrast .text-red-400 { color: #ff3333 !important; }
+        body.high-contrast .text-blue-400,
+        body.high-contrast .text-cyan-400 { color: #33ccff !important; }
+        .code-slot {
+            min-width: 3.25rem;
+        }
+        .code-slot.done {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        .code-slot.current {
+            border-color: #f59e0b;
+            color: #fde68a;
+            box-shadow: 0 0 0 2px #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-[#121212] text-[#f3f4f6] min-h-screen flex flex-col transition-colors duration-200">
+
+<div class="flex-grow flex flex-col max-w-5xl w-full mx-auto px-4 py-6 md:py-10 justify-between">
+
+    <header class="border-b border-gray-800 pb-4 mb-6 flex flex-wrap justify-between items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-[#f59e0b] tracking-wide flex items-center gap-2">
+                <span>⌨️</span> 視障無障礙倉頡打字訓練
+            </h1>
+            <p class="text-sm text-gray-400 mt-1">
+                三代倉頡 • 字根鍵位 • 常用拆碼 • 全鍵盤語音導航
+            </p>
+            <p class="text-xs text-gray-500 mt-1">
+                <a href="accessibility_typing_trainer.html" class="underline hover:text-yellow-400">切換至英文打字練習</a>
+            </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+            <button onclick="toggleVoice()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-green-400" aria-label="切換語音開關，選單按 V，練習時按 Alt 加 V">
+                🔊 語音：<span id="btn-voice-status">開啟</span> <span id="btn-voice-hint">(按 V)</span>
+            </button>
+            <button onclick="toggleVoiceMode()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-cyan-400" aria-label="切換語音模式，選單按 M，練習時按 Alt 加 M">
+                💬 模式：<span id="btn-voice-mode">全語音</span> <span id="btn-voice-mode-hint">(按 M)</span>
+            </button>
+            <button onclick="openTimeSettings()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-yellow-400" aria-label="設定練習限時模式">
+                ⏱️ 限時：<span id="btn-timer-label">不限時</span> (按 T)
+            </button>
+            <button onclick="openCountSettings()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-cyan-400" aria-label="設定目標練習字數">
+                🎯 字數：<span id="btn-count-label">10字</span> (按 C)
+            </button>
+            <button onclick="toggleContrast()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition" aria-label="切換高對比色彩">
+                🌓 切換對比色
+            </button>
+            <button onclick="speakInstruction()" class="bg-amber-600 hover:bg-amber-500 text-black font-extrabold text-sm px-4 py-2 rounded-lg transition" aria-label="朗讀目前頁面操作指引">
+                🔊 語音說明 (Enter)
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col justify-center items-center my-4">
+
+        <div id="screen-welcome" class="w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+            <h2 class="text-2xl font-bold text-center mb-4 text-white">請選擇倉頡練習類型</h2>
+            <p class="text-gray-300 text-center mb-2 text-lg">
+                口訣：<strong class="text-[#f59e0b]">日月金木水火土，竹戈十大中一弓，人心手口，尸廿山女田卜</strong>
+            </p>
+            <p class="text-gray-400 text-center mb-6">
+                按數字鍵 <strong class="text-[#f59e0b]">1、2、3、4</strong> 選擇。可按 <strong class="text-yellow-400">T</strong> 設定限時，按 <strong class="text-cyan-400">C</strong> 設定字數。
+            </p>
+            <div class="space-y-4">
+                <button onclick="selectMode('roots')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 1】字根鍵位</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">見到字根就撳對應英文字母</span>
+                </button>
+                <button onclick="selectMode('codes')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 2】常用拆碼</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">見到漢字就輸入完整倉頡碼</span>
+                </button>
+                <button onclick="selectMode('chant')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 3】口訣練習</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">順唸或打亂回想 24 個字根</span>
+                </button>
+                <button onclick="selectMode('dict')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 4】字典同廣東話</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">口語助詞、繁體基本字、繁體字典</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-timeset" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+            <h2 class="text-2xl font-bold text-center mb-6 text-white">⏱️ 設定練習限時時間</h2>
+            <p class="text-gray-300 text-center mb-6 text-lg">
+                請按 <strong class="text-[#f59e0b] text-xl">1、2、3、4、5</strong> 微調，完成後按 <strong class="text-green-400">Enter 確認</strong>：
+            </p>
+            <div class="text-center my-8 bg-black p-6 rounded-2xl border border-zinc-800">
+                <span class="text-sm text-gray-400 uppercase tracking-wider block mb-2">當前設定</span>
+                <span id="timeset-display" class="text-6xl font-black text-yellow-400 tracking-wider">01:00</span>
+                <span id="timeset-desc" class="block text-xl text-gray-300 mt-2">（1分00秒）</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="adjustTime(60)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left"><span class="text-yellow-400 font-bold block text-lg">【按 1】 ➕ 增加 1 分鐘</span></button>
+                <button onclick="adjustTime(-60)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left"><span class="text-yellow-400 font-bold block text-lg">【按 2】 ➖ 減少 1 分鐘</span></button>
+                <button onclick="adjustTime(10)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left"><span class="text-yellow-400 font-bold block text-lg">【按 3】 ➕ 增加 10 秒</span></button>
+                <button onclick="adjustTime(-10)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left"><span class="text-yellow-400 font-bold block text-lg">【按 4】 ➖ 減少 10 秒</span></button>
+                <button onclick="setTimeZero()" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left col-span-1 sm:col-span-2"><span class="text-red-400 font-bold block text-lg">【按 5】 🚫 設為不限時模式</span></button>
+            </div>
+            <div class="mt-8 flex flex-col sm:flex-row gap-3">
+                <button onclick="confirmTimeSettings()" class="flex-1 py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-lg rounded-xl">【Enter】確認設定</button>
+                <button onclick="goBack()" class="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-lg rounded-xl border border-zinc-700">【Esc】取消返回</button>
+            </div>
+        </div>
+
+        <div id="screen-countset" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+            <h2 class="text-2xl font-bold text-center mb-6 text-white">🎯 設定目標練習字數</h2>
+            <p class="text-gray-300 text-center mb-6 text-lg">
+                請按 <strong class="text-[#f59e0b] text-xl">1、2、3、4、5</strong> 調整，完成後按 <strong class="text-green-400">Enter 確認</strong>：
+            </p>
+            <div class="text-center my-8 bg-black p-6 rounded-2xl border border-zinc-800">
+                <span class="text-sm text-gray-400 uppercase tracking-wider block mb-2">當前設定</span>
+                <span id="countset-display" class="text-6xl font-black text-cyan-400 tracking-wider">10 字</span>
+                <span id="countset-desc" class="block text-xl text-gray-300 mt-2">（適合快速基礎練習）</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="adjustCount(10)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-cyan-400 rounded-xl text-left"><span class="text-cyan-400 font-bold block text-lg">【按 1】 ➕ 增加 10 個字</span></button>
+                <button onclick="adjustCount(-10)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-cyan-400 rounded-xl text-left"><span class="text-cyan-400 font-bold block text-lg">【按 2】 ➖ 減少 10 個字</span></button>
+                <button onclick="adjustCount(50)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-cyan-400 rounded-xl text-left"><span class="text-cyan-400 font-bold block text-lg">【按 3】 ➕ 增加 50 個字</span></button>
+                <button onclick="adjustCount(-50)" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-cyan-400 rounded-xl text-left"><span class="text-cyan-400 font-bold block text-lg">【按 4】 ➖ 減少 50 個字</span></button>
+                <button onclick="setCountZero()" class="p-4 bg-zinc-900 border border-zinc-700 hover:border-cyan-400 rounded-xl text-left col-span-1 sm:col-span-2"><span class="text-yellow-400 font-bold block text-lg">【按 5】 ♾️ 設為無限自由模式 (按 Esc 隨時結算)</span></button>
+            </div>
+            <div class="mt-8 flex flex-col sm:flex-row gap-3">
+                <button onclick="confirmCountSettings()" class="flex-1 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-lg rounded-xl">【Enter】確認設定</button>
+                <button onclick="goBack()" class="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-lg rounded-xl border border-zinc-700">【Esc】取消返回</button>
+            </div>
+        </div>
+
+        <div id="screen-subselect" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="subselect-title" class="text-2xl font-bold text-yellow-400">請選擇練習分組</h2>
+                <button onclick="goBack()" class="text-sm text-gray-400 hover:text-white underline">【Esc】返回上頁</button>
+            </div>
+            <p class="text-gray-300 mb-6 text-lg">
+                請按數字鍵選擇。可按 <strong class="text-yellow-400">T</strong> 調限時，按 <strong class="text-cyan-400">C</strong> 調字數。
+            </p>
+            <div id="subselect-options" class="space-y-4"></div>
+        </div>
+
+        <div id="screen-practice" class="hidden w-full max-w-4xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center">
+            <div class="w-full flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
+                <span id="practice-title" class="text-lg font-semibold text-gray-300">正在練習</span>
+                <button onclick="goBack()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-sm px-4 py-2 rounded-lg border border-zinc-700">
+                    【Esc】結束並觀看結算
+                </button>
+            </div>
+
+            <div id="timer-display-box" class="hidden w-full max-w-xs text-center bg-red-950/40 border-2 border-red-500 py-3 rounded-2xl mb-6 shadow-lg animate-pulse">
+                <span class="text-xs text-red-400 uppercase font-black tracking-wider block">⏱️ 剩餘時間</span>
+                <span id="timer-value" class="text-4xl font-extrabold text-white">60 秒</span>
+            </div>
+
+            <div class="text-center my-4">
+                <span class="text-sm tracking-wider uppercase text-gray-400 block mb-2">請輸入此字的倉頡碼</span>
+                <div id="target-key-box" class="w-44 h-44 flex items-center justify-center bg-black border-4 border-[#f59e0b] rounded-3xl shadow-inner mb-4 mx-auto">
+                    <span id="target-key-char" lang="zh-Hant-HK" class="text-8xl font-bold text-yellow-400 select-none">日</span>
+                </div>
+                <p id="target-key-pronunciation" class="text-xl text-yellow-200 font-semibold">日（A）</p>
+                <p id="target-code-progress" class="text-sm text-gray-400 mt-1">第 1 / 1 碼</p>
+                <div class="flex items-center justify-center gap-2 mt-2">
+                    <button onclick="playTargetVoice(true)" class="p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs">
+                        🔊 重聽 (或按 Enter)
+                    </button>
+                </div>
+            </div>
+
+            <div id="code-slots" class="flex flex-wrap justify-center gap-2 mb-6" aria-live="polite"></div>
+
+            <div class="w-full max-w-2xl bg-black rounded-xl p-4 border border-zinc-800 mb-8">
+                <p class="text-xs text-gray-400 text-center mb-3">倉頡鍵盤（亮色即為依家要撳嘅字根）：</p>
+                <div id="visual-keyboard" class="grid grid-rows-3 gap-1 text-xs font-semibold text-gray-500">
+                    <div class="flex justify-center gap-1">
+                        <span id="key-q" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">手</b><small>Q</small></span>
+                        <span id="key-w" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">田</b><small>W</small></span>
+                        <span id="key-e" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">水</b><small>E</small></span>
+                        <span id="key-r" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">口</b><small>R</small></span>
+                        <span id="key-t" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">廿</b><small>T</small></span>
+                        <span id="key-y" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">卜</b><small>Y</small></span>
+                        <span id="key-u" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">山</b><small>U</small></span>
+                        <span id="key-i" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">戈</b><small>I</small></span>
+                        <span id="key-o" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">人</b><small>O</small></span>
+                        <span id="key-p" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">心</b><small>P</small></span>
+                    </div>
+                    <div class="flex justify-center gap-1 pl-4">
+                        <span id="key-a" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">日</b><small>A</small></span>
+                        <span id="key-s" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">尸</b><small>S</small></span>
+                        <span id="key-d" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">木</b><small>D</small></span>
+                        <span id="key-f" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">火</b><small>F</small></span>
+                        <span id="key-g" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">土</b><small>G</small></span>
+                        <span id="key-h" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">竹</b><small>H</small></span>
+                        <span id="key-j" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">十</b><small>J</small></span>
+                        <span id="key-k" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">大</b><small>K</small></span>
+                        <span id="key-l" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">中</b><small>L</small></span>
+                    </div>
+                    <div class="flex justify-center gap-1 pl-10">
+                        <span id="key-x" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">難</b><small>X</small></span>
+                        <span id="key-c" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">金</b><small>C</small></span>
+                        <span id="key-v" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">女</b><small>V</small></span>
+                        <span id="key-b" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">月</b><small>B</small></span>
+                        <span id="key-n" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">弓</b><small>N</small></span>
+                        <span id="key-m" class="w-10 h-10 rounded bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center leading-none"><b class="text-yellow-100">一</b><small>M</small></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full flex justify-between items-center text-center gap-4 border-t border-zinc-800 pt-6">
+                <div>
+                    <span id="stats-progress-label" class="block text-xs text-gray-400">當前進度</span>
+                    <span id="stats-progress" class="text-xl font-bold text-yellow-400">0 / 10</span>
+                </div>
+                <div>
+                    <span class="block text-xs text-gray-400">輸入正確</span>
+                    <span id="stats-correct" class="text-xl font-bold text-green-400">0</span>
+                </div>
+                <div>
+                    <span class="block text-xs text-gray-400">輸入失誤</span>
+                    <span id="stats-errors" class="text-xl font-bold text-red-500">0</span>
+                </div>
+                <div>
+                    <span class="block text-xs text-gray-400">精準度</span>
+                    <span id="stats-accuracy" class="text-xl font-bold text-blue-400">100%</span>
+                </div>
+            </div>
+            <div class="w-full mt-4 text-center">
+                <span id="free-mode-tip" class="text-xs text-gray-500">打錯會停喺依家呢碼，聽語音糾正後再撳正確字根。</span>
+            </div>
+        </div>
+
+        <div id="screen-summary" class="hidden w-full max-w-xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl text-center">
+            <h2 class="text-3xl font-extrabold text-green-400 mb-2">🎉 恭喜完成本輪練習！</h2>
+            <p id="summary-category-txt" class="text-gray-400 mb-6">練習項目</p>
+            <div class="grid grid-cols-2 gap-4 my-6">
+                <div class="bg-black p-4 rounded-xl border border-zinc-800">
+                    <span class="block text-xs text-zinc-400">總輸入正確次數</span>
+                    <span id="summary-correct" class="text-3xl font-bold text-green-400">10</span>
+                </div>
+                <div class="bg-black p-4 rounded-xl border border-zinc-800">
+                    <span class="block text-xs text-zinc-400">失誤次數</span>
+                    <span id="summary-errors" class="text-3xl font-bold text-red-500">0</span>
+                </div>
+                <div class="bg-black p-4 rounded-xl border border-zinc-800 col-span-2">
+                    <span class="block text-xs text-yellow-500 font-bold">⏱️ 平均打字速度</span>
+                    <span id="summary-speed" class="text-3xl font-black text-cyan-400">0 字/分鐘</span>
+                </div>
+                <div class="bg-black p-4 rounded-xl border border-zinc-800 col-span-2">
+                    <span class="block text-xs text-zinc-400">最終精準度</span>
+                    <span id="summary-accuracy" class="text-4xl font-extrabold text-yellow-400">100%</span>
+                </div>
+            </div>
+            <p class="text-gray-300 mb-6 text-base">
+                按 <strong class="text-[#f59e0b]">【1】</strong> 重新練習，或按 <strong class="text-[#f59e0b]">【Escape】</strong> 返回主選單。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="restartPractice()" class="flex-1 py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-lg rounded-xl">【按 1】重新練習</button>
+                <button onclick="goBack()" class="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-lg rounded-xl border border-zinc-700">【Esc】返回選單</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-6 p-4 bg-zinc-900 border border-zinc-800 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
+        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">V</kbd> / <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">Alt+V</kbd>：語音開關</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-cyan-400 font-bold">M</kbd> / <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-cyan-400 font-bold">Alt+M</kbd>：全語音 / 只讀字根</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">1-9</kbd>：選單</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">T</kbd>：限時</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-cyan-400 font-bold">C</kbd>：字數</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">Enter</kbd>：重聽 / 確認</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">Esc</kbd>：返回或結算</div>
+        </div>
+        <div class="text-center md:text-right">三代倉頡 • 免用滑鼠 • 適合全盲、弱視使用</div>
+    </footer>
+</div>
+
+<script src="cangjie3_dict.js?v=trad5"></script>
+<script>
+    let currentScreen = 'welcome';
+    let previousScreen = 'welcome';
+    let selectedMode = null;
+    let selectedCategory = null;
+    let targetItems = [];
+    let practiceIndex = 0;
+    let codeIndex = 0;
+    let correctCount = 0;
+    let errorCount = 0;
+    let revealCodeHint = false;
+    let hintHideTimer = null;
+
+    let voiceEnabled = true;
+    let voiceMode = 'full';
+    let speechChain = Promise.resolve();
+    let speakGeneration = 0;
+
+    let timeLimitSetting = 0;
+    let tempTimeLimit = 60;
+    let timeLeft = 0;
+    let timerInterval = null;
+    let startTimeStamp = null;
+
+    let targetCountSetting = 10;
+    let tempTargetCount = 10;
+    let highContrast = false;
+    let currentHighlightedKeyId = null;
+    let audioCtx = null;
+
+    const radicalByKey = {
+        a: '日', b: '月', c: '金', d: '木', e: '水', f: '火', g: '土',
+        h: '竹', i: '戈', j: '十', k: '大', l: '中', m: '一', n: '弓',
+        o: '人', p: '心', q: '手', r: '口', s: '尸', t: '廿',
+        u: '山', v: '女', w: '田', x: '難', y: '卜'
+    };
+
+    function item(char, code) {
+        const roots = code.split('').map((k) => radicalByKey[k] || k).join('');
+        return { char, code, roots };
+    }
+
+    const rootItems = {
+        philosophy: [item('日','a'), item('月','b'), item('金','c'), item('木','d'), item('水','e'), item('火','f'), item('土','g')],
+        strokes: [item('竹','h'), item('戈','i'), item('十','j'), item('大','k'), item('中','l'), item('一','m'), item('弓','n')],
+        body: [item('人','o'), item('心','p'), item('手','q'), item('口','r')],
+        shapes: [item('尸','s'), item('廿','t'), item('山','u'), item('女','v'), item('田','w'), item('難','x'), item('卜','y')]
+    };
+    rootItems.all = [].concat(rootItems.philosophy, rootItems.strokes, rootItems.body, rootItems.shapes);
+
+    const chantOrder = rootItems.philosophy.concat(rootItems.strokes, rootItems.body, [
+        item('尸','s'), item('廿','t'), item('山','u'), item('女','v'), item('田','w'), item('卜','y')
+    ]);
+
+    const twoCode = [
+        item('明','ab'), item('林','dd'), item('休','od'), item('上','ym'), item('下','my'),
+        item('不','mf'), item('有','kb'), item('小','nc'), item('了','nn'), item('出','uu'),
+        item('去','gi'), item('用','bq'), item('本','dm'), item('未','jd'), item('末','dj'),
+        item('早','aj'), item('古','jr'), item('右','kr'), item('左','km'), item('白','ha'),
+        item('千','hj'), item('午','oj'), item('天','mk'), item('王','mg'), item('主','yg'),
+        item('年','oq'), item('文','yk'), item('目','bu'), item('耳','sj'), item('立','yt'),
+        item('作','os'), item('太','ki'), item('少','fh'), item('友','ke'), item('反','he'),
+        item('公','ci'), item('化','op'), item('安','jv'), item('如','vr'), item('東','dw'),
+        item('門','an')
+    ];
+
+    const threeCode = [
+        item('好','vnd'), item('他','opd'), item('你','onf'), item('我','hqi'), item('可','mnr'),
+        item('以','vio'), item('在','klg'), item('來','doo'), item('要','mwv'), item('生','hqm'),
+        item('們','oan'), item('和','hdr'), item('字','jnd'), item('成','ihs'),
+        item('香','hda'), item('打','qmn'), item('名','nir'), item('她','vpd'), item('外','niy'),
+        item('加','krs'), item('今','oin'), item('分','csh'), item('西','mcw'), item('北','lmp'),
+        item('車','jwj'), item('書','lga'), item('問','anr'), item('知','okr'), item('老','jkp')
+    ];
+
+    const longCode = [
+        item('的','hapi'), item('是','amyo'), item('到','mgln'), item('時','agdi'),
+        item('會','omwa'), item('國','wirm'), item('家','jmso'), item('學','hbnd'),
+        item('這','yymr'), item('說','yrcru'), item('個','owjr'), item('先','hghu'),
+        item('南','jbtj'), item('港','etcu'), item('見','buhu'), item('師','hrmlb'),
+        item('話','yrhjr'), item('食','oiav'), item('爸','ckau')
+    ];
+
+    const practiceCategories = {
+        roots: [
+            { id: 'root_phi', label: '哲理類（日月金木水火土）', description: 'A 至 G 字根鍵位', items: rootItems.philosophy },
+            { id: 'root_str', label: '筆畫類（竹戈十大中一弓）', description: 'H 至 N 字根鍵位', items: rootItems.strokes },
+            { id: 'root_body', label: '人體類（人心手口）', description: 'O 至 R 字根鍵位', items: rootItems.body },
+            { id: 'root_shape', label: '字形類（尸廿山女田卜難）', description: 'S 至 Y 字根鍵位', items: rootItems.shapes },
+            { id: 'root_all', label: '全部字根混合', description: '24 個字根加大亂鬥', items: rootItems.all }
+        ],
+        codes: [
+            { id: 'code_2', label: '二字碼入門', description: '明林休、太少友、東門、上下', items: twoCode },
+            { id: 'code_3', label: '三碼常用字', description: '我你她、車書問、西北、老知', items: threeCode },
+            { id: 'code_4', label: '四至五碼', description: '的是這、香港、食爸、老師', items: longCode },
+            { id: 'code_mix', label: '常用字混合', description: '二字至五碼綜合挑戰', items: twoCode.concat(threeCode, longCode) }
+        ],
+        chant: [
+            { id: 'chant_order', label: '順唸口訣', description: '由日到卜依序按鍵', items: chantOrder, sequential: true },
+            { id: 'chant_random', label: '打亂回想', description: '隨機抽出字根，考鍵位', items: chantOrder }
+        ],
+        dict: []
+    };
+
+    let dictCache = null;
+    let simplifiedSet = null;
+
+    function getSimplifiedSet() {
+        if (simplifiedSet) return simplifiedSet;
+        simplifiedSet = new Set(Array.from(window.SIMPLIFIED_HANZI || ''));
+        return simplifiedSet;
+    }
+
+    function isSimplifiedHanzi(ch) {
+        if (!ch) return false;
+        const spoken = window.CANTONESE_SPOKEN_CHARS || [];
+        if (spoken.indexOf(ch) !== -1) return false;
+        if (getSimplifiedSet().has(ch)) return true;
+        const o = ch.codePointAt(0);
+        return (o >= 0x9A6C && o <= 0x9AA7) ||
+            (o >= 0x95E8 && o <= 0x961B) ||
+            (o >= 0x9F99 && o <= 0x9F9B) ||
+            o === 0x9F9F ||
+            (o >= 0x9F50 && o <= 0x9F51) ||
+            (o >= 0x9F7F && o <= 0x9F8C) ||
+            (o >= 0x9EA6 && o <= 0x9EA7) ||
+            (o >= 0x9E1F && o <= 0x9E74) ||
+            (o >= 0x9C7C && o <= 0x9CE4) ||
+            (o >= 0x89C1 && o <= 0x89E3) ||
+            (o >= 0x8D1D && o <= 0x8D5B) ||
+            (o >= 0x9875 && o <= 0x98A7) ||
+            (o >= 0x98CE && o <= 0x98D9) ||
+            o === 0x98DE ||
+            (o >= 0x97E6 && o <= 0x97EC) ||
+            (o >= 0x9485 && o <= 0x9576) ||
+            (o >= 0x8F66 && o <= 0x8F9A);
+    }
+
+    function isPracticeDisplayable(ch) {
+        if (!ch) return false;
+        const spoken = window.CANTONESE_SPOKEN_CHARS || [];
+        if (spoken.indexOf(ch) !== -1) return true;
+        if (ch.length !== 1) return false;
+        const cp = ch.charCodeAt(0);
+        return cp >= 0x4E00 && cp <= 0x9FFF;
+    }
+
+    function keepTraditionalItems(items) {
+        return (items || []).filter((it) => it && !isSimplifiedHanzi(it.char) && isPracticeDisplayable(it.char));
+    }
+
+    function ensureDictItems() {
+        if (dictCache) return dictCache;
+        const map = window.CANGJIE3_MAP || {};
+        const all = [];
+        const byLen = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+        const bmp = [];
+        Object.keys(map).forEach((ch) => {
+            if (isSimplifiedHanzi(ch)) return;
+            if (!isPracticeDisplayable(ch)) return;
+            const code = String(map[ch] || '').toLowerCase();
+            if (!code || /[^a-y]/.test(code)) return;
+            const row = item(ch, code);
+            all.push(row);
+            if (byLen[code.length]) byLen[code.length].push(row);
+            if (ch.length === 1) {
+                const cp = ch.charCodeAt(0);
+                if (cp >= 0x4E00 && cp <= 0x9FFF) bmp.push(row);
+            }
+        });
+        const spoken = (window.CANTONESE_SPOKEN_CHARS || [])
+            .map((ch) => (map[ch] ? item(ch, map[ch]) : null))
+            .filter(Boolean);
+        dictCache = { all, byLen, bmp, spoken };
+        return dictCache;
+    }
+
+    function buildDictCategories() {
+        const d = ensureDictItems();
+        return [
+            { id: 'yue_spoken', label: '廣東話口語', description: `${d.spoken.length} 個語氣助詞同口語繁體字`, items: d.spoken },
+            { id: 'dict_bmp', label: '繁體基本字', description: `${d.bmp.length} 個常用區繁體字`, items: d.bmp },
+            { id: 'dict_2', label: '繁體二字碼', description: `${d.byLen[2].length} 個二字碼`, items: d.byLen[2] },
+            { id: 'dict_3', label: '繁體三碼', description: `${d.byLen[3].length} 個三碼字`, items: d.byLen[3] },
+            { id: 'dict_long', label: '繁體四至五碼', description: `${d.byLen[4].length + d.byLen[5].length} 個較長拆碼`, items: d.byLen[4].concat(d.byLen[5]) },
+            { id: 'dict_all', label: '繁體字典全部', description: `${d.all.length} 個睇得見嘅繁體字（已刪簡體同罕字方格）`, items: d.all }
+        ];
+    }
+
+    function speakText(text, lang = 'zh-HK', cancelPrevious = true, force = false) {
+        if (!('speechSynthesis' in window)) return;
+        if (!voiceEnabled && !force) return;
+
+        if (cancelPrevious) {
+            speakGeneration += 1;
+            window.speechSynthesis.cancel();
+            speechChain = new Promise((resolve) => setTimeout(resolve, 50));
+        }
+
+        const generation = speakGeneration;
+        speechChain = speechChain.then(() => new Promise((resolve) => {
+            if (generation !== speakGeneration) {
+                resolve();
+                return;
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 1.0;
+            utterance.volume = 1;
+            const finish = () => resolve();
+            utterance.onend = finish;
+            utterance.onerror = finish;
+            window.speechSynthesis.speak(utterance);
+        }));
+    }
+
+    function toggleVoice() {
+        voiceEnabled = !voiceEnabled;
+        const btn = document.getElementById('btn-voice-status');
+        if (voiceEnabled) {
+            btn.textContent = '開啟';
+            btn.classList.remove('text-red-500');
+            btn.classList.add('text-green-400');
+            speakText('語音已開啟', 'zh-HK', true, true);
+        } else {
+            btn.textContent = '關閉';
+            btn.classList.remove('text-green-400');
+            btn.classList.add('text-red-500');
+            speakText('語音已關閉', 'zh-HK', true, true);
+        }
+    }
+
+    function toggleVoiceMode() {
+        if (voiceMode === 'full') {
+            voiceMode = 'letter-only';
+            document.getElementById('btn-voice-mode').textContent = '只讀字根';
+            speakText('已切換為只讀字根模式', 'zh-HK', true);
+        } else {
+            voiceMode = 'full';
+            document.getElementById('btn-voice-mode').textContent = '全語音';
+            speakText('已切換為全語音模式', 'zh-HK', true);
+        }
+    }
+
+    function getCurrentItem() {
+        return targetItems[practiceIndex] || null;
+    }
+
+    function currentRootName() {
+        const item = getCurrentItem();
+        if (!item) return '';
+        return item.roots[codeIndex] || item.char;
+    }
+
+    function currentKeyLetter() {
+        const item = getCurrentItem();
+        if (!item) return '';
+        return item.code[codeIndex] || '';
+    }
+
+    function isHanziQuiz() {
+        return selectedMode === 'codes' || selectedMode === 'dict';
+    }
+
+    function playTargetVoice(cancel = false) {
+        const item = getCurrentItem();
+        if (!item) return;
+        if (isHanziQuiz()) {
+            speakText(item.char, 'zh-HK', cancel);
+            return;
+        }
+        const root = currentRootName();
+        const letter = currentKeyLetter().toUpperCase();
+        if (voiceMode === 'letter-only') {
+            speakText(root, 'zh-HK', cancel);
+            return;
+        }
+        speakText(`${item.char}，字根 ${root}，請按 ${letter}`, 'zh-HK', cancel);
+    }
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playTone(freq, type, duration) {
+        try {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.45, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {
+            console.log('Audio play blocked:', e);
+        }
+    }
+
+    function playSuccessSound() { playTone(880, 'sine', 0.15); }
+    function playErrorSound() { playTone(220, 'sawtooth', 0.25); }
+    function playVictorySound() {
+        playTone(523.25, 'sine', 0.1);
+        setTimeout(() => playTone(659.25, 'sine', 0.1), 100);
+        setTimeout(() => playTone(783.99, 'sine', 0.1), 200);
+        setTimeout(() => playTone(1046.50, 'sine', 0.3), 300);
+    }
+
+    function speakInstruction(cancelPrevious = true) {
+        if (voiceMode === 'letter-only') return;
+        const limitText = timeLimitSetting === 0 ? '目前不設時間限制。' : `目前設定為 ${formatChineseTime(timeLimitSetting)} 限時挑戰。`;
+        const countText = targetCountSetting === 0 ? '不設練習字數限制。' : `目前設定每組練習 ${targetCountSetting} 個字。`;
+
+        if (currentScreen === 'welcome') {
+            speakText(`歡迎使用無障礙倉頡打字訓練，採用三代倉頡。${limitText}${countText} 按 T 鍵自訂限時，按 C 鍵自訂字數。按一選擇字根鍵位。按二選擇常用拆碼。按三選擇口訣練習。按四選擇字典同廣東話口語。`, 'zh-HK', cancelPrevious);
+        } else if (currentScreen === 'timeset') {
+            const timeDesc = tempTimeLimit === 0 ? '不限時' : formatChineseTime(tempTimeLimit);
+            speakText(`自訂限時設定頁面。目前設定為 ${timeDesc}。按 1 增加一分鐘，按 2 減少一分鐘，按 3 增加十秒，按 4 減少十秒，按 5 設定不限時。設定後按 Enter 確認，或按 Esc 取消。`, 'zh-HK', cancelPrevious);
+        } else if (currentScreen === 'countset') {
+            const countDesc = tempTargetCount === 0 ? '無限字數自由模式' : `${tempTargetCount}個字`;
+            speakText(`自訂字數設定頁面。目前設定為 ${countDesc}。按 1 增加十個字，按 2 減少十個字，按 3 增加五十個字，按 4 減少五十個字，按 5 設為無限自由模式。確認請按 Enter，或按 Esc 取消。`, 'zh-HK', cancelPrevious);
+        } else if (currentScreen === 'subselect') {
+            let optionsText = `請選擇練習分組。${limitText}${countText}`;
+            practiceCategories[selectedMode].forEach((cat, index) => {
+                optionsText += `按 ${index + 1} 選擇：${cat.label}。`;
+            });
+            optionsText += '按 Esc 返回上一頁。';
+            speakText(optionsText, 'zh-HK', cancelPrevious);
+        } else if (currentScreen === 'practice') {
+            speakText(`正在練習：${getActiveCategoryLabel()}。按 Esc 可以隨時結算。練習時切換語音請按 Alt 加 V，切換模式請按 Alt 加 M。`, 'zh-HK', cancelPrevious);
+            playTargetVoice(false);
+        } else if (currentScreen === 'summary') {
+            const acc = calculateAccuracy();
+            const { cpm } = calculateTypingSpeed();
+            speakText(`恭喜完成！總輸入正確 ${correctCount} 次，失誤 ${errorCount} 次，精準度百分之 ${acc}。平均打字速度為每分鐘 ${cpm} 個字。按 1 重新開始，按 Esc 返回。`, 'zh-HK', cancelPrevious);
+        }
+    }
+
+    function formatChineseTime(totalSeconds) {
+        if (totalSeconds === 0) return '不限時';
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        let text = '';
+        if (mins > 0) text += `${mins} 分鐘`;
+        if (secs > 0) text += `${secs} 秒`;
+        return text;
+    }
+
+    function formatTimeDisplay(totalSeconds) {
+        const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const secs = String(totalSeconds % 60).padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
+
+    function getActiveCategoryLabel() {
+        if (!selectedMode || !selectedCategory) return '';
+        const cat = practiceCategories[selectedMode].find((c) => c.id === selectedCategory);
+        return cat ? cat.label : '';
+    }
+
+    function selectMode(mode) {
+        if (mode === 'dict') {
+            if (!window.CANGJIE3_MAP) {
+                speakText('未載入字典，請重新整理呢個頁面。', 'zh-HK', true, true);
+                return;
+            }
+            practiceCategories.dict = buildDictCategories();
+        }
+        selectedMode = mode;
+        const categories = practiceCategories[mode];
+        const container = document.getElementById('subselect-options');
+        container.innerHTML = '';
+        document.getElementById('subselect-title').textContent =
+            mode === 'roots' ? '字根鍵位：請選擇分組' :
+            mode === 'codes' ? '常用拆碼：請選擇難度' :
+            mode === 'dict' ? '字典同廣東話：請選擇字庫' : '口訣練習：請選擇方式';
+
+        categories.forEach((cat, index) => {
+            const btn = document.createElement('button');
+            btn.onclick = () => selectCategory(cat.id);
+            btn.className = 'w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left';
+            btn.innerHTML = `
+                <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 ${index + 1}】${cat.label}</span>
+                <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">${cat.description}</span>
+            `;
+            container.appendChild(btn);
+        });
+        showScreen('subselect');
+    }
+
+    function buildQueue(cat) {
+        const set = keepTraditionalItems(cat.items || []);
+        if (!set.length) return [];
+        const count = targetCountSetting === 0
+            ? (cat.sequential ? set.length : Math.min(30, set.length))
+            : targetCountSetting;
+        const queue = [];
+        for (let i = 0; i < count; i++) {
+            queue.push(cat.sequential ? set[i % set.length] : set[Math.floor(Math.random() * set.length)]);
+        }
+        return queue;
+    }
+
+    function selectCategory(catId) {
+        selectedCategory = catId;
+        const cat = practiceCategories[selectedMode].find((c) => c.id === catId);
+        if (!cat) return;
+
+        targetItems = buildQueue(cat);
+        practiceIndex = 0;
+        codeIndex = 0;
+        correctCount = 0;
+        errorCount = 0;
+        revealCodeHint = false;
+        clearTimeout(hintHideTimer);
+        hintHideTimer = null;
+        startTimeStamp = Date.now();
+
+        document.getElementById('practice-title').textContent = `正在練習：${cat.label}`;
+        showScreen('practice');
+        updatePracticeUI();
+        startTimer();
+    }
+
+    function showScreen(screenId, options = {}) {
+        const announce = options.announce !== false;
+        const appendSpeech = options.appendSpeech === true;
+        currentScreen = screenId;
+
+        ['welcome', 'timeset', 'countset', 'subselect', 'practice', 'summary'].forEach((id) => {
+            document.getElementById(`screen-${id}`).classList.add('hidden');
+        });
+        document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+        updateVoiceShortcutHints();
+
+        if (announce) {
+            setTimeout(() => speakInstruction(!appendSpeech), 150);
+        }
+    }
+
+    function updateVoiceShortcutHints() {
+        const voiceHint = document.getElementById('btn-voice-hint');
+        const modeHint = document.getElementById('btn-voice-mode-hint');
+        if (!voiceHint || !modeHint) return;
+        if (currentScreen === 'practice') {
+            voiceHint.textContent = '(按 Alt+V)';
+            modeHint.textContent = '(按 Alt+M)';
+        } else {
+            voiceHint.textContent = '(按 V)';
+            modeHint.textContent = '(按 M)';
+        }
+    }
+
+    function openTimeSettings() {
+        if (timerInterval) return;
+        if (currentScreen !== 'timeset' && currentScreen !== 'countset') previousScreen = currentScreen;
+        tempTimeLimit = timeLimitSetting === 0 ? 60 : timeLimitSetting;
+        updateTimeSettingsUI();
+        showScreen('timeset');
+    }
+
+    function adjustTime(amount) {
+        tempTimeLimit = Math.max(0, tempTimeLimit + amount);
+        if (tempTimeLimit === 0) {
+            setTimeZero();
+            return;
+        }
+        updateTimeSettingsUI();
+        speakText(`調整為 ${formatChineseTime(tempTimeLimit)}`, 'zh-HK', true);
+    }
+
+    function setTimeZero() {
+        tempTimeLimit = 0;
+        updateTimeSettingsUI();
+        speakText('已調整為不限時模式', 'zh-HK', true);
+    }
+
+    function updateTimeSettingsUI() {
+        const display = document.getElementById('timeset-display');
+        const desc = document.getElementById('timeset-desc');
+        if (tempTimeLimit === 0) {
+            display.textContent = '--:--';
+            desc.textContent = '（不限時模式）';
+        } else {
+            display.textContent = formatTimeDisplay(tempTimeLimit);
+            desc.textContent = `（${formatChineseTime(tempTimeLimit)}）`;
+        }
+    }
+
+    function confirmTimeSettings() {
+        timeLimitSetting = tempTimeLimit;
+        const labelText = timeLimitSetting === 0 ? '不限時' : formatChineseTime(timeLimitSetting);
+        document.getElementById('btn-timer-label').textContent = labelText;
+        playSuccessSound();
+        speakText(`時間設定完成。已設為：${labelText}。`, 'zh-HK', true);
+        let dest = previousScreen;
+        if (dest === 'timeset' || dest === 'countset') dest = 'welcome';
+        showScreen(dest, { appendSpeech: true });
+    }
+
+    function openCountSettings() {
+        if (timerInterval) return;
+        if (currentScreen !== 'timeset' && currentScreen !== 'countset') previousScreen = currentScreen;
+        tempTargetCount = targetCountSetting === 0 ? 10 : targetCountSetting;
+        updateCountSettingsUI();
+        showScreen('countset');
+    }
+
+    function adjustCount(amount) {
+        tempTargetCount = Math.max(5, tempTargetCount + amount);
+        updateCountSettingsUI();
+        speakText(`調整為 ${tempTargetCount} 個字`, 'zh-HK', true);
+    }
+
+    function setCountZero() {
+        tempTargetCount = 0;
+        updateCountSettingsUI();
+        speakText('已調整為無限字數自由模式', 'zh-HK', true);
+    }
+
+    function updateCountSettingsUI() {
+        const display = document.getElementById('countset-display');
+        const desc = document.getElementById('countset-desc');
+        if (tempTargetCount === 0) {
+            display.textContent = '無限字數';
+            desc.textContent = '（無字數上限，按 Esc 隨時結算）';
+        } else {
+            display.textContent = `${tempTargetCount} 字`;
+            desc.textContent = tempTargetCount <= 10 ? '（適合快速基礎練習）' :
+                tempTargetCount <= 30 ? '（中等耐力指法熟悉）' : '（高強度打字挑戰與速度檢測）';
+        }
+    }
+
+    function confirmCountSettings() {
+        targetCountSetting = tempTargetCount;
+        const labelText = targetCountSetting === 0 ? '無限字數' : `${targetCountSetting}字`;
+        document.getElementById('btn-count-label').textContent = labelText;
+        playSuccessSound();
+        speakText(`字數設定完成。已設為：${labelText}。`, 'zh-HK', true);
+        let dest = previousScreen;
+        if (dest === 'timeset' || dest === 'countset') dest = 'welcome';
+        showScreen(dest, { appendSpeech: true });
+    }
+
+    function startTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        if (timeLimitSetting === 0) return;
+        timeLeft = timeLimitSetting;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft === 60) speakText('剩下一分鐘', 'zh-HK', false);
+            else if (timeLeft === 30) speakText('剩下三十秒', 'zh-HK', false);
+            else if (timeLeft === 10) speakText('最後十秒', 'zh-HK', false);
+            else if (timeLeft <= 5 && timeLeft > 0) {
+                speakText(String(timeLeft), 'zh-HK', false);
+                playTone(440, 'sine', 0.05);
+            }
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                endPracticeSession(true);
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const timerBox = document.getElementById('timer-display-box');
+        if (timeLimitSetting > 0) {
+            timerBox.classList.remove('hidden');
+            document.getElementById('timer-value').textContent = `${timeLeft} 秒`;
+        } else {
+            timerBox.classList.add('hidden');
+        }
+
+        const progressLabel = document.getElementById('stats-progress-label');
+        const progressVal = document.getElementById('stats-progress');
+        if (targetCountSetting > 0) {
+            progressLabel.textContent = '當前進度';
+            progressVal.textContent = `${practiceIndex} / ${targetCountSetting}`;
+        } else {
+            progressLabel.textContent = '已正確輸入';
+            progressVal.textContent = `${correctCount} 次`;
+        }
+    }
+
+    function calculateAccuracy() {
+        const total = correctCount + errorCount;
+        if (total === 0) return 100;
+        return Math.round((correctCount / total) * 100);
+    }
+
+    function calculateTypingSpeed() {
+        const elapsedSeconds = Math.max(1, (Date.now() - startTimeStamp) / 1000);
+        const cpm = Math.round(correctCount / (elapsedSeconds / 60));
+        return { elapsedSeconds, cpm };
+    }
+
+    function hideCodeHintVisuals() {
+        revealCodeHint = false;
+        clearTimeout(hintHideTimer);
+        hintHideTimer = null;
+        const item = getCurrentItem();
+        const pronEl = document.getElementById('target-key-pronunciation');
+        const progEl = document.getElementById('target-code-progress');
+        if (pronEl) pronEl.textContent = '';
+        if (progEl) progEl.textContent = '';
+        if (item) renderCodeSlots(item);
+        highlightVirtualKey('', false);
+    }
+
+    function showOneCodeHint() {
+        revealCodeHint = true;
+        const letter = currentKeyLetter().toUpperCase();
+        const root = currentRootName();
+        const item = getCurrentItem();
+        document.getElementById('target-key-pronunciation').textContent = `${root}（${letter}）`;
+        document.getElementById('target-code-progress').textContent = `第 ${codeIndex + 1} / ${item.code.length} 碼`;
+        renderCodeSlots(item);
+        highlightVirtualKey(currentKeyLetter(), true);
+        clearTimeout(hintHideTimer);
+        hintHideTimer = setTimeout(() => {
+            if (currentScreen === 'practice') hideCodeHintVisuals();
+        }, 2200);
+    }
+
+    function renderCodeSlots(item) {
+        const box = document.getElementById('code-slots');
+        box.innerHTML = '';
+        const reveal = !isHanziQuiz() || revealCodeHint;
+        item.roots.split('').forEach((root, i) => {
+            const slot = document.createElement('span');
+            slot.className = 'code-slot px-3 py-2 rounded-lg border-2 border-zinc-700 bg-zinc-900 text-2xl font-black';
+            if (i < codeIndex) {
+                slot.classList.add('done');
+                slot.textContent = root;
+            } else if (reveal && i === codeIndex) {
+                slot.classList.add('current');
+                slot.textContent = root;
+            } else {
+                slot.textContent = '·';
+            }
+            box.appendChild(slot);
+        });
+    }
+
+    function refillQueueIfNeeded() {
+        if (practiceIndex < targetItems.length) return;
+        const cat = practiceCategories[selectedMode].find((c) => c.id === selectedCategory);
+        const set = keepTraditionalItems(cat.items || []);
+        if (!set.length) return;
+        const extra = [];
+        for (let i = 0; i < 15; i++) {
+            extra.push(cat.sequential ? set[i % set.length] : set[Math.floor(Math.random() * set.length)]);
+        }
+        targetItems = extra;
+        practiceIndex = 0;
+    }
+
+    function updatePracticeUI() {
+        if (targetCountSetting > 0 && practiceIndex >= targetCountSetting) {
+            endPracticeSession();
+            return;
+        }
+        refillQueueIfNeeded();
+
+        let skipGuard = 0;
+        while (getCurrentItem() && (isSimplifiedHanzi(getCurrentItem().char) || !isPracticeDisplayable(getCurrentItem().char)) && skipGuard < 80) {
+            practiceIndex += 1;
+            refillQueueIfNeeded();
+            skipGuard += 1;
+        }
+
+        const current = getCurrentItem();
+        if (!current || isSimplifiedHanzi(current.char) || !isPracticeDisplayable(current.char)) return;
+
+        document.getElementById('target-key-char').textContent = current.char;
+        const letter = currentKeyLetter().toUpperCase();
+        const root = currentRootName();
+        const pronEl = document.getElementById('target-key-pronunciation');
+        const progEl = document.getElementById('target-code-progress');
+        const hideCode = isHanziQuiz() && !revealCodeHint;
+
+        if (hideCode) {
+            pronEl.textContent = '';
+            progEl.textContent = '';
+        } else {
+            pronEl.textContent = `${root}（${letter}）`;
+            progEl.textContent = `第 ${codeIndex + 1} / ${current.code.length} 碼`;
+        }
+        renderCodeSlots(current);
+
+        document.getElementById('stats-correct').textContent = correctCount;
+        document.getElementById('stats-errors').textContent = errorCount;
+        document.getElementById('stats-accuracy').textContent = `${calculateAccuracy()}%`;
+
+        const tipEl = document.getElementById('free-mode-tip');
+        if (targetCountSetting === 0) {
+            tipEl.innerHTML = "💡 <b>自由無限模式</b>：想結束隨時按 <strong class='text-yellow-400'>Escape</strong> 觀看速度成果！";
+        } else {
+            tipEl.textContent = isHanziQuiz()
+                ? '先自己拆碼。打錯會出一次正確字根，收起後再打錯會再出。'
+                : '打錯會停喺依家呢碼，聽語音糾正後再撳正確字根。';
+        }
+
+        updateTimerDisplay();
+        if (hideCode) {
+            highlightVirtualKey('', false);
+        } else {
+            highlightVirtualKey(currentKeyLetter(), true);
+        }
+        playTargetVoice(false);
+    }
+
+    function handlePracticeInput(inputKey) {
+        const current = getCurrentItem();
+        if (!current) return;
+
+        const target = current.code[codeIndex];
+        const userInput = inputKey.toLowerCase();
+
+        if (userInput === target) {
+            codeIndex += 1;
+            playSuccessSound();
+            if (codeIndex >= current.code.length) {
+                correctCount += 1;
+                practiceIndex += 1;
+                codeIndex = 0;
+                revealCodeHint = false;
+                clearTimeout(hintHideTimer);
+                hintHideTimer = null;
+            } else {
+                hideCodeHintVisuals();
+            }
+            updatePracticeUI();
+        } else {
+            errorCount += 1;
+            playErrorSound();
+            if (isHanziQuiz()) {
+                showOneCodeHint();
+                speakText(`不對。${current.char}`, 'zh-HK', true);
+            } else {
+                const expectedRoot = radicalByKey[target] || target;
+                const typedRoot = radicalByKey[userInput] || userInput.toUpperCase();
+                if (voiceMode === 'letter-only') {
+                    speakText(expectedRoot, 'zh-HK', true);
+                } else {
+                    speakText(`不對，目標是 ${expectedRoot}，你按了 ${typedRoot}`, 'zh-HK', true);
+                }
+                setTimeout(() => {
+                    if (currentScreen === 'practice') playTargetVoice(false);
+                }, 1600);
+            }
+            document.getElementById('stats-errors').textContent = errorCount;
+            document.getElementById('stats-accuracy').textContent = `${calculateAccuracy()}%`;
+        }
+    }
+
+    function highlightVirtualKey(targetChar, active) {
+        if (currentHighlightedKeyId) {
+            const prevEl = document.getElementById(currentHighlightedKeyId);
+            if (prevEl) {
+                prevEl.classList.remove('bg-yellow-500', 'text-black', 'scale-110', 'font-black', 'key-highlight');
+                prevEl.classList.add('bg-zinc-900', 'text-gray-500');
+            }
+        }
+        if (!active) {
+            currentHighlightedKeyId = null;
+            return;
+        }
+        const keyId = 'key-' + String(targetChar).toLowerCase();
+        const el = document.getElementById(keyId);
+        if (el) {
+            el.classList.remove('bg-zinc-900', 'text-gray-500');
+            el.classList.add('bg-yellow-500', 'text-black', 'scale-110', 'font-black', 'key-highlight');
+            currentHighlightedKeyId = keyId;
+        }
+    }
+
+    function toggleContrast() {
+        highContrast = !highContrast;
+        if (highContrast) {
+            document.body.classList.add('high-contrast');
+            speakText('已開啟超高對比度純黑白模式', 'zh-HK', true);
+        } else {
+            document.body.classList.remove('high-contrast');
+            speakText('已恢復標準深色模式', 'zh-HK', true);
+        }
+    }
+
+    function restartPractice() {
+        selectCategory(selectedCategory);
+    }
+
+    function goBack() {
+        if (currentScreen === 'practice') {
+            endPracticeSession();
+            return;
+        }
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        if (currentScreen === 'timeset' || currentScreen === 'countset') {
+            showScreen(previousScreen);
+        } else if (currentScreen === 'subselect') {
+            showScreen('welcome');
+        } else if (currentScreen === 'summary') {
+            showScreen('welcome');
+        }
+    }
+
+    function endPracticeSession(isTimeout = false) {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        playVictorySound();
+        const { elapsedSeconds, cpm } = calculateTypingSpeed();
+        showScreen('summary', { announce: !isTimeout });
+        document.getElementById('summary-category-txt').textContent = `練習項目：${getActiveCategoryLabel()}`;
+        document.getElementById('summary-correct').textContent = correctCount;
+        document.getElementById('summary-errors').textContent = errorCount;
+        document.getElementById('summary-accuracy').textContent = `${calculateAccuracy()}%`;
+        document.getElementById('summary-speed').textContent = `${cpm} 字/分鐘（正確 ${correctCount} 字，耗時 ${Math.round(elapsedSeconds)} 秒）`;
+        if (isTimeout) {
+            speakText(`時間到！挑戰完成。總共正確輸入 ${correctCount} 次，打字速度每分鐘 ${cpm} 個字，請按數字一重新挑戰，或按 Esc 返回選單。`, 'zh-HK', true);
+        }
+    }
+
+    window.addEventListener('keydown', function(event) {
+        const key = event.key;
+
+        if (key === 'Enter') {
+            event.preventDefault();
+            if (currentScreen === 'practice') playTargetVoice(true);
+            else if (currentScreen === 'timeset') confirmTimeSettings();
+            else if (currentScreen === 'countset') confirmCountSettings();
+            else speakInstruction();
+            return;
+        }
+
+        if (key === 'Escape') {
+            event.preventDefault();
+            goBack();
+            return;
+        }
+
+        const letter = key.length === 1 ? key.toLowerCase() : '';
+        const isPlainLetter = letter && !event.altKey && !event.ctrlKey && !event.metaKey;
+
+        if ((event.altKey && letter === 'v') || (isPlainLetter && letter === 'v' && currentScreen !== 'practice')) {
+            event.preventDefault();
+            toggleVoice();
+            return;
+        }
+        if ((event.altKey && letter === 'm') || (isPlainLetter && letter === 'm' && currentScreen !== 'practice')) {
+            event.preventDefault();
+            toggleVoiceMode();
+            return;
+        }
+
+        if (isPlainLetter && letter === 't' && (currentScreen === 'welcome' || currentScreen === 'subselect')) {
+            event.preventDefault();
+            openTimeSettings();
+            return;
+        }
+        if (isPlainLetter && letter === 'c' && (currentScreen === 'welcome' || currentScreen === 'subselect')) {
+            event.preventDefault();
+            openCountSettings();
+            return;
+        }
+
+        if (currentScreen === 'welcome') {
+            if (key === '1') { event.preventDefault(); selectMode('roots'); }
+            else if (key === '2') { event.preventDefault(); selectMode('codes'); }
+            else if (key === '3') { event.preventDefault(); selectMode('chant'); }
+            else if (key === '4') { event.preventDefault(); selectMode('dict'); }
+        } else if (currentScreen === 'timeset') {
+            if (key === '1') { event.preventDefault(); adjustTime(60); }
+            else if (key === '2') { event.preventDefault(); adjustTime(-60); }
+            else if (key === '3') { event.preventDefault(); adjustTime(10); }
+            else if (key === '4') { event.preventDefault(); adjustTime(-10); }
+            else if (key === '5') { event.preventDefault(); setTimeZero(); }
+        } else if (currentScreen === 'countset') {
+            if (key === '1') { event.preventDefault(); adjustCount(10); }
+            else if (key === '2') { event.preventDefault(); adjustCount(-10); }
+            else if (key === '3') { event.preventDefault(); adjustCount(50); }
+            else if (key === '4') { event.preventDefault(); adjustCount(-50); }
+            else if (key === '5') { event.preventDefault(); setCountZero(); }
+        } else if (currentScreen === 'subselect') {
+            const categories = practiceCategories[selectedMode];
+            const numVal = parseInt(key, 10);
+            if (!isNaN(numVal) && numVal >= 1 && numVal <= categories.length) {
+                event.preventDefault();
+                selectCategory(categories[numVal - 1].id);
+            }
+        } else if (currentScreen === 'summary') {
+            if (key === '1') {
+                event.preventDefault();
+                restartPractice();
+            }
+        } else if (currentScreen === 'practice') {
+            if (letter && letter >= 'a' && letter <= 'z') {
+                event.preventDefault();
+                handlePracticeInput(letter);
+            }
+        }
+    });
+
+    window.onload = function() {
+        setTimeout(() => {
+            speakText('歡迎使用無障礙倉頡打字訓練。請點擊螢幕任何地方，或按下 Enter 鍵以啟用語音導航。按一練習字根，按二練習拆碼，按三練習口訣，按四練習字典同廣東話。', 'zh-HK');
+        }, 1000);
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+        }
+    };
+</script>
+</body>
+</html>
