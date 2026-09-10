@@ -144,7 +144,7 @@
         .italic { font-style: italic; }
         .select-none { user-select: none; }
         .shadow-lg, .shadow-2xl, .shadow-inner { box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
-        button { cursor: pointer; font: inherit; }
+        button { cursor: pointer; font: inherit; color: inherit; }
         kbd { font-family: inherit; }
         .w-8 { width: 2rem; } .h-8 { height: 2rem; }
         .w-36 { width: 9rem; } .h-36 { height: 9rem; }
@@ -659,7 +659,7 @@
             <button onclick="openCountSettings()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-cyan-400" aria-label="設定目標練習字數">
                 🎯 字數：<span id="btn-count-label">10字</span> (按 C)
             </button>
-            <button onclick="toggleContrast()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition" aria-label="切換高對比色彩">
+            <button onclick="toggleContrast()" class="bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition" aria-label="切換高對比色彩">
                 🌓 切換對比色
             </button>
             <button onclick="speakInstruction()" class="bg-amber-600 hover:bg-amber-500 text-black font-extrabold text-sm px-4 py-2 rounded-lg transition" aria-label="朗讀目前頁面操作指引">
