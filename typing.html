@@ -105,7 +105,7 @@
         .text-blue-400 { color: #60a5fa; }
         .text-black { color: #111; }
         header h1, .text-yellow-400.text-3xl { color: #f59e0b; }
-        #screen-welcome, #screen-battlediff, #screen-battle,
+        #screen-welcome, #screen-battlediff, #screen-battlehand, #screen-battle,
         #screen-timeset, #screen-countset, #screen-subselect,
         #screen-practice, #screen-summary {
             background: #1e1e1e;
@@ -114,7 +114,7 @@
         #screen-subselect, #screen-practice, #screen-summary {
             border-color: #f59e0b;
         }
-        #screen-battlediff, #screen-battle { border-color: #ef4444; }
+        #screen-battlediff, #screen-battlehand, #screen-battle { border-color: #ef4444; }
         button:hover { filter: brightness(1.12); }
         .hover\:border-yellow-400:hover { border-color: #f59e0b; }
         .hover\:border-red-400:hover { border-color: #f87171; }
@@ -705,20 +705,41 @@
             <h2 class="text-2xl font-bold text-center mb-6 text-white">⚔️ 打怪模式：選擇難度</h2>
             <p class="text-gray-300 text-center mb-6 text-lg">
                 打啱字母就攻擊怪物。打錯或者太慢，怪物會打返你。<br>
-                請按 <strong class="text-red-400">1、2、3</strong> 選擇難度，或按 Esc 返回。
+                請按 <strong class="text-red-400">1、2、3</strong> 選擇難度，之後再揀打邊組鍵，或按 Esc 返回。
             </p>
             <div class="space-y-4">
-                <button onclick="startBattle('easy')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-green-400 rounded-xl text-left">
+                <button onclick="chooseBattleDifficulty('easy')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-green-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-green-400">【按 1】簡單</span>
-                    <span class="text-sm text-gray-300">8 命 • 6 秒攻擊 • 基準鍵</span>
+                    <span class="text-sm text-gray-300">8 命 • 6 秒攻擊</span>
                 </button>
-                <button onclick="startBattle('normal')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left">
+                <button onclick="chooseBattleDifficulty('normal')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-yellow-400">【按 2】普通</span>
-                    <span class="text-sm text-gray-300">6 命 • 4 秒攻擊 • 逐步加鍵</span>
+                    <span class="text-sm text-gray-300">6 命 • 4 秒攻擊</span>
                 </button>
-                <button onclick="startBattle('hard')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-red-400 rounded-xl text-left">
+                <button onclick="chooseBattleDifficulty('hard')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-red-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-red-400">【按 3】困難</span>
-                    <span class="text-sm text-gray-300">5 命 • 2.5 秒攻擊 • 全字母</span>
+                    <span class="text-sm text-gray-300">5 命 • 2.5 秒攻擊</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-battlehand" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
+            <h2 class="text-2xl font-bold text-center mb-6 text-white">⚔️ 打怪模式：揀打邊邊手</h2>
+            <p class="text-gray-300 text-center mb-6 text-lg">
+                請按 <strong class="text-red-400">1、2、3</strong> 選擇鍵盤範圍，之後再揀排別，或按 Esc 返回。
+            </p>
+            <div class="space-y-4">
+                <button onclick="selectBattleHand('left')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400">【按 1】👈 左手專用鍵盤範圍</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">ASDFG / QWERT / ZXCVB</span>
+                </button>
+                <button onclick="selectBattleHand('right')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400">【按 2】👉 右手專用鍵盤範圍</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">HJKL; / YUIOP / NM,./</span>
+                </button>
+                <button onclick="selectBattleHand('both')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
+                    <span class="text-xl font-bold text-yellow-400">【按 3】👐 雙手混合</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">全鍵盤綜合打字</span>
                 </button>
             </div>
         </div>
@@ -899,7 +920,7 @@
                 <h2 id="subselect-title" class="text-2xl font-bold text-yellow-400">請選擇細分練習排</h2>
                 <button onclick="goBack()" class="text-sm text-gray-400 hover:text-white underline">【Esc】返回上頁</button>
             </div>
-            <p class="text-gray-300 mb-6 text-lg">
+            <p id="subselect-hint" class="text-gray-300 mb-6 text-lg">
                 請按鍵盤 <strong class="text-yellow-400 text-xl">數字鍵 (1, 2, 3, 4)</strong> 選擇您想練習的字母分組：<br>
                 可按 <strong class="text-yellow-400 text-xl">T 鍵</strong> 調整限時，按 <strong class="text-cyan-400 text-xl">C 鍵</strong> 調整練習字數。
             </p>
@@ -1075,7 +1096,7 @@
 </div>
 
 <script>
-    let currentScreen = 'welcome'; // welcome, battlediff, battle, timeset, countset, subselect, practice, summary
+    let currentScreen = 'welcome'; // welcome, battlediff, battlehand, battle, timeset, countset, subselect, practice, summary
     let previousScreen = 'welcome'; 
     let selectedHand = null;       // left, right, both
     let selectedCategory = null;   // selected subgroup key
@@ -1181,6 +1202,10 @@
 
     let battleActive = false;
     let battleWon = false;
+    let battleSelectingKeys = false;
+    let lastGameMode = 'practice';
+    let battleKeyPool = ['a', 's', 'd', 'f', 'g'];
+    let battleCategoryLabel = '左手基準鍵 (ASDFG)';
     let battleDifficulty = 'normal';
     let playerHp = 6;
     let playerMaxHp = 6;
@@ -1331,9 +1356,7 @@
     }
 
     function currentBattleKeys() {
-        if (battleDifficulty === 'easy') return HOME_KEYS;
-        if (battleDifficulty === 'hard') return LETTER_KEYS;
-        return currentMonster().keys;
+        return battleKeyPool.length ? battleKeyPool : HOME_KEYS;
     }
 
     function pickBattleKey() {
@@ -1352,12 +1375,24 @@
         showScreen('battlediff');
     }
 
-    function startBattle(diff) {
+    function chooseBattleDifficulty(diff) {
         battleDifficulty = BATTLE_DIFFICULTY[diff] ? diff : 'normal';
+        battleSelectingKeys = true;
+        showScreen('battlehand');
+    }
+
+    function selectBattleHand(hand) {
+        battleSelectingKeys = true;
+        selectHand(hand);
+    }
+
+    function startBattle(diff) {
+        if (diff) battleDifficulty = BATTLE_DIFFICULTY[diff] ? diff : battleDifficulty;
         const setup = BATTLE_DIFFICULTY[battleDifficulty];
         battleActive = true;
         battleWon = false;
-        selectedCategory = 'battle';
+        battleSelectingKeys = false;
+        lastGameMode = 'battle';
         playerMaxHp = setup.playerHp;
         playerHp = setup.playerHp;
         monsterIndex = 0;
@@ -1372,7 +1407,7 @@
         startTimer();
         const first = currentMonster();
         const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
-        speakText(`打怪模式，${setup.label}難度。你有 ${playerHp} 點生命。第一隻怪物係${first.name}，生命 ${first.hp} 點。太慢或者打錯就會捱打。請按下 ${nameObj.zh}。`, 'zh-HK', true);
+        speakText(`打怪模式，${setup.label}難度，${battleCategoryLabel}。你有 ${playerHp} 點生命。第一隻怪物係${first.name}，生命 ${first.hp} 點。太慢或者打錯就會捱打。請按下 ${nameObj.zh}。`, 'zh-HK', true);
         setTimeout(() => {
             if (currentScreen === 'battle') playTargetVoice(false);
         }, 1600);
@@ -1447,7 +1482,7 @@
         const mon = currentMonster();
         const el = monsterEl();
         if (el) el.dataset.kind = mon.kind;
-        document.getElementById('battle-wave-title').textContent = `第 ${monsterIndex + 1} / ${BATTLE_MONSTERS.length} 關 · ${BATTLE_DIFFICULTY[battleDifficulty].label}`;
+        document.getElementById('battle-wave-title').textContent = `第 ${monsterIndex + 1} / ${BATTLE_MONSTERS.length} 關 · ${BATTLE_DIFFICULTY[battleDifficulty].label} · ${battleCategoryLabel}`;
         document.getElementById('battle-monster-name').textContent = mon.name;
         document.getElementById('battle-monster-hp').textContent = `${monsterHp} / ${monsterMaxHp}`;
         document.getElementById('monster-hp-fill').style.width = `${Math.max(0, monsterHp / monsterMaxHp) * 100}%`;
@@ -1556,7 +1591,7 @@
         title.textContent = won ? '🎉 你打敗晒所有怪物！' : '💀 戰鬥結束';
         title.classList.toggle('text-green-400', won);
         title.classList.toggle('text-red-400', !won);
-        document.getElementById('summary-category-txt').textContent = `打怪模式（${BATTLE_DIFFICULTY[battleDifficulty].label}）：打倒 ${monstersDefeated} / ${BATTLE_MONSTERS.length} 隻`;
+        document.getElementById('summary-category-txt').textContent = `打怪模式（${BATTLE_DIFFICULTY[battleDifficulty].label}）· ${battleCategoryLabel}：打倒 ${monstersDefeated} / ${BATTLE_MONSTERS.length} 隻`;
         document.getElementById('summary-correct').textContent = correctCount;
         document.getElementById('summary-errors').textContent = errorCount;
         document.getElementById('summary-accuracy').textContent = `${calculateAccuracy()}%`;
@@ -1582,7 +1617,9 @@
             const countDesc = tempTargetCount === 0 ? "無限字數自由模式" : `${tempTargetCount}個字`;
             speakText(`自訂字數設定頁面。目前設定為 ${countDesc}。按 1 增加十個字，按 2 減少十個字，按 3 增加五十個字，按 4 減少五十個字，按 5 設為無限自由模式。確認請按 Enter 鍵，或按 Esc 鍵取消。`, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'subselect') {
-            let optionsText = `請選擇細分練習排。${limitText} ${countText} 按 T 鍵改限時，按 C 鍵改字數。`;
+            let optionsText = battleSelectingKeys
+                ? '打怪模式，請選擇要打嘅鍵。'
+                : `請選擇細分練習排。${limitText} ${countText} 按 T 鍵改限時，按 C 鍵改字數。`;
             const currentCategories = practiceCategories[selectedHand];
             currentCategories.forEach((cat, index) => {
                 optionsText += `按 ${index + 1} 鍵選擇：${cat.label}。`;
@@ -1590,7 +1627,9 @@
             optionsText += "按 Esc 鍵返回上一頁。";
             speakText(optionsText, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlediff') {
-            speakText('打怪模式。打啱字母就攻擊，打錯或者太慢就會捱打。按 1 簡單，按 2 普通，按 3 困難，按 Esc 返回。', 'zh-HK', cancelPrevious);
+            speakText('打怪模式。打啱字母就攻擊，打錯或者太慢就會捱打。按 1 簡單，按 2 普通，按 3 困難，之後再揀打邊組鍵。按 Esc 返回。', 'zh-HK', cancelPrevious);
+        } else if (currentScreen === 'battlehand') {
+            speakText('請選擇打怪鍵盤範圍。按 1 左手，按 2 右手，按 3 雙手。按 Esc 返回難度。', 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battle') {
             const mon = currentMonster();
             const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
@@ -1636,15 +1675,23 @@
     }
 
     function selectHand(hand) {
+        if (currentScreen !== 'battlehand') battleSelectingKeys = false;
         selectedHand = hand;
         
         const categories = practiceCategories[hand];
         const container = document.getElementById('subselect-options');
         container.innerHTML = '';
         
-        document.getElementById('subselect-title').textContent = 
-            hand === 'left' ? '👈 左手練習：請選擇排別' : 
-            hand === 'right' ? '👉 右手練習：請選擇排別' : '👐 雙手練習：請選擇排別';
+        const rowTitle = hand === 'left' ? '👈 左手：請選擇排別' : 
+            hand === 'right' ? '👉 右手：請選擇排別' : '👐 雙手：請選擇排別';
+        document.getElementById('subselect-title').textContent = battleSelectingKeys ? `⚔️ 打怪 · ${rowTitle}` : rowTitle;
+
+        const hint = document.getElementById('subselect-hint');
+        if (hint) {
+            hint.innerHTML = battleSelectingKeys
+                ? '請按鍵盤 <strong class="text-yellow-400 text-xl">數字鍵 (1, 2, 3, 4)</strong> 選擇今次打怪要打嘅鍵：'
+                : '請按鍵盤 <strong class="text-yellow-400 text-xl">數字鍵 (1, 2, 3, 4)</strong> 選擇您想練習的字母分組：<br>可按 <strong class="text-yellow-400 text-xl">T 鍵</strong> 調整限時，按 <strong class="text-cyan-400 text-xl">C 鍵</strong> 調整練習字數。';
+        }
 
         categories.forEach((cat, index) => {
             const btn = document.createElement('button');
@@ -1665,6 +1712,14 @@
         const cat = practiceCategories[selectedHand].find(c => c.id === catId);
         if (!cat) return;
 
+        if (battleSelectingKeys) {
+            battleKeyPool = cat.keys.slice();
+            battleCategoryLabel = cat.label;
+            startBattle();
+            return;
+        }
+
+        lastGameMode = 'practice';
         targetKeys = [];
         const set = cat.keys;
         const keysToGenerate = targetCountSetting === 0 ? 15 : targetCountSetting; 
@@ -1692,6 +1747,7 @@
         
         document.getElementById('screen-welcome').classList.add('hidden');
         document.getElementById('screen-battlediff').classList.add('hidden');
+        document.getElementById('screen-battlehand').classList.add('hidden');
         document.getElementById('screen-battle').classList.add('hidden');
         document.getElementById('screen-timeset').classList.add('hidden');
         document.getElementById('screen-countset').classList.add('hidden');
@@ -2030,8 +2086,8 @@
     }
 
     function restartPractice() {
-        if (selectedCategory === 'battle') {
-            startBattle(battleDifficulty);
+        if (lastGameMode === 'battle') {
+            startBattle();
             return;
         }
         selectCategory(selectedCategory);
@@ -2054,7 +2110,12 @@
 
         if (currentScreen === 'timeset' || currentScreen === 'countset') {
             showScreen(previousScreen);
+        } else if (currentScreen === 'subselect' && battleSelectingKeys) {
+            showScreen('battlehand');
+        } else if (currentScreen === 'battlehand') {
+            showScreen('battlediff');
         } else if (currentScreen === 'subselect' || currentScreen === 'battlediff') {
+            battleSelectingKeys = false;
             showScreen('welcome');
         } else if (currentScreen === 'summary') {
             showScreen('welcome');
@@ -2128,7 +2189,7 @@
         }
 
         if (key.toLowerCase() === 't') {
-            if (currentScreen === 'welcome' || currentScreen === 'subselect' || currentScreen === 'battlediff') {
+            if (currentScreen === 'welcome' || currentScreen === 'subselect' || currentScreen === 'battlediff' || currentScreen === 'battlehand') {
                 event.preventDefault();
                 openTimeSettings();
                 return;
@@ -2136,7 +2197,7 @@
         }
 
         if (key.toLowerCase() === 'c') {
-            if (currentScreen === 'welcome' || currentScreen === 'subselect' || currentScreen === 'battlediff') {
+            if (currentScreen === 'welcome' || currentScreen === 'subselect' || currentScreen === 'battlediff' || currentScreen === 'battlehand') {
                 event.preventDefault();
                 openCountSettings();
                 return;
@@ -2161,13 +2222,25 @@
         else if (currentScreen === 'battlediff') {
             if (key === '1') {
                 event.preventDefault();
-                startBattle('easy');
+                chooseBattleDifficulty('easy');
             } else if (key === '2') {
                 event.preventDefault();
-                startBattle('normal');
+                chooseBattleDifficulty('normal');
             } else if (key === '3') {
                 event.preventDefault();
-                startBattle('hard');
+                chooseBattleDifficulty('hard');
+            }
+        }
+        else if (currentScreen === 'battlehand') {
+            if (key === '1') {
+                event.preventDefault();
+                selectBattleHand('left');
+            } else if (key === '2') {
+                event.preventDefault();
+                selectBattleHand('right');
+            } else if (key === '3') {
+                event.preventDefault();
+                selectBattleHand('both');
             }
         } 
         else if (currentScreen === 'timeset') {
