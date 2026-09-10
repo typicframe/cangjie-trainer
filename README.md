@@ -4,7 +4,10 @@
 
 ## 線上使用
 
-https://typicframe.github.io/cangjie-trainer/
+- 倉頡：https://typicframe.github.io/cangjie-trainer/
+- 英文打字／打怪：https://typicframe.github.io/cangjie-trainer/typing.html
+
+Google 協作平台請用「嵌入 → 網址」，唔好貼 HTML 程式碼。
 
 ## 本機使用
 
