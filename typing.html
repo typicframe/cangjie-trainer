@@ -1176,10 +1176,10 @@
         'w': { text: 'W', zh: 'W' },
         'x': { text: 'X', zh: 'X' },
         'y': { text: 'Y', zh: 'Y' },
-        'z': { text: 'Z', zh: 'Z' },
+        'z': { text: 'Zed', zh: 'Z' },
         ';': { text: 'Semicolon', zh: '分號' },
         ',': { text: 'Comma', zh: '逗號' },
-        '.': { text: 'Period', zh: '句號' },
+        '.': { text: 'Full stop', zh: '句號' },
         '/': { text: 'Slash', zh: '斜線' }
     };
 
@@ -1221,6 +1221,40 @@
     let battleStrikeAnim = null;
 
     // TTS engine respects global voice toggles and can queue instead of interrupting
+    function listSpeechVoices() {
+        if (!('speechSynthesis' in window)) return [];
+        return window.speechSynthesis.getVoices() || [];
+    }
+
+    function pickSpeechVoice(lang) {
+        const voices = listSpeechVoices();
+        if (!voices.length) return null;
+        const wanted = (lang || '').toLowerCase().replace('_', '-');
+        let best = null;
+        let bestScore = -1;
+        voices.forEach((voice) => {
+            const vLang = (voice.lang || '').toLowerCase().replace('_', '-');
+            const name = (voice.name || '').toLowerCase();
+            let score = 0;
+            if (vLang === wanted) score += 50;
+            if (wanted && vLang.startsWith(wanted.split('-')[0])) score += 8;
+            if (wanted.startsWith('en-gb')) {
+                if (vLang === 'en-gb' || vLang.startsWith('en-gb')) score += 40;
+                if (name.includes('uk english') || name.includes('british') || name.includes('united kingdom')) score += 35;
+                if (/\b(hazel|george|libby|ryan|sonia|susan|daniel|kate|serena|martha|arthur)\b/.test(name)) score += 15;
+                if (vLang.startsWith('en-us') || name.includes('us english') || name.includes('american')) score -= 30;
+            }
+            if (wanted.startsWith('zh')) {
+                if (vLang.includes('hk') || name.includes('hong kong') || name.includes('cantonese')) score += 40;
+            }
+            if (score > bestScore) {
+                best = voice;
+                bestScore = score;
+            }
+        });
+        return bestScore > 0 ? best : null;
+    }
+
     function speakText(text, lang = 'zh-HK', cancelPrevious = true, force = false) {
         if (!('speechSynthesis' in window)) return;
         // If voice is disabled globally, do not speak unless forced (e.g. telling the user "Speech disabled")
@@ -1243,6 +1277,8 @@
             utterance.lang = lang;
             utterance.rate = 1.0;
             utterance.volume = 1;
+            const voice = pickSpeechVoice(lang);
+            if (voice) utterance.voice = voice;
             const finish = () => resolve();
             utterance.onend = finish;
             utterance.onerror = finish;
@@ -1285,7 +1321,7 @@
         const currentTarget = currentScreen === 'battle' ? currentBattleKey : targetKeys[practiceIndex];
         if (!currentTarget) return;
         const nameObj = pronunciationMap[currentTarget.toLowerCase()] || { text: currentTarget, zh: currentTarget };
-        speakText(nameObj.text, 'en-US', cancel);
+        speakText(nameObj.text, 'en-GB', cancel);
     }
 
     function initAudio() {
@@ -1912,7 +1948,7 @@
             } else if (timeLeft === 10) {
                 speakText("最後十秒", 'zh-HK', false);
             } else if (timeLeft <= 5 && timeLeft > 0) {
-                speakText(timeLeft.toString(), 'en-US', false);
+                speakText(timeLeft.toString(), 'en-GB', false);
                 playTone(440, 'sine', 0.05);
             }
 
@@ -2025,7 +2061,7 @@
             // Handle error voice feedback depending on Voice Mode selection
             if (voiceMode === 'letter-only') {
                 // Letter-Only Mode: Just read the target letter again directly, don't say error descriptions
-                speakText(targetObj.text, 'en-US', true);
+                speakText(targetObj.text, 'en-GB', true);
             } else {
                 // Full Mode: Traditional helpful error instruction guide
                 const targetSpoken = targetObj.zh;
@@ -2314,6 +2350,9 @@
 
         if ('speechSynthesis' in window) {
             window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
         }
     };
 </script>
