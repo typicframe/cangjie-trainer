@@ -77,23 +77,55 @@
         .border-4 { border-width: 4px; border-style: solid; }
         .border-b { border-bottom: 1px solid #27272a; }
         .border-t { border-top: 1px solid #27272a; }
-        .border-[#f59e0b], .border-yellow-400, .border-yellow-500 { border-color: #f59e0b; }
-        .border-red-500, .border-red-700, .border-red-800 { border-color: #b91c1c; }
+        .border-yellow-400, .border-yellow-500, .border-amber-400 { border-color: #f59e0b; }
+        .border-red-400, .border-red-500, .border-red-700, .border-red-800 { border-color: #ef4444; }
+        .border-green-400 { border-color: #4ade80; }
         .border-zinc-700, .border-zinc-800, .border-gray-700, .border-gray-800 { border-color: #3f3f46; }
-        .bg-[#121212] { background: #121212; }
-        .bg-[#1e1e1e], .bg-zinc-900, .bg-gray-800 { background: #1e1e1e; }
+        .bg-zinc-900, .bg-gray-800 { background: #18181b; }
         .bg-black { background: #000; }
         .bg-zinc-800 { background: #27272a; }
-        .bg-amber-600 { background: #d97706; }
-        .bg-yellow-500 { background: #eab308; }
-        .bg-red-950\/40 { background: rgba(69, 10, 10, 0.4); }
+        .bg-amber-600 { background: #d97706; color: #111; }
+        .bg-yellow-500 { background: #eab308; color: #111; }
+        .bg-cyan-500 { background: #06b6d4; color: #111; }
+        .bg-red-950 { background: rgba(69, 10, 10, 0.4); }
         .text-white { color: #fff; }
-        .text-[#f59e0b], .text-yellow-400, .text-yellow-200, .text-yellow-300, .text-yellow-500 { color: #f59e0b; }
-        .text-gray-300, .text-gray-400, .text-gray-500 { color: #d1d5db; }
+        .text-yellow-400 { color: #facc15; }
+        .text-yellow-200 { color: #fde68a; }
+        .text-yellow-300 { color: #fde047; }
+        .text-yellow-500 { color: #eab308; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
         .text-green-300, .text-green-400 { color: #4ade80; }
-        .text-red-200, .text-red-300, .text-red-400, .text-red-500 { color: #f87171; }
-        .text-cyan-400, .text-blue-400 { color: #22d3ee; }
+        .text-red-200 { color: #fecaca; }
+        .text-red-300 { color: #fca5a5; }
+        .text-red-400 { color: #f87171; }
+        .text-red-500 { color: #ef4444; }
+        .text-cyan-400 { color: #22d3ee; }
+        .text-blue-400 { color: #60a5fa; }
         .text-black { color: #111; }
+        header h1, .text-yellow-400.text-3xl { color: #f59e0b; }
+        #screen-welcome, #screen-battlediff, #screen-battle,
+        #screen-timeset, #screen-countset, #screen-subselect,
+        #screen-practice, #screen-summary {
+            background: #1e1e1e;
+        }
+        #screen-welcome, #screen-timeset, #screen-countset,
+        #screen-subselect, #screen-practice, #screen-summary {
+            border-color: #f59e0b;
+        }
+        #screen-battlediff, #screen-battle { border-color: #ef4444; }
+        button:hover { filter: brightness(1.12); }
+        .hover\:border-yellow-400:hover { border-color: #f59e0b; }
+        .hover\:border-red-400:hover { border-color: #f87171; }
+        .hover\:border-green-400:hover { border-color: #4ade80; }
+        .hover\:border-cyan-400:hover { border-color: #22d3ee; }
+        .hover\:bg-gray-700:hover { background: #374151; }
+        .hover\:bg-zinc-700:hover { background: #3f3f46; }
+        .hover\:bg-amber-500:hover { background: #f59e0b; }
+        .hover\:bg-yellow-400:hover { background: #facc15; }
+        .hover\:bg-cyan-400:hover { background: #22d3ee; }
+        .hover\:text-white:hover { color: #fff; }
         .text-xs { font-size: 0.75rem; }
         .text-sm { font-size: 0.875rem; }
         .text-base { font-size: 1rem; }
@@ -186,7 +218,7 @@
         /* 文字高對比亮色 */
         body.high-contrast .text-yellow-400,
         body.high-contrast .text-yellow-200,
-        body.high-contrast .text-[#f59e0b] {
+        body.high-contrast .text-yellow-400 {
             color: #ffff00 !important;
         }
         body.high-contrast .text-green-400 {
@@ -597,14 +629,14 @@
         }
     </style>
 </head>
-<body class="bg-[#121212] text-[#f3f4f6] min-h-screen flex flex-col transition-colors duration-200">
+<body class="min-h-screen flex flex-col">
 
 <div class="flex-grow flex flex-col max-w-5xl w-full mx-auto px-4 py-6 md:py-10 justify-between">
     
     <!-- Header -->
     <header class="border-b border-gray-800 pb-4 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div>
-            <h1 class="text-3xl font-extrabold text-[#f59e0b] tracking-wide flex items-center gap-2">
+            <h1 class="text-3xl font-extrabold tracking-wide flex items-center gap-2">
                 <span>⌨️</span> 視障無障礙英文打字訓練
             </h1>
             <p class="text-sm text-gray-400 mt-1">
@@ -640,23 +672,23 @@
     <main class="flex-grow flex flex-col justify-center items-center my-4">
         
         <!-- SCREEN 1: Welcome & Hand Selection -->
-        <div id="screen-welcome" class="w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div id="screen-welcome" class="w-full max-w-2xl bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 class="text-2xl font-bold text-center mb-6 text-white">請選擇你要練習的手部範圍</h2>
             <p class="text-gray-300 text-center mb-6 text-lg">
-                您可以按鍵盤 <strong class="text-[#f59e0b] text-xl">數字鍵 (1, 2, 3, 4)</strong> 進行選擇：<br>
+                您可以按鍵盤 <strong class="text-yellow-400 text-xl">數字鍵 (1, 2, 3, 4)</strong> 進行選擇：<br>
                 或隨時按 <strong class="text-yellow-400 text-xl">T 鍵</strong> 設定限時，按 <strong class="text-cyan-400 text-xl">C 鍵</strong> 設定字數。
             </p>
             
             <div class="space-y-4">
-                <button onclick="selectHand('left')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                <button onclick="selectHand('left')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
                     <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 1】👈 左手專用鍵盤範圍</span>
                     <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">ASDFG / QWERT / ZXCVB</span>
                 </button>
-                <button onclick="selectHand('right')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                <button onclick="selectHand('right')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
                     <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 2】👉 右手專用鍵盤範圍</span>
                     <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">HJKL; / YUIOP / NM,./</span>
                 </button>
-                <button onclick="selectHand('both')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left">
+                <button onclick="selectHand('both')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
                     <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 3】👐 雙手混合練習</span>
                     <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">全鍵盤綜合打字</span>
                 </button>
@@ -667,7 +699,7 @@
             </div>
         </div>
 
-        <div id="screen-battlediff" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div id="screen-battlediff" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 class="text-2xl font-bold text-center mb-6 text-white">⚔️ 打怪模式：選擇難度</h2>
             <p class="text-gray-300 text-center mb-6 text-lg">
                 打啱字母就攻擊怪物。打錯或者太慢，怪物會打返你。<br>
@@ -689,7 +721,7 @@
             </div>
         </div>
 
-        <div id="screen-battle" class="hidden w-full max-w-4xl bg-[#1e1e1e] border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center">
+        <div id="screen-battle" class="hidden w-full max-w-4xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center">
             <div class="w-full flex justify-between items-center mb-4 pb-4 border-b border-zinc-800">
                 <span id="battle-wave-title" class="text-lg font-semibold text-red-300">第 1 關</span>
                 <button onclick="goBack()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-sm px-4 py-2 rounded-lg border border-zinc-700">
@@ -778,10 +810,10 @@
         </div>
 
         <!-- SCREEN: Custom Time Limit Setting -->
-        <div id="screen-timeset" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div id="screen-timeset" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 class="text-2xl font-bold text-center mb-6 text-white">⏱️ 設定練習限時時間</h2>
             <p class="text-gray-300 text-center mb-6 text-lg">
-                請按鍵盤 <strong class="text-[#f59e0b] text-xl">1、2、3、4、5</strong> 來微調分秒，完成後按 <strong class="text-green-400">Enter 確認</strong>：
+                請按鍵盤 <strong class="text-yellow-400 text-xl">1、2、3、4、5</strong> 來微調分秒，完成後按 <strong class="text-green-400">Enter 確認</strong>：
             </p>
             
             <div class="text-center my-8 bg-black p-6 rounded-2xl border border-zinc-800">
@@ -819,10 +851,10 @@
         </div>
 
         <!-- SCREEN: Custom Target Letter Count Setting -->
-        <div id="screen-countset" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div id="screen-countset" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 class="text-2xl font-bold text-center mb-6 text-white">🎯 設定目標練習字數</h2>
             <p class="text-gray-300 text-center mb-6 text-lg">
-                請按鍵盤 <strong class="text-[#f59e0b] text-xl">1、2、3、4、5</strong> 來調整字數，完成後按 <strong class="text-green-400">Enter 確認</strong>：
+                請按鍵盤 <strong class="text-yellow-400 text-xl">1、2、3、4、5</strong> 來調整字數，完成後按 <strong class="text-green-400">Enter 確認</strong>：
             </p>
             
             <div class="text-center my-8 bg-black p-6 rounded-2xl border border-zinc-800">
@@ -860,13 +892,13 @@
         </div>
 
         <!-- SCREEN 2: Subcategory Selection -->
-        <div id="screen-subselect" class="hidden w-full max-w-2xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div id="screen-subselect" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-6 md:p-8 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
                 <h2 id="subselect-title" class="text-2xl font-bold text-yellow-400">請選擇細分練習排</h2>
                 <button onclick="goBack()" class="text-sm text-gray-400 hover:text-white underline">【Esc】返回上頁</button>
             </div>
             <p class="text-gray-300 mb-6 text-lg">
-                請按鍵盤 <strong class="text-[#f59e0b] text-xl">數字鍵 (1, 2, 3, 4)</strong> 選擇您想練習的字母分組：<br>
+                請按鍵盤 <strong class="text-yellow-400 text-xl">數字鍵 (1, 2, 3, 4)</strong> 選擇您想練習的字母分組：<br>
                 可按 <strong class="text-yellow-400 text-xl">T 鍵</strong> 調整限時，按 <strong class="text-cyan-400 text-xl">C 鍵</strong> 調整練習字數。
             </p>
             
@@ -876,7 +908,7 @@
         </div>
 
         <!-- SCREEN 3: Active Practice Board -->
-        <div id="screen-practice" class="hidden w-full max-w-4xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center">
+        <div id="screen-practice" class="hidden w-full max-w-4xl bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center">
             
             <!-- Progress & Controls Top -->
             <div class="w-full flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
@@ -887,7 +919,7 @@
             </div>
 
             <!-- Countdown Timer Widget (Visible in Time Limit mode) -->
-            <div id="timer-display-box" class="hidden w-full max-w-xs text-center bg-red-950/40 border-2 border-red-500 py-3 rounded-2xl mb-6 shadow-lg animate-pulse">
+            <div id="timer-display-box" class="hidden w-full max-w-xs text-center bg-red-950 border-2 border-red-500 py-3 rounded-2xl mb-6 shadow-lg animate-pulse">
                 <span class="text-xs text-red-400 uppercase font-black tracking-wider block">⏱️ 剩餘時間</span>
                 <span id="timer-value" class="text-4xl font-extrabold text-white">60 秒</span>
             </div>
@@ -896,7 +928,7 @@
             <div class="text-center my-6">
                 <span class="text-sm tracking-wider uppercase text-gray-400 block mb-2">請按下此鍵：</span>
                 <!-- Giant bold visual of the single key target -->
-                <div id="target-key-box" class="w-44 h-44 flex items-center justify-center bg-black border-4 border-[#f59e0b] rounded-3xl shadow-inner mb-4 transition-transform duration-100">
+                <div id="target-key-box" class="w-44 h-44 flex items-center justify-center bg-black border-4 border-yellow-400 rounded-3xl shadow-inner mb-4 transition-transform duration-100">
                     <span id="target-key-char" class="text-8xl font-black text-yellow-400 select-none">A</span>
                 </div>
                 <!-- Spoken prompt helpers -->
@@ -983,7 +1015,7 @@
         </div>
 
         <!-- SCREEN 4: Practice Results / Summary -->
-        <div id="screen-summary" class="hidden w-full max-w-xl bg-[#1e1e1e] border-2 border-[#f59e0b] rounded-2xl p-6 md:p-8 shadow-2xl text-center">
+        <div id="screen-summary" class="hidden w-full max-w-xl bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-6 md:p-8 shadow-2xl text-center">
             <h2 id="summary-title" class="text-3xl font-extrabold text-green-400 mb-2">🎉 恭喜完成本輪練習！</h2>
             <p id="summary-category-txt" class="text-gray-400 mb-6">練習項目：左手基準鍵 (asdfg)</p>
 
@@ -1008,7 +1040,7 @@
             </div>
 
             <p class="text-gray-300 mb-6 text-base">
-                您現在可以按 <strong class="text-[#f59e0b]">【1】</strong> 重新開始本次練習，或按 <strong class="text-[#f59e0b]">【Escape】</strong> 返回主選單。
+                您現在可以按 <strong class="text-yellow-400">【1】</strong> 重新開始本次練習，或按 <strong class="text-yellow-400">【Escape】</strong> 返回主選單。
             </p>
 
             <div class="flex flex-col sm:flex-row gap-3">
@@ -1615,7 +1647,7 @@
         categories.forEach((cat, index) => {
             const btn = document.createElement('button');
             btn.onclick = () => selectCategory(cat.id);
-            btn.className = "w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-[#f59e0b] rounded-xl transition-all group text-left";
+            btn.className = "w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left";
             btn.innerHTML = `
                 <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 ${index + 1}】${cat.label}</span>
                 <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">${cat.description}</span>
