@@ -233,6 +233,7 @@
             color: #33ccff !important;
         }
         .hp-track {
+            position: relative;
             height: 1.1rem;
             background: #27272a;
             border: 2px solid #52525b;
@@ -240,17 +241,18 @@
             overflow: hidden;
         }
         .hp-fill {
+            display: block;
             height: 100%;
             width: 100%;
             transition: width 0.2s ease;
         }
-        .hp-fill.player { background: #22c55e; }
-        .hp-fill.monster { background: #ef4444; }
-        .hp-fill.strike { background: #f59e0b; }
+        .hp-fill.hp-player { background: #22c55e; }
+        .hp-fill.hp-monster { background: #ef4444; }
+        .hp-fill.hp-strike { background: #f59e0b; }
         body.high-contrast .hp-track { background: #000 !important; border-color: #fff !important; }
-        body.high-contrast .hp-fill.player { background: #00ff00 !important; }
-        body.high-contrast .hp-fill.monster { background: #ff3333 !important; }
-        body.high-contrast .hp-fill.strike { background: #ffff00 !important; }
+        body.high-contrast .hp-fill.hp-player { background: #00ff00 !important; }
+        body.high-contrast .hp-fill.hp-monster { background: #ff3333 !important; }
+        body.high-contrast .hp-fill.hp-strike { background: #ffff00 !important; }
         @keyframes battle-hit {
             0%, 100% { transform: scale(1); }
             40% { transform: scale(1.06); }
@@ -782,7 +784,7 @@
                 </div>
                 <p id="battle-monster-name" class="text-2xl font-black text-red-300">史萊姆</p>
                 <p class="text-xs text-gray-400 mt-3 mb-1">怪物生命</p>
-                <div class="hp-track" aria-hidden="true"><div id="monster-hp-fill" class="hp-fill monster"></div></div>
+                <div class="hp-track" aria-hidden="true"><div id="monster-hp-fill" class="hp-fill hp-monster"></div></div>
                 <p id="battle-monster-hp" class="text-sm text-red-200 mt-1">3 / 3</p>
             </div>
 
@@ -791,9 +793,9 @@
                     <span class="text-green-300">你的生命 <span id="battle-player-hp">8 / 8</span></span>
                     <span class="text-yellow-300">連擊 <span id="battle-combo">0</span></span>
                 </div>
-                <div class="hp-track" aria-hidden="true"><div id="player-hp-fill" class="hp-fill player"></div></div>
+                <div class="hp-track" aria-hidden="true"><div id="player-hp-fill" class="hp-fill hp-player"></div></div>
                 <p class="text-xs text-gray-400 mt-3 mb-1">怪物下次攻擊</p>
-                <div class="hp-track" aria-hidden="true"><div id="strike-fill" class="hp-fill strike"></div></div>
+                <div class="hp-track" aria-hidden="true"><div id="strike-fill" class="hp-fill hp-strike"></div></div>
             </div>
 
             <p class="text-sm tracking-wider uppercase text-gray-400 mb-2">打呢個鍵攻擊！</p>
