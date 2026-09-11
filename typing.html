@@ -1246,7 +1246,11 @@
                 if (vLang.startsWith('en-us') || name.includes('us english') || name.includes('american')) score -= 30;
             }
             if (wanted.startsWith('zh')) {
+                const isChinese = vLang.startsWith('zh') || name.includes('chinese') || name.includes('hong kong') || name.includes('cantonese');
+                if (!isChinese) return;
                 if (vLang.includes('hk') || name.includes('hong kong') || name.includes('cantonese')) score += 40;
+            } else if (wanted.startsWith('en') && !vLang.startsWith('en') && !name.includes('english')) {
+                return;
             }
             if (score > bestScore) {
                 best = voice;
@@ -1265,7 +1269,7 @@
             speakGeneration += 1;
             window.speechSynthesis.cancel();
             // Chrome 取消後要稍等，否則下一句可能被吞掉
-            speechChain = new Promise((resolve) => setTimeout(resolve, 50));
+            speechChain = new Promise((resolve) => setTimeout(resolve, 180));
         }
 
         const generation = speakGeneration;
@@ -1283,6 +1287,9 @@
             const finish = () => resolve();
             utterance.onend = finish;
             utterance.onerror = finish;
+            try {
+                if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+            } catch (e) {}
             window.speechSynthesis.speak(utterance);
         }));
     }
@@ -1446,11 +1453,10 @@
     }
 
     function announceBattlePrompt(includeMonster) {
-        if (includeMonster && voiceMode === 'full') {
-            speakText(currentMonster().name, 'zh-HK', true);
-            setTimeout(() => {
-                if (currentScreen === 'battle') playTargetVoice(false);
-            }, 400);
+        const mon = currentMonster();
+        if (includeMonster) {
+            speakText(`${mon.name}。`, 'zh-HK', true);
+            playTargetVoice(false);
             return;
         }
         playTargetVoice(true);
