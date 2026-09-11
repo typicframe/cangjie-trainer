@@ -1222,6 +1222,7 @@
     let battleStrikeAnim = null;
     let battleCueId = 0;
     let battleAcceptInput = false;
+    let battleStrikeArmed = false;
 
     // TTS engine respects global voice toggles and can queue instead of interrupting
     function listSpeechVoices() {
@@ -1333,6 +1334,62 @@
         if (!currentTarget) return Promise.resolve();
         const nameObj = pronunciationMap[currentTarget.toLowerCase()] || { text: currentTarget, zh: currentTarget };
         return speakText(nameObj.text, 'en-GB', cancel);
+    }
+
+    function delayMs(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function estimateSpeakMs(text, lang) {
+        const t = String(text || '').trim();
+        if ((lang || '').toLowerCase().startsWith('en')) {
+            return t.length > 3 ? 1200 : 1000;
+        }
+        const chars = t.replace(/[。．、，.\s]/g, '').length;
+        return 1000 + Math.max(1, chars) * 450;
+    }
+
+    function speakCueAndWait(text, lang) {
+        if (!('speechSynthesis' in window) || !voiceEnabled) return Promise.resolve();
+        const minMs = estimateSpeakMs(text, lang);
+        return new Promise((resolve) => {
+            const startedAt = Date.now();
+            let started = false;
+            let finished = false;
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+                const remain = Math.max(120, minMs - (Date.now() - startedAt));
+                setTimeout(resolve, remain);
+            };
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 1.0;
+            utterance.volume = 1;
+            const voice = pickSpeechVoice(lang);
+            if (voice) utterance.voice = voice;
+            utterance.onstart = () => { started = true; };
+            utterance.onend = finish;
+            utterance.onerror = finish;
+            try {
+                if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+            } catch (e) {}
+            window.speechSynthesis.speak(utterance);
+            const poll = setInterval(() => {
+                if (finished) {
+                    clearInterval(poll);
+                    return;
+                }
+                if (started && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
+                    clearInterval(poll);
+                    finish();
+                }
+            }, 80);
+            setTimeout(() => {
+                clearInterval(poll);
+                finish();
+            }, minMs + 2500);
+        });
     }
 
     function initAudio() {
@@ -1459,6 +1516,7 @@
     }
 
     function freezeStrikeBar() {
+        battleStrikeArmed = false;
         clearBattleTimers();
         battleAcceptInput = false;
         const fill = document.getElementById('strike-fill');
@@ -1473,16 +1531,20 @@
     async function announceBattlePrompt(includeMonster) {
         const cueId = ++battleCueId;
         freezeStrikeBar();
-        const wait = (p) => Promise.race([p || Promise.resolve(), new Promise((resolve) => setTimeout(resolve, 5000))]);
-        if (includeMonster) {
-            await wait(speakText(`${currentMonster().name}。`, 'zh-HK', true));
+        if (voiceEnabled && 'speechSynthesis' in window) {
+            speakGeneration += 1;
+            window.speechSynthesis.cancel();
+            await delayMs(220);
             if (!isBattleCueCurrent(cueId)) return;
-            await wait(playTargetVoice(false));
-        } else {
-            await wait(playTargetVoice(true));
+            if (includeMonster) {
+                await speakCueAndWait(`${currentMonster().name}。`, 'zh-HK');
+                if (!isBattleCueCurrent(cueId)) return;
+            }
+            const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
+            await speakCueAndWait(nameObj.text, 'en-GB');
+            if (!isBattleCueCurrent(cueId)) return;
+            await delayMs(180);
         }
-        if (!isBattleCueCurrent(cueId)) return;
-        await wait(speechChain);
         if (!isBattleCueCurrent(cueId)) return;
         armMonsterStrike();
     }
@@ -1519,6 +1581,7 @@
 
     function armMonsterStrike() {
         clearBattleTimers();
+        battleStrikeArmed = true;
         const ms = BATTLE_DIFFICULTY[battleDifficulty].strikeMs;
         battleStrikeStartedAt = Date.now();
         const fill = document.getElementById('strike-fill');
@@ -1528,7 +1591,7 @@
         setMonsterPose('idle');
 
         const tick = () => {
-            if (currentScreen !== 'battle') return;
+            if (!battleStrikeArmed || currentScreen !== 'battle') return;
             const left = Math.max(0, 1 - ((Date.now() - battleStrikeStartedAt) / ms));
             if (fill) fill.style.width = `${left * 100}%`;
             if (el) {
@@ -1642,6 +1705,7 @@
         battleWon = won;
         battleActive = false;
         battleAcceptInput = false;
+        battleStrikeArmed = false;
         battleCueId += 1;
         clearBattleTimers();
         if (timerInterval) {
@@ -2217,6 +2281,7 @@
         if (key === ' ' || key === 'Spacebar') {
             if (currentScreen === 'practice' || currentScreen === 'battle') {
                 event.preventDefault();
+                if (currentScreen === 'battle' && !battleAcceptInput) return;
                 playTargetVoice(true);
                 return;
             }
