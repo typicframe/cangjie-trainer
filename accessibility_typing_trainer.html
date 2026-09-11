@@ -826,7 +826,7 @@
             <div class="flex items-center justify-center gap-2 mb-2">
                 <p id="battle-key-pronunciation" class="text-xl text-yellow-200 font-semibold">A</p>
                 <button onclick="playTargetVoice(true)" class="p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs">
-                    🔊 重聽 (Enter)
+                    🔊 重聽 (空白鍵)
                 </button>
             </div>
             <p id="battle-status" class="text-sm text-gray-300 min-h-[1.5rem]">準備戰鬥</p>
@@ -958,7 +958,7 @@
                 <div class="flex items-center justify-center gap-2">
                     <p id="target-key-pronunciation" class="text-xl text-yellow-200 font-semibold italic">"A"</p>
                     <button onclick="playTargetVoice(true)" class="p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs" title="重複讀音">
-                        🔊 重聽 (或按 Enter)
+                        🔊 重聽 (空白鍵)
                     </button>
                 </div>
             </div>
@@ -1086,7 +1086,8 @@
             <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">1</kbd> 至 <kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">9</kbd>：選單</div>
             <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">T</kbd>：自訂限時</div>
             <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-cyan-400 font-bold">C</kbd>：自訂字數</div>
-            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">Enter</kbd>：重聽 / 確認</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">空白鍵</kbd>：重聽字母</div>
+            <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">Enter</kbd>：確認 / 聽說明</div>
             <div><kbd class="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-yellow-400 font-bold">Escape</kbd>：返回或結算</div>
         </div>
         <div class="text-center md:text-right">
@@ -1441,12 +1442,18 @@
         spawnMonster(true);
         showScreen('battle', { announce: false });
         startTimer();
-        const first = currentMonster();
-        const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
-        speakText(`打怪模式，${setup.label}難度，${battleCategoryLabel}。你有 ${playerHp} 點生命。第一隻怪物係${first.name}，生命 ${first.hp} 點。太慢或者打錯就會捱打。請按下 ${nameObj.zh}。`, 'zh-HK', true);
-        setTimeout(() => {
-            if (currentScreen === 'battle') playTargetVoice(false);
-        }, 1600);
+        announceBattlePrompt(true);
+    }
+
+    function announceBattlePrompt(includeMonster) {
+        if (includeMonster && voiceMode === 'full') {
+            speakText(currentMonster().name, 'zh-HK', true);
+            setTimeout(() => {
+                if (currentScreen === 'battle') playTargetVoice(false);
+            }, 400);
+            return;
+        }
+        playTargetVoice(true);
     }
 
     function spawnMonster(isFirst) {
@@ -1457,9 +1464,7 @@
         setMonsterPose('idle');
         updateBattleUI();
         armMonsterStrike();
-        if (!isFirst && voiceMode === 'full') {
-            speakText(`下一隻係${mon.name}，生命 ${mon.hp} 點。`, 'zh-HK', true);
-        }
+        if (!isFirst) announceBattlePrompt(true);
     }
 
     function monsterEl() {
@@ -1552,13 +1557,8 @@
         }
         pickBattleKey();
         updateBattleUI();
-        if (voiceMode === 'full') {
-            speakText(`${reason} 剩餘生命 ${playerHp}。`, 'zh-HK', true);
-        }
         armMonsterStrike();
-        setTimeout(() => {
-            if (currentScreen === 'battle') playTargetVoice(false);
-        }, 900);
+        playTargetVoice(true);
     }
 
     function handleBattleInput(inputKey) {
@@ -1595,9 +1595,6 @@
                     monsterIndex = nextIndex;
                     spawnMonster(false);
                     updateBattleUI();
-                    setTimeout(() => {
-                        if (currentScreen === 'battle') playTargetVoice(false);
-                    }, 400);
                 }, 560);
                 return;
             }
@@ -1667,16 +1664,14 @@
         } else if (currentScreen === 'battlehand') {
             speakText('請選擇打怪鍵盤範圍。按 1 左手，按 2 右手，按 3 雙手。按 Esc 返回難度。', 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battle') {
-            const mon = currentMonster();
-            const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
-            speakText(`正在打${mon.name}。怪物生命 ${monsterHp}，你生命 ${playerHp}，連擊 ${combo}。請按下 ${nameObj.zh}。Enter 重聽，Esc 撤退。練習時切換語音請按 Alt 加 V。`, 'zh-HK', cancelPrevious);
+            speakText(`${currentMonster().name}。`, 'zh-HK', cancelPrevious);
             playTargetVoice(false);
         } else if (currentScreen === 'practice') {
             const currentTarget = targetKeys[practiceIndex];
             if (!currentTarget) return;
             const nameObj = pronunciationMap[currentTarget.toLowerCase()] || { text: currentTarget, zh: currentTarget };
             const spokenChar = nameObj.zh;
-            speakText(`正在練習：${getActiveCategoryLabel()}。請按下字母鍵： ${spokenChar}。 如需重聽，請按下 Enter 鍵。 按 Esc 鍵可以隨時結算。 練習時切換語音請按 Alt 加 V，切換語音模式請按 Alt 加 M。`, 'zh-HK', cancelPrevious);
+            speakText(`正在練習：${getActiveCategoryLabel()}。請按下字母鍵： ${spokenChar}。 如需重聽，請按空白鍵。 按 Esc 鍵可以隨時結算。 練習時切換語音請按 Alt 加 V，切換語音模式請按 Alt 加 M。`, 'zh-HK', cancelPrevious);
             playTargetVoice(false);
         } else if (currentScreen === 'summary') {
             const acc = calculateAccuracy();
@@ -2188,10 +2183,18 @@
     window.addEventListener('keydown', function(event) {
         const key = event.key;
 
+        if (key === ' ' || key === 'Spacebar') {
+            if (currentScreen === 'practice' || currentScreen === 'battle') {
+                event.preventDefault();
+                playTargetVoice(true);
+                return;
+            }
+        }
+
         if (key === 'Enter') {
             event.preventDefault();
             if (currentScreen === 'practice' || currentScreen === 'battle') {
-                playTargetVoice(true);
+                return;
             } else if (currentScreen === 'timeset') {
                 confirmTimeSettings();
             } else if (currentScreen === 'countset') {
