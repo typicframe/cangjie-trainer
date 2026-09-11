@@ -1220,6 +1220,8 @@
     let battleStrikeTimer = null;
     let battleStrikeStartedAt = 0;
     let battleStrikeAnim = null;
+    let battleCueId = 0;
+    let battleAcceptInput = false;
 
     // TTS engine respects global voice toggles and can queue instead of interrupting
     function listSpeechVoices() {
@@ -1261,9 +1263,9 @@
     }
 
     function speakText(text, lang = 'zh-HK', cancelPrevious = true, force = false) {
-        if (!('speechSynthesis' in window)) return;
+        if (!('speechSynthesis' in window)) return Promise.resolve();
         // If voice is disabled globally, do not speak unless forced (e.g. telling the user "Speech disabled")
-        if (!voiceEnabled && !force) return;
+        if (!voiceEnabled && !force) return Promise.resolve();
 
         if (cancelPrevious) {
             speakGeneration += 1;
@@ -1292,6 +1294,7 @@
             } catch (e) {}
             window.speechSynthesis.speak(utterance);
         }));
+        return speechChain;
     }
 
     // Toggle voice state globally
@@ -1327,9 +1330,9 @@
 
     function playTargetVoice(cancel = false) {
         const currentTarget = currentScreen === 'battle' ? currentBattleKey : targetKeys[practiceIndex];
-        if (!currentTarget) return;
+        if (!currentTarget) return Promise.resolve();
         const nameObj = pronunciationMap[currentTarget.toLowerCase()] || { text: currentTarget, zh: currentTarget };
-        speakText(nameObj.text, 'en-GB', cancel);
+        return speakText(nameObj.text, 'en-GB', cancel);
     }
 
     function initAudio() {
@@ -1449,17 +1452,39 @@
         spawnMonster(true);
         showScreen('battle', { announce: false });
         startTimer();
-        announceBattlePrompt(true);
     }
 
-    function announceBattlePrompt(includeMonster) {
-        const mon = currentMonster();
-        if (includeMonster) {
-            speakText(`${mon.name}。`, 'zh-HK', true);
-            playTargetVoice(false);
-            return;
+    function isBattleCueCurrent(cueId) {
+        return cueId === battleCueId && currentScreen === 'battle' && battleActive;
+    }
+
+    function freezeStrikeBar() {
+        clearBattleTimers();
+        battleAcceptInput = false;
+        const fill = document.getElementById('strike-fill');
+        const el = monsterEl();
+        if (fill) fill.style.width = '100%';
+        if (el) {
+            el.style.setProperty('--threat', '0');
+            el.classList.remove('windup', 'attack');
         }
-        playTargetVoice(true);
+    }
+
+    async function announceBattlePrompt(includeMonster) {
+        const cueId = ++battleCueId;
+        freezeStrikeBar();
+        const wait = (p) => Promise.race([p || Promise.resolve(), new Promise((resolve) => setTimeout(resolve, 5000))]);
+        if (includeMonster) {
+            await wait(speakText(`${currentMonster().name}。`, 'zh-HK', true));
+            if (!isBattleCueCurrent(cueId)) return;
+            await wait(playTargetVoice(false));
+        } else {
+            await wait(playTargetVoice(true));
+        }
+        if (!isBattleCueCurrent(cueId)) return;
+        await wait(speechChain);
+        if (!isBattleCueCurrent(cueId)) return;
+        armMonsterStrike();
     }
 
     function spawnMonster(isFirst) {
@@ -1469,8 +1494,7 @@
         pickBattleKey();
         setMonsterPose('idle');
         updateBattleUI();
-        armMonsterStrike();
-        if (!isFirst) announceBattlePrompt(true);
+        announceBattlePrompt(true);
     }
 
     function monsterEl() {
@@ -1523,6 +1547,7 @@
             if (currentScreen !== 'battle') return;
             takeBattleDamage('太慢！怪物打中你。');
         }, ms);
+        battleAcceptInput = true;
     }
 
     function updateBattleUI() {
@@ -1563,8 +1588,7 @@
         }
         pickBattleKey();
         updateBattleUI();
-        armMonsterStrike();
-        playTargetVoice(true);
+        announceBattlePrompt(false);
     }
 
     function handleBattleInput(inputKey) {
@@ -1606,8 +1630,7 @@
             }
             pickBattleKey();
             updateBattleUI();
-            armMonsterStrike();
-            playTargetVoice(false);
+            announceBattlePrompt(false);
         } else {
             const targetObj = pronunciationMap[target] || { text: target, zh: target };
             const inputObj = pronunciationMap[userInput] || { text: userInput, zh: userInput };
@@ -1618,6 +1641,8 @@
     function endBattle(won, reason) {
         battleWon = won;
         battleActive = false;
+        battleAcceptInput = false;
+        battleCueId += 1;
         clearBattleTimers();
         if (timerInterval) {
             clearInterval(timerInterval);
@@ -2347,6 +2372,7 @@
         else if (currentScreen === 'battle') {
             if (key.length === 1) {
                 event.preventDefault();
+                if (!battleAcceptInput) return;
                 handleBattleInput(key);
             }
         }
