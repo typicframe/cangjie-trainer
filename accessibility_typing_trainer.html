@@ -306,20 +306,11 @@
             overflow: hidden;
             border-radius: 0;
             background:
-                radial-gradient(ellipse 42% 28% at 72% 22%, rgba(255,255,255,0.22), transparent 60%),
-                linear-gradient(180deg, #7dd3fc 0%, #38bdf8 22%, #86efac 52%, #4d7c0f 68%, #5b3a1a 86%, #292017 100%);
+                repeating-linear-gradient(90deg, #5b9a2f 0 18px, #4e8a28 18px 36px) 0 100% / 100% 22% no-repeat,
+                repeating-linear-gradient(90deg, #8a5a2b 0 18px, #6f4722 18px 36px) 0 100% / 100% 32% no-repeat,
+                linear-gradient(#6eb1ff 0%, #8ec7ff 42%, #d4eeff 72%);
         }
-        .rpg-hills {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 26%;
-            height: 4.5rem;
-            background:
-                radial-gradient(ellipse 55% 90% at 18% 110%, #166534 0 55%, transparent 56%),
-                radial-gradient(ellipse 60% 100% at 82% 120%, #14532d 0 58%, transparent 59%);
-            pointer-events: none;
-        }
+        .rpg-hills { display: none; }
         .battle-floor {
             position: absolute;
             left: 6%;
@@ -362,79 +353,82 @@
             transform: translateX(-50%);
             filter: blur(1px);
         }
-        .hero-cape {
-            position: absolute;
-            left: 0.7rem;
-            top: 2.6rem;
-            width: 2.1rem;
-            height: 4.2rem;
-            background: linear-gradient(180deg, #ef4444, #7f1d1d);
-            border-radius: 80% 20% 40% 60%;
-            transform: rotate(-18deg);
-        }
+        .hero-cape { display: none; }
         .hero-head {
             position: absolute;
             left: 50%;
-            top: 0.35rem;
-            width: 2.15rem;
-            height: 2.15rem;
-            margin-left: -1.05rem;
-            background: #f5c7a1;
-            border-radius: 50%;
+            top: 0.2rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-left: -1.25rem;
+            background: #c68642;
+            border-radius: 0;
             z-index: 2;
+            box-shadow: inset -6px -6px 0 rgba(0,0,0,0.12);
         }
         .hero-hair {
             position: absolute;
-            left: -0.15rem;
-            top: -0.2rem;
-            width: 2.45rem;
-            height: 1.35rem;
-            background: #1e3a8a;
-            border-radius: 1.2rem 1.2rem 0.2rem 0.2rem;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 0.7rem;
+            background: #2d1b0e;
+            border-radius: 0;
         }
         .hero-eye {
             position: absolute;
-            top: 0.95rem;
-            width: 0.32rem;
-            height: 0.4rem;
-            background: #111;
-            border-radius: 50%;
+            top: 1.15rem;
+            width: 0.45rem;
+            height: 0.35rem;
+            background: #fff;
+            border-radius: 0;
         }
-        .hero-eye.l { left: 0.5rem; }
-        .hero-eye.r { right: 0.5rem; }
+        .hero-eye.l { left: 0.4rem; }
+        .hero-eye.r { right: 0.4rem; }
+        .hero-eye::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 0.2rem;
+            height: 0.35rem;
+            background: #3b2a1a;
+        }
         .hero-torso {
             position: absolute;
             left: 50%;
-            top: 2.35rem;
+            top: 2.7rem;
             width: 2.5rem;
-            height: 3.1rem;
+            height: 2.7rem;
             margin-left: -1.25rem;
-            background: linear-gradient(180deg, #2563eb, #1e3a8a);
-            border-radius: 0.5rem 0.5rem 0.3rem 0.3rem;
+            background: #169c9c;
+            border-radius: 0;
             z-index: 2;
+            box-shadow: inset -6px 0 0 rgba(0,0,0,0.12);
         }
         .hero-legs {
             position: absolute;
             left: 50%;
-            top: 5.2rem;
-            width: 2.1rem;
-            height: 2.6rem;
-            margin-left: -1.05rem;
-            background: #44403c;
-            border-radius: 0.25rem;
+            top: 5.4rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-left: -1.25rem;
+            background: #3c44aa;
+            border-radius: 0;
             z-index: 1;
+            box-shadow: inset 0 -6px 0 #2a2f7a;
         }
         .hero-sword {
             position: absolute;
-            right: 0.15rem;
-            top: 2.4rem;
-            width: 0.42rem;
-            height: 4.4rem;
-            background: linear-gradient(#fde68a, #ca8a04);
-            border-radius: 0.2rem;
-            transform: rotate(18deg);
+            right: 0.05rem;
+            top: 2.5rem;
+            width: 0.45rem;
+            height: 3.6rem;
+            background: #5ad2e6;
+            border-radius: 0;
+            transform: none;
             z-index: 3;
-            box-shadow: 0 0 8px rgba(253, 224, 71, 0.45);
+            box-shadow: 0 0 0 2px #3aa8b8, 4px 2.6rem 0 1px #8b5a2b;
         }
         .hero.idle { animation: hero-idle 1.8s ease-in-out infinite; }
         #battle-arena.battle-hit .hero { animation: hero-slash 0.34s ease; }
@@ -514,217 +508,264 @@
         .fig { display: none; position: absolute; inset: 0; }
         .monster[data-kind="slime"] .fig-slime,
         .monster[data-kind="bat"] .fig-bat,
-        .monster[data-kind="goblin"] .fig-goblin,
+        .monster[data-kind="zombie"] .fig-zombie,
         .monster[data-kind="skel"] .fig-skel,
         .monster[data-kind="golem"] .fig-golem,
         .monster[data-kind="dragon"] .fig-dragon { display: block; }
 
-        .eye {
+        .mc-eye {
             position: absolute;
-            width: 0.7rem;
-            height: 0.85rem;
-            background: #111;
-            border-radius: 50%;
+            width: 0.55rem;
+            height: 0.45rem;
+            background: #fff;
+            border-radius: 0;
         }
-        .eye::after {
+        .mc-eye::after {
             content: '';
             position: absolute;
-            top: 0.12rem;
-            left: 0.16rem;
+            right: 0;
+            top: 0;
             width: 0.22rem;
-            height: 0.22rem;
-            background: #fff;
-            border-radius: 50%;
+            height: 0.45rem;
+            background: #111;
         }
 
         .slime-blob {
             position: absolute;
             left: 50%;
-            bottom: 0.4rem;
-            width: 6.4rem;
-            height: 5.1rem;
-            margin-left: -3.2rem;
-            background: radial-gradient(circle at 35% 28%, #86efac, #16a34a 58%, #14532d);
-            border-radius: 55% 55% 42% 42%;
-            box-shadow: inset 0 -12px 0 rgba(0,0,0,0.12), 0 0 16px rgba(34,197,94,0.25);
+            bottom: 0.35rem;
+            width: 6.2rem;
+            height: 5.4rem;
+            margin-left: -3.1rem;
+            background: #62c23a;
+            border-radius: 0;
+            box-shadow: inset -10px -10px 0 #3f9a22, inset 8px 8px 0 #8be05a;
         }
-        .slime-blob .eye.l { top: 1.4rem; left: 1.6rem; }
-        .slime-blob .eye.r { top: 1.4rem; right: 1.6rem; }
+        .slime-blob .mc-eye.l { top: 1.5rem; left: 1.15rem; }
+        .slime-blob .mc-eye.r { top: 1.5rem; right: 1.15rem; }
         .slime-mouth {
             position: absolute;
             left: 50%;
             top: 2.7rem;
-            width: 1.3rem;
-            height: 0.55rem;
-            margin-left: -0.65rem;
-            border: 3px solid #14532d;
-            border-top: 0;
-            border-radius: 0 0 1rem 1rem;
+            width: 1.8rem;
+            height: 0.45rem;
+            margin-left: -0.9rem;
+            background: #14532d;
+            border-radius: 0;
         }
 
         .bat-body {
             position: absolute;
             left: 50%;
-            top: 2.4rem;
-            width: 2.4rem;
-            height: 2.6rem;
-            margin-left: -1.2rem;
-            background: radial-gradient(circle at 40% 30%, #a78bfa, #4c1d95);
-            border-radius: 50% 50% 40% 40%;
+            top: 3.1rem;
+            width: 2.1rem;
+            height: 1.6rem;
+            margin-left: -1.05rem;
+            background: #3f3a38;
+            border-radius: 0;
         }
         .bat-wing {
             position: absolute;
-            top: 2.5rem;
-            width: 3.3rem;
-            height: 2.1rem;
-            background: #5b21b6;
-            border-radius: 10% 80% 20% 80%;
+            top: 2.9rem;
+            width: 3.1rem;
+            height: 1.7rem;
+            background: #2a2624;
+            border-radius: 0;
             transform-origin: center;
         }
-        .bat-wing.l { left: 0.1rem; transform: rotate(-18deg); }
-        .bat-wing.r { right: 0.1rem; transform: scaleX(-1) rotate(-18deg); }
-        .bat-body .eye.l { top: 0.7rem; left: 0.35rem; width: 0.5rem; height: 0.6rem; }
-        .bat-body .eye.r { top: 0.7rem; right: 0.35rem; width: 0.5rem; height: 0.6rem; }
+        .bat-wing.l { left: 0.15rem; transform: rotate(-12deg); }
+        .bat-wing.r { right: 0.15rem; transform: scaleX(-1) rotate(-12deg); }
+        .bat-body .mc-eye.l { top: 0.45rem; left: 0.2rem; width: 0.4rem; height: 0.3rem; }
+        .bat-body .mc-eye.r { top: 0.45rem; right: 0.2rem; width: 0.4rem; height: 0.3rem; }
 
-        .goblin-head {
+        .zomb-head {
             position: absolute;
             left: 50%;
-            top: 0.7rem;
-            width: 3.4rem;
-            height: 3.1rem;
-            margin-left: -1.7rem;
-            background: radial-gradient(circle at 40% 30%, #86efac, #166534);
-            border-radius: 45%;
+            top: 0.35rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-left: -1.25rem;
+            background: #4a7c32;
+            border-radius: 0;
+            box-shadow: inset -6px -6px 0 rgba(0,0,0,0.15);
+            z-index: 2;
         }
-        .goblin-ear {
-            position: absolute;
-            top: 1.1rem;
-            width: 0;
-            height: 0;
-            border-left: 0.55rem solid transparent;
-            border-right: 0.55rem solid transparent;
-            border-bottom: 1.3rem solid #166534;
-        }
-        .goblin-ear.l { left: 1.7rem; transform: rotate(-28deg); }
-        .goblin-ear.r { right: 1.7rem; transform: rotate(28deg); }
-        .goblin-body {
+        .zomb-head .mc-eye.l { top: 1.1rem; left: 0.35rem; }
+        .zomb-head .mc-eye.r { top: 1.1rem; right: 0.35rem; }
+        .zomb-body {
             position: absolute;
             left: 50%;
-            top: 3.5rem;
-            width: 2.8rem;
-            height: 3.2rem;
-            margin-left: -1.4rem;
-            background: #3f6212;
-            border-radius: 40% 40% 20% 20%;
+            top: 2.85rem;
+            width: 2.5rem;
+            height: 2.7rem;
+            margin-left: -1.25rem;
+            background: #169c9c;
+            border-radius: 0;
         }
-        .goblin-head .eye.l { top: 1.15rem; left: 0.7rem; }
-        .goblin-head .eye.r { top: 1.15rem; right: 0.7rem; }
+        .zomb-legs {
+            position: absolute;
+            left: 50%;
+            top: 5.55rem;
+            width: 2.5rem;
+            height: 2.4rem;
+            margin-left: -1.25rem;
+            background: #3c2a6e;
+            border-radius: 0;
+        }
+        .zomb-arm {
+            position: absolute;
+            top: 2.9rem;
+            width: 0.9rem;
+            height: 2.5rem;
+            background: #4a7c32;
+            border-radius: 0;
+            z-index: 1;
+        }
+        .zomb-arm.l { left: 1.35rem; }
+        .zomb-arm.r { right: 1.35rem; }
 
         .skel-skull {
             position: absolute;
             left: 50%;
-            top: 0.6rem;
-            width: 3.2rem;
-            height: 2.8rem;
-            margin-left: -1.6rem;
-            background: #e7e5e4;
-            border-radius: 45% 45% 35% 35%;
+            top: 0.35rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-left: -1.25rem;
+            background: #ece7dc;
+            border-radius: 0;
+            box-shadow: inset -6px -6px 0 #cfc8b8;
+            z-index: 2;
         }
-        .skel-skull .eye {
+        .skel-skull .mc-eye {
             background: #111;
-            width: 0.7rem;
-            height: 0.75rem;
-            top: 1rem;
+            width: 0.55rem;
+            height: 0.55rem;
+            top: 1.05rem;
         }
-        .skel-skull .eye.l { left: 0.5rem; }
-        .skel-skull .eye.r { right: 0.5rem; }
+        .skel-skull .mc-eye::after { display: none; }
+        .skel-skull .mc-eye.l { left: 0.35rem; }
+        .skel-skull .mc-eye.r { right: 0.35rem; }
         .skel-jaw {
             position: absolute;
             left: 50%;
-            top: 3.2rem;
-            width: 2rem;
-            height: 0.7rem;
-            margin-left: -1rem;
-            background: #d6d3d1;
-            border-radius: 0 0 0.4rem 0.4rem;
+            top: 2.2rem;
+            width: 1.6rem;
+            height: 0.35rem;
+            margin-left: -0.8rem;
+            background: #ddd6c8;
+            border-radius: 0;
+            z-index: 3;
         }
         .skel-ribs {
             position: absolute;
             left: 50%;
-            top: 4.1rem;
-            width: 2.4rem;
+            top: 2.85rem;
+            width: 2.1rem;
             height: 2.6rem;
-            margin-left: -1.2rem;
+            margin-left: -1.05rem;
             background:
-                repeating-linear-gradient(180deg, #f5f5f4 0 4px, transparent 4px 10px);
-            border-radius: 0.4rem;
-            opacity: 0.9;
+                repeating-linear-gradient(180deg, #f5f0e6 0 5px, #2a241c 5px 8px);
+            border-radius: 0;
+        }
+        .skel-legs {
+            position: absolute;
+            left: 50%;
+            top: 5.5rem;
+            width: 2.1rem;
+            height: 2.3rem;
+            margin-left: -1.05rem;
+            background: #e8e0d4;
+            border-radius: 0;
+            box-shadow: inset 0.7rem 0 0 #d4ccbe;
         }
 
         .golem-rock {
             position: absolute;
             left: 50%;
-            top: 0.8rem;
-            width: 5.4rem;
-            height: 6.6rem;
-            margin-left: -2.7rem;
-            background: linear-gradient(160deg, #a8a29e, #57534e 55%, #292524);
-            border-radius: 1.1rem 1.1rem 0.6rem 0.6rem;
-            box-shadow: inset 8px 10px 0 rgba(255,255,255,0.08);
+            top: 0.15rem;
+            width: 5.6rem;
+            height: 7.4rem;
+            margin-left: -2.8rem;
+            background: #c4c4c4;
+            border-radius: 0;
+            box-shadow: inset -12px -12px 0 #8d8d8d, inset 8px 8px 0 #ddd;
         }
-        .golem-rock .eye {
-            top: 1.8rem;
-            width: 0.85rem;
-            height: 0.45rem;
-            background: #f59e0b;
-            border-radius: 0.2rem;
+        .golem-rock .mc-eye {
+            top: 1.35rem;
+            width: 0.7rem;
+            height: 0.35rem;
+            background: #7a1f1f;
+            border-radius: 0;
         }
-        .golem-rock .eye::after { display: none; }
-        .golem-rock .eye.l { left: 1.1rem; }
-        .golem-rock .eye.r { right: 1.1rem; }
+        .golem-rock .mc-eye::after { display: none; }
+        .golem-rock .mc-eye.l { left: 1.15rem; }
+        .golem-rock .mc-eye.r { right: 1.15rem; }
+        .golem-nose {
+            position: absolute;
+            left: 50%;
+            top: 1.85rem;
+            width: 0.7rem;
+            height: 0.85rem;
+            margin-left: -0.35rem;
+            background: #8a2b2b;
+            border-radius: 0;
+        }
+        .golem-arm {
+            position: absolute;
+            top: 2.4rem;
+            width: 1.15rem;
+            height: 4.4rem;
+            background: #bdbdbd;
+            border-radius: 0;
+            box-shadow: inset -4px 0 0 #8d8d8d;
+        }
+        .golem-arm.l { left: 1.7rem; }
+        .golem-arm.r { right: 1.7rem; }
 
         .dragon-body {
             position: absolute;
             left: 50%;
-            top: 2.2rem;
-            width: 3.4rem;
-            height: 4.4rem;
-            margin-left: -1.7rem;
-            background: linear-gradient(180deg, #f87171, #991b1b);
-            border-radius: 50% 50% 35% 35%;
+            top: 2.5rem;
+            width: 3.2rem;
+            height: 4.2rem;
+            margin-left: -1.6rem;
+            background: #1b1024;
+            border-radius: 0;
+            box-shadow: inset -8px -8px 0 #0b0610, inset 6px 6px 0 #3b1d58;
         }
         .dragon-head {
             position: absolute;
             left: 50%;
-            top: 0.35rem;
-            width: 3rem;
+            top: 0.2rem;
+            width: 3.2rem;
             height: 2.4rem;
-            margin-left: -1.5rem;
-            background: #dc2626;
-            border-radius: 50% 50% 40% 40%;
+            margin-left: -1.6rem;
+            background: #160c20;
+            border-radius: 0;
         }
         .dragon-wing {
             position: absolute;
-            top: 2.1rem;
-            width: 3.4rem;
-            height: 2.4rem;
-            background: #7f1d1d;
-            border-radius: 10% 90% 20% 80%;
+            top: 1.8rem;
+            width: 3.3rem;
+            height: 2.5rem;
+            background: #2a1540;
+            border-radius: 0;
             transform-origin: 90% 80%;
         }
-        .dragon-wing.l { left: 0; transform: rotate(-16deg); }
-        .dragon-wing.r { right: 0; transform: scaleX(-1) rotate(-16deg); }
-        .dragon-head .eye.l { top: 0.85rem; left: 0.45rem; background: #fde047; }
-        .dragon-head .eye.r { top: 0.85rem; right: 0.45rem; background: #fde047; }
+        .dragon-wing.l { left: 0; transform: rotate(-10deg); }
+        .dragon-wing.r { right: 0; transform: scaleX(-1) rotate(-10deg); }
+        .dragon-head .mc-eye.l { top: 0.95rem; left: 0.4rem; background: #e879f9; }
+        .dragon-head .mc-eye.r { top: 0.95rem; right: 0.4rem; background: #e879f9; }
+        .dragon-head .mc-eye::after { background: #4c1d95; }
         .dragon-fire {
             position: absolute;
             left: 50%;
-            top: 2.2rem;
+            top: 2.4rem;
             width: 0.7rem;
             height: 0;
             margin-left: -0.35rem;
-            background: linear-gradient(#fde047, #ea580c);
-            border-radius: 50%;
+            background: #a855f7;
+            border-radius: 0;
             opacity: 0;
         }
 
@@ -759,8 +800,8 @@
             50% { transform: translateX(-50%) scale(0.78); opacity: 0.35; }
         }
         @keyframes slime-jiggle {
-            0%, 100% { border-radius: 55% 55% 42% 42%; transform: scale(1, 1); }
-            50% { border-radius: 48% 52% 58% 50%; transform: scale(1.08, 0.9); }
+            0%, 100% { transform: scale(1, 1); }
+            50% { transform: scale(1.08, 0.9); }
         }
         @keyframes wing-l {
             0%, 100% { transform: rotate(-8deg); }
@@ -812,16 +853,21 @@
         body.high-contrast .hero-hair,
         body.high-contrast .hero-torso,
         body.high-contrast .hero-legs,
-        body.high-contrast .hero-cape,
         body.high-contrast .hero-sword,
         body.high-contrast .slime-blob,
         body.high-contrast .bat-body,
         body.high-contrast .bat-wing,
-        body.high-contrast .goblin-head,
-        body.high-contrast .goblin-body,
+        body.high-contrast .zomb-head,
+        body.high-contrast .zomb-body,
+        body.high-contrast .zomb-legs,
+        body.high-contrast .zomb-arm,
         body.high-contrast .skel-skull,
         body.high-contrast .skel-jaw,
+        body.high-contrast .skel-ribs,
+        body.high-contrast .skel-legs,
         body.high-contrast .golem-rock,
+        body.high-contrast .golem-arm,
+        body.high-contrast .golem-nose,
         body.high-contrast .dragon-body,
         body.high-contrast .dragon-head,
         body.high-contrast .dragon-wing {
@@ -983,7 +1029,7 @@
                         <div class="m-figure">
                             <div class="fig fig-slime">
                                 <div class="slime-blob">
-                                    <span class="eye l"></span><span class="eye r"></span>
+                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
                                     <span class="slime-mouth"></span>
                                 </div>
                             </div>
@@ -991,34 +1037,39 @@
                                 <div class="bat-wing l"></div>
                                 <div class="bat-wing r"></div>
                                 <div class="bat-body">
-                                    <span class="eye l"></span><span class="eye r"></span>
+                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
                                 </div>
                             </div>
-                            <div class="fig fig-goblin">
-                                <div class="goblin-ear l"></div>
-                                <div class="goblin-ear r"></div>
-                                <div class="goblin-head">
-                                    <span class="eye l"></span><span class="eye r"></span>
+                            <div class="fig fig-zombie">
+                                <div class="zomb-arm l"></div>
+                                <div class="zomb-arm r"></div>
+                                <div class="zomb-head">
+                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
                                 </div>
-                                <div class="goblin-body"></div>
+                                <div class="zomb-body"></div>
+                                <div class="zomb-legs"></div>
                             </div>
                             <div class="fig fig-skel">
                                 <div class="skel-skull">
-                                    <span class="eye l"></span><span class="eye r"></span>
+                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
                                 </div>
                                 <div class="skel-jaw"></div>
                                 <div class="skel-ribs"></div>
+                                <div class="skel-legs"></div>
                             </div>
                             <div class="fig fig-golem">
+                                <div class="golem-arm l"></div>
+                                <div class="golem-arm r"></div>
                                 <div class="golem-rock">
-                                    <span class="eye l"></span><span class="eye r"></span>
+                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
+                                    <span class="golem-nose"></span>
                                 </div>
                             </div>
                             <div class="fig fig-dragon">
                                 <div class="dragon-wing l"></div>
                                 <div class="dragon-wing r"></div>
                                 <div class="dragon-head">
-                                    <span class="eye l"></span><span class="eye r"></span>
+                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
                                 </div>
                                 <div class="dragon-fire"></div>
                                 <div class="dragon-body"></div>
@@ -1422,10 +1473,10 @@
     const BATTLE_MONSTERS = [
         { name: '史萊姆', kind: 'slime', hp: 3, keys: HOME_KEYS },
         { name: '蝙蝠', kind: 'bat', hp: 4, keys: HOME_WIDE_KEYS },
-        { name: '哥布林', kind: 'goblin', hp: 5, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','u','i','o']) },
-        { name: '骷髏兵', kind: 'skel', hp: 6, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','t','y','u','i','o','p']) },
-        { name: '石頭人', kind: 'golem', hp: 8, keys: LETTER_KEYS },
-        { name: '火龍王', kind: 'dragon', hp: 12, keys: LETTER_KEYS }
+        { name: '殭屍', kind: 'zombie', hp: 5, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','u','i','o']) },
+        { name: '骷髏', kind: 'skel', hp: 6, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','t','y','u','i','o','p']) },
+        { name: '鐵魔像', kind: 'golem', hp: 8, keys: LETTER_KEYS },
+        { name: '終界龍', kind: 'dragon', hp: 12, keys: LETTER_KEYS }
     ];
     const BATTLE_DIFFICULTY = {
         easy: { label: '簡單', playerHp: 8, strikeMs: 6000 },
