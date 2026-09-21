@@ -306,9 +306,10 @@
             overflow: hidden;
             border-radius: 0;
             background:
-                repeating-linear-gradient(90deg, #5b9a2f 0 18px, #4e8a28 18px 36px) 0 100% / 100% 22% no-repeat,
-                repeating-linear-gradient(90deg, #8a5a2b 0 18px, #6f4722 18px 36px) 0 100% / 100% 32% no-repeat,
-                linear-gradient(#6eb1ff 0%, #8ec7ff 42%, #d4eeff 72%);
+                repeating-linear-gradient(90deg, #5d9c2f 0 22px, #4f8a27 22px 44px) 0 100% / 100% 18% no-repeat,
+                repeating-linear-gradient(90deg, #8b5a2b 0 22px, #6f4722 22px 44px) 0 100% / 100% 30% no-repeat,
+                linear-gradient(#78b7ff 0%, #9eccff 48%, #d8eeff 78%);
+            image-rendering: pixelated;
         }
         .rpg-hills { display: none; }
         .battle-floor {
@@ -418,17 +419,31 @@
             z-index: 1;
             box-shadow: inset 0 -6px 0 #2a2f7a;
         }
-        .hero-sword {
+        .hero-pick {
             position: absolute;
-            right: 0.05rem;
-            top: 2.5rem;
-            width: 0.45rem;
-            height: 3.6rem;
-            background: #5ad2e6;
+            right: -0.15rem;
+            top: 2.1rem;
+            width: 0.55rem;
+            height: 3.9rem;
+            background: #8b8b8b;
             border-radius: 0;
-            transform: none;
             z-index: 3;
-            box-shadow: 0 0 0 2px #3aa8b8, 4px 2.6rem 0 1px #8b5a2b;
+            box-shadow:
+                0 0 0 2px #5a5a5a,
+                -0.85rem 0.15rem 0 0 #8b8b8b,
+                0.85rem 0.15rem 0 0 #8b8b8b,
+                0 3.2rem 0 1px #6b4423;
+        }
+        .hero-arms {
+            position: absolute;
+            left: 50%;
+            top: 2.85rem;
+            width: 3.6rem;
+            height: 0.85rem;
+            margin-left: -1.8rem;
+            background: #c68642;
+            z-index: 1;
+            box-shadow: inset 0 0 0 0.15rem rgba(0,0,0,0.08);
         }
         .hero.idle { animation: hero-idle 1.8s ease-in-out infinite; }
         #battle-arena.battle-hit .hero { animation: hero-slash 0.34s ease; }
@@ -507,10 +522,10 @@
         }
         .fig { display: none; position: absolute; inset: 0; }
         .monster[data-kind="slime"] .fig-slime,
-        .monster[data-kind="bat"] .fig-bat,
+        .monster[data-kind="spider"] .fig-spider,
         .monster[data-kind="zombie"] .fig-zombie,
         .monster[data-kind="skel"] .fig-skel,
-        .monster[data-kind="golem"] .fig-golem,
+        .monster[data-kind="creeper"] .fig-creeper,
         .monster[data-kind="dragon"] .fig-dragon { display: block; }
 
         .mc-eye {
@@ -530,197 +545,275 @@
             background: #111;
         }
 
+        /* 史萊姆：層層方塊 */
         .slime-blob {
             position: absolute;
             left: 50%;
             bottom: 0.35rem;
-            width: 6.2rem;
-            height: 5.4rem;
-            margin-left: -3.1rem;
-            background: #62c23a;
+            width: 5.8rem;
+            height: 4.6rem;
+            margin-left: -2.9rem;
+            background: #6fc93b;
             border-radius: 0;
-            box-shadow: inset -10px -10px 0 #3f9a22, inset 8px 8px 0 #8be05a;
+            box-shadow:
+                inset -10px -10px 0 #3f9a22,
+                inset 8px 8px 0 #98e85f,
+                0 -2.1rem 0 -0.55rem #62c23a,
+                -0.35rem -2.1rem 0 -0.55rem #3f9a22,
+                0.35rem -2.1rem 0 -0.55rem #8be05a;
         }
-        .slime-blob .mc-eye.l { top: 1.5rem; left: 1.15rem; }
-        .slime-blob .mc-eye.r { top: 1.5rem; right: 1.15rem; }
+        .slime-blob .mc-eye.l { top: 1.15rem; left: 1.05rem; }
+        .slime-blob .mc-eye.r { top: 1.15rem; right: 1.05rem; }
         .slime-mouth {
             position: absolute;
             left: 50%;
-            top: 2.7rem;
-            width: 1.8rem;
-            height: 0.45rem;
-            margin-left: -0.9rem;
+            top: 2.35rem;
+            width: 1.9rem;
+            height: 0.55rem;
+            margin-left: -0.95rem;
             background: #14532d;
             border-radius: 0;
+            box-shadow: inset 0 0.2rem 0 #0a2e16;
         }
 
-        .bat-body {
+        /* 蜘蛛：深啡身、紅眼、八腳 */
+        .spider-body {
             position: absolute;
             left: 50%;
-            top: 3.1rem;
-            width: 2.1rem;
-            height: 1.6rem;
-            margin-left: -1.05rem;
-            background: #3f3a38;
+            bottom: 1.7rem;
+            width: 3.6rem;
+            height: 2.6rem;
+            margin-left: -1.8rem;
+            background: #3d2418;
             border-radius: 0;
+            box-shadow: inset -8px -8px 0 #26150e, inset 6px 6px 0 #5a3a28;
+            z-index: 2;
         }
-        .bat-wing {
+        .spider-head {
             position: absolute;
-            top: 2.9rem;
-            width: 3.1rem;
+            left: 50%;
+            bottom: 2.05rem;
+            width: 2.1rem;
             height: 1.7rem;
-            background: #2a2624;
+            margin-left: -1.05rem;
+            background: #2c1a12;
+            border-radius: 0;
+            z-index: 3;
+            box-shadow: inset -4px -4px 0 #1a0f0a;
+        }
+        .spider-head .mc-eye {
+            width: 0.35rem;
+            height: 0.35rem;
+            background: #ef4444;
+            top: 0.55rem;
+        }
+        .spider-head .mc-eye::after { display: none; }
+        .spider-head .mc-eye.l { left: 0.3rem; }
+        .spider-head .mc-eye.r { right: 0.3rem; }
+        .spider-head .mc-eye.ml { left: 0.75rem; top: 0.35rem; width: 0.25rem; height: 0.25rem; }
+        .spider-head .mc-eye.mr { right: 0.75rem; top: 0.35rem; width: 0.25rem; height: 0.25rem; }
+        .spider-leg {
+            position: absolute;
+            bottom: 2rem;
+            width: 2.4rem;
+            height: 0.35rem;
+            background: #2a1810;
             border-radius: 0;
             transform-origin: center;
+            z-index: 1;
         }
-        .bat-wing.l { left: 0.15rem; transform: rotate(-12deg); }
-        .bat-wing.r { right: 0.15rem; transform: scaleX(-1) rotate(-12deg); }
-        .bat-body .mc-eye.l { top: 0.45rem; left: 0.2rem; width: 0.4rem; height: 0.3rem; }
-        .bat-body .mc-eye.r { top: 0.45rem; right: 0.2rem; width: 0.4rem; height: 0.3rem; }
+        .spider-leg.l1 { left: 0.2rem; transform: rotate(-28deg); }
+        .spider-leg.l2 { left: 0.1rem; bottom: 2.55rem; transform: rotate(-8deg); }
+        .spider-leg.l3 { left: 0.2rem; bottom: 3.1rem; transform: rotate(18deg); }
+        .spider-leg.l4 { left: 0.45rem; bottom: 3.55rem; transform: rotate(36deg); }
+        .spider-leg.r1 { right: 0.2rem; transform: scaleX(-1) rotate(-28deg); }
+        .spider-leg.r2 { right: 0.1rem; bottom: 2.55rem; transform: scaleX(-1) rotate(-8deg); }
+        .spider-leg.r3 { right: 0.2rem; bottom: 3.1rem; transform: scaleX(-1) rotate(18deg); }
+        .spider-leg.r4 { right: 0.45rem; bottom: 3.55rem; transform: scaleX(-1) rotate(36deg); }
 
+        /* 殭屍：封面姿勢，雙手前伸 */
         .zomb-head {
             position: absolute;
             left: 50%;
-            top: 0.35rem;
+            top: 0.2rem;
             width: 2.5rem;
             height: 2.5rem;
             margin-left: -1.25rem;
-            background: #4a7c32;
+            background: #527d32;
             border-radius: 0;
-            box-shadow: inset -6px -6px 0 rgba(0,0,0,0.15);
+            box-shadow: inset -6px -6px 0 rgba(0,0,0,0.18);
             z-index: 2;
         }
-        .zomb-head .mc-eye.l { top: 1.1rem; left: 0.35rem; }
-        .zomb-head .mc-eye.r { top: 1.1rem; right: 0.35rem; }
+        .zomb-head .mc-eye.l { top: 1.05rem; left: 0.35rem; }
+        .zomb-head .mc-eye.r { top: 1.05rem; right: 0.35rem; }
         .zomb-body {
             position: absolute;
             left: 50%;
-            top: 2.85rem;
+            top: 2.7rem;
             width: 2.5rem;
             height: 2.7rem;
             margin-left: -1.25rem;
-            background: #169c9c;
+            background: #00aaaa;
             border-radius: 0;
+            box-shadow: inset -5px 0 0 rgba(0,0,0,0.12);
         }
         .zomb-legs {
             position: absolute;
             left: 50%;
-            top: 5.55rem;
+            top: 5.4rem;
             width: 2.5rem;
-            height: 2.4rem;
+            height: 2.5rem;
             margin-left: -1.25rem;
-            background: #3c2a6e;
+            background: #3b2767;
             border-radius: 0;
+            box-shadow: inset 0.85rem 0 0 #2d1d52;
         }
         .zomb-arm {
             position: absolute;
-            top: 2.9rem;
-            width: 0.9rem;
-            height: 2.5rem;
-            background: #4a7c32;
+            top: 2.85rem;
+            width: 2.3rem;
+            height: 0.85rem;
+            background: #527d32;
             border-radius: 0;
-            z-index: 1;
+            z-index: 3;
+            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.15);
         }
-        .zomb-arm.l { left: 1.35rem; }
-        .zomb-arm.r { right: 1.35rem; }
+        .zomb-arm.l { left: 0.2rem; transform: rotate(-4deg); }
+        .zomb-arm.r { right: 0.2rem; transform: rotate(4deg); }
 
+        /* 骷髏：白骨 + 弓 */
         .skel-skull {
             position: absolute;
             left: 50%;
-            top: 0.35rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            margin-left: -1.25rem;
-            background: #ece7dc;
+            top: 0.2rem;
+            width: 2.4rem;
+            height: 2.4rem;
+            margin-left: -1.2rem;
+            background: #e8e4d8;
             border-radius: 0;
-            box-shadow: inset -6px -6px 0 #cfc8b8;
+            box-shadow: inset -6px -6px 0 #c4bfb0;
             z-index: 2;
         }
         .skel-skull .mc-eye {
             background: #111;
             width: 0.55rem;
             height: 0.55rem;
-            top: 1.05rem;
+            top: 1rem;
         }
         .skel-skull .mc-eye::after { display: none; }
-        .skel-skull .mc-eye.l { left: 0.35rem; }
-        .skel-skull .mc-eye.r { right: 0.35rem; }
+        .skel-skull .mc-eye.l { left: 0.3rem; }
+        .skel-skull .mc-eye.r { right: 0.3rem; }
         .skel-jaw {
             position: absolute;
             left: 50%;
-            top: 2.2rem;
-            width: 1.6rem;
+            top: 2.05rem;
+            width: 1.5rem;
             height: 0.35rem;
-            margin-left: -0.8rem;
-            background: #ddd6c8;
+            margin-left: -0.75rem;
+            background: #d8d2c4;
             border-radius: 0;
             z-index: 3;
         }
         .skel-ribs {
             position: absolute;
             left: 50%;
-            top: 2.85rem;
-            width: 2.1rem;
-            height: 2.6rem;
-            margin-left: -1.05rem;
+            top: 2.7rem;
+            width: 2rem;
+            height: 2.5rem;
+            margin-left: -1rem;
             background:
-                repeating-linear-gradient(180deg, #f5f0e6 0 5px, #2a241c 5px 8px);
+                repeating-linear-gradient(180deg, #f2eee4 0 5px, #2a241c 5px 8px);
             border-radius: 0;
         }
         .skel-legs {
             position: absolute;
             left: 50%;
-            top: 5.5rem;
-            width: 2.1rem;
-            height: 2.3rem;
-            margin-left: -1.05rem;
+            top: 5.25rem;
+            width: 2rem;
+            height: 2.4rem;
+            margin-left: -1rem;
             background: #e8e0d4;
             border-radius: 0;
             box-shadow: inset 0.7rem 0 0 #d4ccbe;
         }
+        .skel-bow {
+            position: absolute;
+            right: 0.35rem;
+            top: 2.4rem;
+            width: 0.35rem;
+            height: 3.4rem;
+            background: #8b5a2b;
+            border-radius: 0;
+            z-index: 4;
+            box-shadow:
+                -0.7rem 0.2rem 0 0 #6b4423,
+                0.55rem 0.2rem 0 0 #6b4423,
+                0 1.4rem 0 -0.05rem #c4a574;
+        }
 
-        .golem-rock {
+        /* 苦力怕：封面經典綠身黑面 */
+        .creeper-body {
+            position: absolute;
+            left: 50%;
+            bottom: 0.35rem;
+            width: 3.2rem;
+            height: 5.1rem;
+            margin-left: -1.6rem;
+            background:
+                linear-gradient(90deg, #3a7d28 0 25%, #5ea83a 25% 50%, #2f6b22 50% 75%, #4e9532 75% 100%);
+            border-radius: 0;
+            box-shadow: inset 0 -1.7rem 0 #2a5c1c;
+            z-index: 2;
+        }
+        .creeper-head {
             position: absolute;
             left: 50%;
             top: 0.15rem;
-            width: 5.6rem;
-            height: 7.4rem;
-            margin-left: -2.8rem;
-            background: #c4c4c4;
+            width: 3.2rem;
+            height: 3.2rem;
+            margin-left: -1.6rem;
+            background: #4e9a34;
             border-radius: 0;
-            box-shadow: inset -12px -12px 0 #8d8d8d, inset 8px 8px 0 #ddd;
+            box-shadow: inset -8px -8px 0 #2f6b22, inset 6px 6px 0 #6fc93b;
+            z-index: 3;
         }
-        .golem-rock .mc-eye {
-            top: 1.35rem;
-            width: 0.7rem;
-            height: 0.35rem;
-            background: #7a1f1f;
-            border-radius: 0;
-        }
-        .golem-rock .mc-eye::after { display: none; }
-        .golem-rock .mc-eye.l { left: 1.15rem; }
-        .golem-rock .mc-eye.r { right: 1.15rem; }
-        .golem-nose {
+        .creeper-face {
             position: absolute;
             left: 50%;
-            top: 1.85rem;
-            width: 0.7rem;
-            height: 0.85rem;
-            margin-left: -0.35rem;
-            background: #8a2b2b;
-            border-radius: 0;
+            top: 0.85rem;
+            width: 2.2rem;
+            height: 1.9rem;
+            margin-left: -1.1rem;
+            background:
+                linear-gradient(#111 0 35%, transparent 35% 55%, #111 55% 100%),
+                linear-gradient(90deg, #111 0 32%, transparent 32% 68%, #111 68% 100%);
+            background-size: 100% 100%, 100% 0.7rem;
+            background-position: center, center 0;
+            background-repeat: no-repeat;
         }
-        .golem-arm {
+        .creeper-face::before,
+        .creeper-face::after {
+            content: '';
             position: absolute;
-            top: 2.4rem;
-            width: 1.15rem;
-            height: 4.4rem;
-            background: #bdbdbd;
-            border-radius: 0;
-            box-shadow: inset -4px 0 0 #8d8d8d;
+            top: 0;
+            width: 0.7rem;
+            height: 0.7rem;
+            background: #111;
         }
-        .golem-arm.l { left: 1.7rem; }
-        .golem-arm.r { right: 1.7rem; }
+        .creeper-face::before { left: 0.15rem; }
+        .creeper-face::after { right: 0.15rem; }
+        .creeper-leg {
+            position: absolute;
+            bottom: 0.35rem;
+            width: 1.35rem;
+            height: 1.7rem;
+            background: #3a7d28;
+            border-radius: 0;
+            z-index: 1;
+            box-shadow: inset -4px 0 0 #2a5c1c;
+        }
+        .creeper-leg.l { left: 1.85rem; }
+        .creeper-leg.r { right: 1.85rem; }
 
         .dragon-body {
             position: absolute;
@@ -771,16 +864,19 @@
 
         .monster.idle { animation: mon-idle 1.6s ease-in-out infinite; }
         .monster[data-kind="slime"].idle { animation-duration: 1.15s; }
-        .monster[data-kind="bat"].idle { animation-duration: 0.85s; }
-        .monster[data-kind="golem"].idle { animation-duration: 2.1s; }
+        .monster[data-kind="spider"].idle { animation-duration: 0.95s; }
+        .monster[data-kind="creeper"].idle { animation-duration: 1.8s; }
         .monster[data-kind="dragon"].idle { animation-duration: 1.4s; }
         .monster.idle .m-shadow { animation: shadow-breathe 1.6s ease-in-out infinite; }
-        .monster[data-kind="bat"].idle .bat-wing.l { animation: wing-l 0.28s ease-in-out infinite; }
-        .monster[data-kind="bat"].idle .bat-wing.r { animation: wing-r 0.28s ease-in-out infinite; }
+        .monster[data-kind="spider"].idle .spider-leg.l1,
+        .monster[data-kind="spider"].idle .spider-leg.l3 { animation: spider-leg-l 0.45s ease-in-out infinite; }
+        .monster[data-kind="spider"].idle .spider-leg.r1,
+        .monster[data-kind="spider"].idle .spider-leg.r3 { animation: spider-leg-r 0.45s ease-in-out infinite; }
         .monster[data-kind="dragon"].idle .dragon-wing.l { animation: wing-l 0.55s ease-in-out infinite; }
         .monster[data-kind="dragon"].idle .dragon-wing.r { animation: wing-r 0.55s ease-in-out infinite; }
         .monster[data-kind="skel"].idle .skel-jaw { animation: jaw 0.9s ease-in-out infinite; }
         .monster[data-kind="slime"].idle .slime-blob { animation: slime-jiggle 1.15s ease-in-out infinite; }
+        .monster[data-kind="creeper"].idle .creeper-body { animation: creeper-pulse 1.8s ease-in-out infinite; }
 
         .monster.windup {
             animation: mon-windup 0.28s ease-in-out infinite;
@@ -814,6 +910,18 @@
         @keyframes jaw {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(4px); }
+        }
+        @keyframes spider-leg-l {
+            0%, 100% { transform: rotate(-28deg); }
+            50% { transform: rotate(-12deg); }
+        }
+        @keyframes spider-leg-r {
+            0%, 100% { transform: scaleX(-1) rotate(-28deg); }
+            50% { transform: scaleX(-1) rotate(-12deg); }
+        }
+        @keyframes creeper-pulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.15); }
         }
         @keyframes mon-windup {
             0%, 100% { transform: translateX(-10px) translateY(2px) rotate(-6deg); }
@@ -853,10 +961,12 @@
         body.high-contrast .hero-hair,
         body.high-contrast .hero-torso,
         body.high-contrast .hero-legs,
-        body.high-contrast .hero-sword,
+        body.high-contrast .hero-pick,
+        body.high-contrast .hero-arms,
         body.high-contrast .slime-blob,
-        body.high-contrast .bat-body,
-        body.high-contrast .bat-wing,
+        body.high-contrast .spider-body,
+        body.high-contrast .spider-head,
+        body.high-contrast .spider-leg,
         body.high-contrast .zomb-head,
         body.high-contrast .zomb-body,
         body.high-contrast .zomb-legs,
@@ -865,9 +975,10 @@
         body.high-contrast .skel-jaw,
         body.high-contrast .skel-ribs,
         body.high-contrast .skel-legs,
-        body.high-contrast .golem-rock,
-        body.high-contrast .golem-arm,
-        body.high-contrast .golem-nose,
+        body.high-contrast .skel-bow,
+        body.high-contrast .creeper-body,
+        body.high-contrast .creeper-head,
+        body.high-contrast .creeper-leg,
         body.high-contrast .dragon-body,
         body.high-contrast .dragon-head,
         body.high-contrast .dragon-wing {
@@ -878,10 +989,11 @@
         @media (prefers-reduced-motion: reduce) {
             .monster.idle,
             .monster.idle .m-shadow,
-            .monster.idle .bat-wing,
+            .monster.idle .spider-leg,
             .monster.idle .dragon-wing,
             .monster.idle .skel-jaw,
             .monster.idle .slime-blob,
+            .monster.idle .creeper-body,
             .hero.idle { animation: none !important; }
         }
     </style>
@@ -1014,7 +1126,7 @@
                     <div class="battle-floor"></div>
                     <div id="battle-hero" class="hero idle">
                         <div class="hero-shadow"></div>
-                        <div class="hero-cape"></div>
+                        <div class="hero-arms"></div>
                         <div class="hero-head">
                             <span class="hero-hair"></span>
                             <span class="hero-eye l"></span>
@@ -1022,7 +1134,7 @@
                         </div>
                         <div class="hero-torso"></div>
                         <div class="hero-legs"></div>
-                        <div class="hero-sword"></div>
+                        <div class="hero-pick"></div>
                     </div>
                     <div id="battle-monster" class="monster idle" data-kind="slime">
                         <div class="m-shadow"></div>
@@ -1033,11 +1145,15 @@
                                     <span class="slime-mouth"></span>
                                 </div>
                             </div>
-                            <div class="fig fig-bat">
-                                <div class="bat-wing l"></div>
-                                <div class="bat-wing r"></div>
-                                <div class="bat-body">
+                            <div class="fig fig-spider">
+                                <div class="spider-leg l1"></div><div class="spider-leg l2"></div>
+                                <div class="spider-leg l3"></div><div class="spider-leg l4"></div>
+                                <div class="spider-leg r1"></div><div class="spider-leg r2"></div>
+                                <div class="spider-leg r3"></div><div class="spider-leg r4"></div>
+                                <div class="spider-body"></div>
+                                <div class="spider-head">
                                     <span class="mc-eye l"></span><span class="mc-eye r"></span>
+                                    <span class="mc-eye ml"></span><span class="mc-eye mr"></span>
                                 </div>
                             </div>
                             <div class="fig fig-zombie">
@@ -1050,6 +1166,7 @@
                                 <div class="zomb-legs"></div>
                             </div>
                             <div class="fig fig-skel">
+                                <div class="skel-bow"></div>
                                 <div class="skel-skull">
                                     <span class="mc-eye l"></span><span class="mc-eye r"></span>
                                 </div>
@@ -1057,12 +1174,12 @@
                                 <div class="skel-ribs"></div>
                                 <div class="skel-legs"></div>
                             </div>
-                            <div class="fig fig-golem">
-                                <div class="golem-arm l"></div>
-                                <div class="golem-arm r"></div>
-                                <div class="golem-rock">
-                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
-                                    <span class="golem-nose"></span>
+                            <div class="fig fig-creeper">
+                                <div class="creeper-leg l"></div>
+                                <div class="creeper-leg r"></div>
+                                <div class="creeper-body"></div>
+                                <div class="creeper-head">
+                                    <div class="creeper-face"></div>
                                 </div>
                             </div>
                             <div class="fig fig-dragon">
@@ -1472,10 +1589,10 @@
     const LETTER_KEYS = ['a','s','d','f','g','q','w','e','r','t','z','x','c','v','b','h','j','k','l','y','u','i','o','p','n','m'];
     const BATTLE_MONSTERS = [
         { name: '史萊姆', kind: 'slime', hp: 3, keys: HOME_KEYS },
-        { name: '蝙蝠', kind: 'bat', hp: 4, keys: HOME_WIDE_KEYS },
+        { name: '蜘蛛', kind: 'spider', hp: 4, keys: HOME_WIDE_KEYS },
         { name: '殭屍', kind: 'zombie', hp: 5, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','u','i','o']) },
         { name: '骷髏', kind: 'skel', hp: 6, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','t','y','u','i','o','p']) },
-        { name: '鐵魔像', kind: 'golem', hp: 8, keys: LETTER_KEYS },
+        { name: '苦力怕', kind: 'creeper', hp: 8, keys: LETTER_KEYS },
         { name: '終界龍', kind: 'dragon', hp: 12, keys: LETTER_KEYS }
     ];
     const BATTLE_DIFFICULTY = {
