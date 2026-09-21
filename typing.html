@@ -115,6 +115,7 @@
             border-color: #f59e0b;
         }
         #screen-battlediff, #screen-battlehand, #screen-battle { border-color: #ef4444; }
+        #screen-battle { background: #16120e; }
         button:hover { filter: brightness(1.12); }
         .hover\:border-yellow-400:hover { border-color: #f59e0b; }
         .hover\:border-red-400:hover { border-color: #f87171; }
@@ -147,6 +148,7 @@
         button { cursor: pointer; font: inherit; color: inherit; }
         kbd { font-family: inherit; }
         .w-8 { width: 2rem; } .h-8 { height: 2rem; }
+        .w-28 { width: 7rem; } .h-28 { height: 7rem; }
         .w-36 { width: 9rem; } .h-36 { height: 9rem; }
         .w-44 { width: 11rem; } .h-44 { height: 11rem; }
         .pl-4 { padding-left: 1rem; }
@@ -265,34 +267,234 @@
         .battle-hit { animation: battle-hit 0.18s ease; }
         .battle-hurt { animation: battle-hurt 0.22s ease; }
 
+        .rpg-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .rpg-mission {
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: #fde68a;
+            border: 2px solid #f59e0b;
+            background: rgba(0,0,0,0.55);
+            padding: 0.4rem 0.85rem;
+            border-radius: 0.45rem;
+        }
+        .rpg-turn {
+            font-weight: 800;
+            color: #86efac;
+            font-size: 1rem;
+        }
+        .rpg-arena {
+            width: 100%;
+            border: 3px solid #92400e;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
+            background: #000;
+        }
         .battle-stage {
             position: relative;
-            height: 13.5rem;
-            margin: 0 auto 0.5rem;
+            height: 20rem;
+            margin: 0;
             overflow: hidden;
-            border-radius: 1.25rem;
+            border-radius: 0;
             background:
-                radial-gradient(ellipse 70% 40% at 50% 88%, rgba(245, 158, 11, 0.18), transparent 70%),
-                linear-gradient(180deg, #0a0a0a 0%, #141414 62%, #1c1917 100%);
+                radial-gradient(ellipse 42% 28% at 72% 22%, rgba(255,255,255,0.22), transparent 60%),
+                linear-gradient(180deg, #7dd3fc 0%, #38bdf8 22%, #86efac 52%, #4d7c0f 68%, #5b3a1a 86%, #292017 100%);
+        }
+        .rpg-hills {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 26%;
+            height: 4.5rem;
+            background:
+                radial-gradient(ellipse 55% 90% at 18% 110%, #166534 0 55%, transparent 56%),
+                radial-gradient(ellipse 60% 100% at 82% 120%, #14532d 0 58%, transparent 59%);
+            pointer-events: none;
         }
         .battle-floor {
             position: absolute;
-            left: 12%;
-            right: 12%;
-            bottom: 1.1rem;
-            height: 1.4rem;
+            left: 6%;
+            right: 6%;
+            bottom: 1rem;
+            height: 1.6rem;
             border-radius: 50%;
-            background: radial-gradient(ellipse, rgba(255,255,255,0.12), transparent 70%);
+            background: radial-gradient(ellipse, rgba(255,255,255,0.16), transparent 70%);
+        }
+        .enemy-plate {
+            position: absolute;
+            top: 0.7rem;
+            right: 0.7rem;
+            min-width: 11rem;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #fca5a5;
+            border-radius: 0.55rem;
+            padding: 0.45rem 0.7rem;
+            text-align: left;
+            z-index: 4;
+        }
+        .enemy-plate .hp-track { margin-top: 0.25rem; }
+        .hero {
+            position: absolute;
+            left: 8%;
+            bottom: 1.55rem;
+            width: 6.6rem;
+            height: 9.4rem;
+            z-index: 3;
+            transform-origin: 50% 92%;
+        }
+        .hero-shadow {
+            position: absolute;
+            left: 50%;
+            bottom: 0.1rem;
+            width: 4.2rem;
+            height: 0.7rem;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            transform: translateX(-50%);
+            filter: blur(1px);
+        }
+        .hero-cape {
+            position: absolute;
+            left: 0.7rem;
+            top: 2.6rem;
+            width: 2.1rem;
+            height: 4.2rem;
+            background: linear-gradient(180deg, #ef4444, #7f1d1d);
+            border-radius: 80% 20% 40% 60%;
+            transform: rotate(-18deg);
+        }
+        .hero-head {
+            position: absolute;
+            left: 50%;
+            top: 0.35rem;
+            width: 2.15rem;
+            height: 2.15rem;
+            margin-left: -1.05rem;
+            background: #f5c7a1;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        .hero-hair {
+            position: absolute;
+            left: -0.15rem;
+            top: -0.2rem;
+            width: 2.45rem;
+            height: 1.35rem;
+            background: #1e3a8a;
+            border-radius: 1.2rem 1.2rem 0.2rem 0.2rem;
+        }
+        .hero-eye {
+            position: absolute;
+            top: 0.95rem;
+            width: 0.32rem;
+            height: 0.4rem;
+            background: #111;
+            border-radius: 50%;
+        }
+        .hero-eye.l { left: 0.5rem; }
+        .hero-eye.r { right: 0.5rem; }
+        .hero-torso {
+            position: absolute;
+            left: 50%;
+            top: 2.35rem;
+            width: 2.5rem;
+            height: 3.1rem;
+            margin-left: -1.25rem;
+            background: linear-gradient(180deg, #2563eb, #1e3a8a);
+            border-radius: 0.5rem 0.5rem 0.3rem 0.3rem;
+            z-index: 2;
+        }
+        .hero-legs {
+            position: absolute;
+            left: 50%;
+            top: 5.2rem;
+            width: 2.1rem;
+            height: 2.6rem;
+            margin-left: -1.05rem;
+            background: #44403c;
+            border-radius: 0.25rem;
+            z-index: 1;
+        }
+        .hero-sword {
+            position: absolute;
+            right: 0.15rem;
+            top: 2.4rem;
+            width: 0.42rem;
+            height: 4.4rem;
+            background: linear-gradient(#fde68a, #ca8a04);
+            border-radius: 0.2rem;
+            transform: rotate(18deg);
+            z-index: 3;
+            box-shadow: 0 0 8px rgba(253, 224, 71, 0.45);
+        }
+        .hero.idle { animation: hero-idle 1.8s ease-in-out infinite; }
+        #battle-arena.battle-hit .hero { animation: hero-slash 0.34s ease; }
+        #battle-arena.battle-hurt .hero { animation: hero-hurt 0.3s ease; }
+        @keyframes hero-idle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes hero-slash {
+            0% { transform: translateX(0) rotate(0); }
+            40% { transform: translateX(22px) rotate(-12deg); }
+            100% { transform: translateX(0) rotate(0); }
+        }
+        @keyframes hero-hurt {
+            0%, 100% { transform: translateX(0); }
+            30% { transform: translateX(-14px) rotate(-8deg); }
+            60% { transform: translateX(-4px); }
+        }
+        .rpg-hud {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 0.75rem;
+            width: 100%;
+        }
+        .rpg-commands, .rpg-party {
+            border-radius: 0.7rem;
+            padding: 0.85rem 1rem;
+        }
+        .rpg-commands {
+            background: rgba(12, 18, 34, 0.94);
+            border: 3px solid #f59e0b;
+        }
+        .rpg-party {
+            background: rgba(0, 0, 0, 0.78);
+            border: 3px solid #d6d3d1;
+        }
+        .rpg-cmd-title {
+            font-size: 0.75rem;
+            letter-spacing: 0.16em;
+            color: #fbbf24;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
+        @media (max-width: 700px) {
+            .rpg-hud { grid-template-columns: 1fr; }
+            .battle-stage { height: 16rem; }
+            .hero { transform: scale(0.86); transform-origin: 20% 100%; }
+            .monster { transform: scale(0.86); transform-origin: 80% 100%; }
         }
         .monster {
             --threat: 0;
             position: absolute;
-            left: 50%;
-            bottom: 1.6rem;
+            right: 6%;
+            left: auto;
+            bottom: 1.55rem;
             width: 9.5rem;
             height: 9.5rem;
-            transform: translateX(-50%);
+            transform: none;
             transform-origin: 50% 90%;
+            z-index: 3;
         }
         .m-shadow {
             position: absolute;
@@ -549,8 +751,8 @@
         .monster.die { animation: mon-die 0.55s ease forwards; }
 
         @keyframes mon-idle {
-            0%, 100% { transform: translateX(calc(-50% + var(--threat) * -10px)) translateY(0) rotate(calc(var(--threat) * -4deg)); }
-            50% { transform: translateX(calc(-50% + var(--threat) * 8px)) translateY(-10px) rotate(calc(var(--threat) * 3deg)); }
+            0%, 100% { transform: translateX(calc(var(--threat) * -10px)) translateY(0) rotate(calc(var(--threat) * -4deg)); }
+            50% { transform: translateX(calc(var(--threat) * 8px)) translateY(-10px) rotate(calc(var(--threat) * 3deg)); }
         }
         @keyframes shadow-breathe {
             0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.55; }
@@ -573,22 +775,22 @@
             50% { transform: translateY(4px); }
         }
         @keyframes mon-windup {
-            0%, 100% { transform: translateX(-56%) translateY(2px) rotate(-6deg); }
-            50% { transform: translateX(-42%) translateY(-6px) rotate(5deg); }
+            0%, 100% { transform: translateX(-10px) translateY(2px) rotate(-6deg); }
+            50% { transform: translateX(8px) translateY(-6px) rotate(5deg); }
         }
         @keyframes mon-lunge {
-            0% { transform: translateX(-50%) scale(1); }
-            35% { transform: translateX(-50%) translateY(18px) scale(1.12, 0.88); }
-            100% { transform: translateX(-50%) scale(1); }
+            0% { transform: translateX(0) scale(1); }
+            35% { transform: translateX(-36px) translateY(10px) scale(1.08, 0.9); }
+            100% { transform: translateX(0) scale(1); }
         }
         @keyframes mon-recoil {
-            0% { transform: translateX(-50%) scale(1); }
-            30% { transform: translateX(-50%) translateY(-14px) rotate(-8deg) scale(0.92); filter: brightness(1.4); }
-            100% { transform: translateX(-50%) scale(1); }
+            0% { transform: translateX(0) scale(1); }
+            30% { transform: translateX(18px) translateY(-10px) rotate(8deg) scale(0.92); filter: brightness(1.4); }
+            100% { transform: translateX(0) scale(1); }
         }
         @keyframes mon-die {
-            0% { transform: translateX(-50%) scale(1); opacity: 1; }
-            100% { transform: translateX(-50%) translateY(24px) rotate(70deg) scale(0.7); opacity: 0; }
+            0% { transform: translateX(0) scale(1); opacity: 1; }
+            100% { transform: translateX(16px) translateY(24px) rotate(70deg) scale(0.7); opacity: 0; }
         }
         @keyframes fire-spit {
             0% { height: 0; opacity: 0; }
@@ -606,6 +808,12 @@
             background: #000 !important;
             outline: 2px solid #fff;
         }
+        body.high-contrast .hero-head,
+        body.high-contrast .hero-hair,
+        body.high-contrast .hero-torso,
+        body.high-contrast .hero-legs,
+        body.high-contrast .hero-cape,
+        body.high-contrast .hero-sword,
         body.high-contrast .slime-blob,
         body.high-contrast .bat-body,
         body.high-contrast .bat-wing,
@@ -627,7 +835,8 @@
             .monster.idle .bat-wing,
             .monster.idle .dragon-wing,
             .monster.idle .skel-jaw,
-            .monster.idle .slime-blob { animation: none !important; }
+            .monster.idle .slime-blob,
+            .hero.idle { animation: none !important; }
         }
     </style>
 </head>
@@ -744,17 +953,31 @@
             </div>
         </div>
 
-        <div id="screen-battle" class="hidden w-full max-w-4xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col items-center">
-            <div class="w-full flex justify-between items-center mb-4 pb-4 border-b border-zinc-800">
-                <span id="battle-wave-title" class="text-lg font-semibold text-red-300">第 1 關</span>
+        <div id="screen-battle" class="hidden w-full max-w-5xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col items-center">
+            <div class="rpg-topbar">
+                <span id="battle-wave-title" class="rpg-mission">第 1 關</span>
+                <span id="battle-turn-label" class="rpg-turn">準備回合</span>
                 <button onclick="goBack()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-sm px-4 py-2 rounded-lg border border-zinc-700">
                     【Esc】撤退並結算
                 </button>
             </div>
 
-            <div id="battle-arena" class="w-full max-w-lg bg-black border-2 border-red-700 rounded-3xl p-6 mb-4 text-center" aria-live="polite">
+            <div id="battle-arena" class="rpg-arena" aria-live="polite">
                 <div class="battle-stage" aria-hidden="true">
+                    <div class="rpg-hills"></div>
                     <div class="battle-floor"></div>
+                    <div id="battle-hero" class="hero idle">
+                        <div class="hero-shadow"></div>
+                        <div class="hero-cape"></div>
+                        <div class="hero-head">
+                            <span class="hero-hair"></span>
+                            <span class="hero-eye l"></span>
+                            <span class="hero-eye r"></span>
+                        </div>
+                        <div class="hero-torso"></div>
+                        <div class="hero-legs"></div>
+                        <div class="hero-sword"></div>
+                    </div>
                     <div id="battle-monster" class="monster idle" data-kind="slime">
                         <div class="m-shadow"></div>
                         <div class="m-figure">
@@ -802,34 +1025,43 @@
                             </div>
                         </div>
                     </div>
+                    <div class="enemy-plate">
+                        <p id="battle-monster-name" class="text-lg font-black text-red-300 mb-1">史萊姆</p>
+                        <p class="text-xs text-gray-400">HP</p>
+                        <div class="hp-track" aria-hidden="true"><div id="monster-hp-fill" class="hp-fill hp-monster"></div></div>
+                        <p id="battle-monster-hp" class="text-sm text-red-200 mt-1">3 / 3</p>
+                    </div>
                 </div>
-                <p id="battle-monster-name" class="text-2xl font-black text-red-300">史萊姆</p>
-                <p class="text-xs text-gray-400 mt-3 mb-1">怪物生命</p>
-                <div class="hp-track" aria-hidden="true"><div id="monster-hp-fill" class="hp-fill hp-monster"></div></div>
-                <p id="battle-monster-hp" class="text-sm text-red-200 mt-1">3 / 3</p>
             </div>
 
-            <div class="w-full max-w-lg mb-4">
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="text-green-300">你的生命 <span id="battle-player-hp">8 / 8</span></span>
-                    <span class="text-yellow-300">連擊 <span id="battle-combo">0</span></span>
+            <div class="rpg-hud">
+                <div class="rpg-commands">
+                    <p class="rpg-cmd-title">COMMAND · ATTACK</p>
+                    <p class="text-sm text-gray-300 mb-2">打呢個鍵攻擊！</p>
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div id="battle-key-box" class="w-28 h-28 flex items-center justify-center bg-black border-4 border-yellow-500 rounded-2xl">
+                            <span id="battle-key-char" class="text-6xl font-black text-yellow-400 select-none">A</span>
+                        </div>
+                        <div>
+                            <p id="battle-key-pronunciation" class="text-2xl text-yellow-200 font-semibold">A</p>
+                            <button onclick="playTargetVoice(true)" class="mt-2 p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs">
+                                🔊 重聽 (空白鍵)
+                            </button>
+                            <p id="battle-status" class="text-sm text-gray-300 mt-2 min-h-[1.5rem]">準備戰鬥</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="hp-track" aria-hidden="true"><div id="player-hp-fill" class="hp-fill hp-player"></div></div>
-                <p class="text-xs text-gray-400 mt-3 mb-1">怪物下次攻擊</p>
-                <div class="hp-track" aria-hidden="true"><div id="strike-fill" class="hp-fill hp-strike"></div></div>
+                <div class="rpg-party">
+                    <p class="rpg-cmd-title">PARTY</p>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-green-300">你 HP <span id="battle-player-hp">8 / 8</span></span>
+                        <span class="text-yellow-300">連擊 <span id="battle-combo">0</span></span>
+                    </div>
+                    <div class="hp-track" aria-hidden="true"><div id="player-hp-fill" class="hp-fill hp-player"></div></div>
+                    <p class="text-xs text-gray-400 mt-3 mb-1">敵人下次攻擊</p>
+                    <div class="hp-track" aria-hidden="true"><div id="strike-fill" class="hp-fill hp-strike"></div></div>
+                </div>
             </div>
-
-            <p class="text-sm tracking-wider uppercase text-gray-400 mb-2">打呢個鍵攻擊！</p>
-            <div id="battle-key-box" class="w-36 h-36 flex items-center justify-center bg-black border-4 border-yellow-500 rounded-3xl mb-3">
-                <span id="battle-key-char" class="text-7xl font-black text-yellow-400 select-none">A</span>
-            </div>
-            <div class="flex items-center justify-center gap-2 mb-2">
-                <p id="battle-key-pronunciation" class="text-xl text-yellow-200 font-semibold">A</p>
-                <button onclick="playTargetVoice(true)" class="p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs">
-                    🔊 重聽 (空白鍵)
-                </button>
-            </div>
-            <p id="battle-status" class="text-sm text-gray-300 min-h-[1.5rem]">準備戰鬥</p>
         </div>
 
         <!-- SCREEN: Custom Time Limit Setting -->
@@ -1519,6 +1751,11 @@
         battleStrikeArmed = false;
         clearBattleTimers();
         battleAcceptInput = false;
+        const turn = document.getElementById('battle-turn-label');
+        if (turn) {
+            turn.textContent = '準備回合';
+            turn.style.color = '';
+        }
         const fill = document.getElementById('strike-fill');
         const el = monsterEl();
         if (fill) fill.style.width = '100%';
@@ -1600,6 +1837,11 @@
                 if (threat >= 0.72 && !el.classList.contains('attack') && !el.classList.contains('hurt') && !el.classList.contains('die')) {
                     el.classList.remove('idle');
                     el.classList.add('windup');
+                    const turn = document.getElementById('battle-turn-label');
+                    if (turn) {
+                        turn.textContent = '敵人回合';
+                        turn.style.color = '#fca5a5';
+                    }
                 }
             }
             if (left > 0) battleStrikeAnim = requestAnimationFrame(tick);
@@ -1611,6 +1853,11 @@
             takeBattleDamage('太慢！怪物打中你。');
         }, ms);
         battleAcceptInput = true;
+        const turn = document.getElementById('battle-turn-label');
+        if (turn) {
+            turn.textContent = '攻擊回合';
+            turn.style.color = '';
+        }
     }
 
     function updateBattleUI() {
