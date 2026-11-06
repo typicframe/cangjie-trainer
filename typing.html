@@ -1339,22 +1339,22 @@
 
         <div id="screen-battlediff" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 class="text-2xl font-bold text-center mb-6 text-white">⚔️ 冒險模式：選擇難度</h2>
-            <p class="text-gray-300 text-center mb-6 text-lg">
+            <p id="battlediff-hint" class="text-gray-300 text-center mb-6 text-lg">
                 打啱字母就攻擊怪物。打錯就會捱打。冇限時，慢慢打都得。<br>
-                請按 <strong class="text-red-400">1、2、3</strong> 選擇難度，之後再揀打邊組鍵，或按 Esc 返回。
+                請按 <strong class="text-red-400">1、2、3</strong> 選擇難度。未通關簡單前，普通／困難會鎖住。
             </p>
             <div class="space-y-4">
-                <button onclick="chooseBattleDifficulty('easy')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-green-400 rounded-xl text-left">
+                <button id="diff-btn-easy" onclick="chooseBattleDifficulty('easy')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-green-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-green-400">【按 1】簡單</span>
                     <span class="text-sm text-gray-300">8 命 • 回合制</span>
                 </button>
-                <button onclick="chooseBattleDifficulty('normal')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left">
+                <button id="diff-btn-normal" onclick="chooseBattleDifficulty('normal')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-yellow-400">【按 2】普通</span>
-                    <span class="text-sm text-gray-300">6 命 • 回合制</span>
+                    <span id="diff-normal-meta" class="text-sm text-gray-300">6 命 • 回合制</span>
                 </button>
-                <button onclick="chooseBattleDifficulty('hard')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-red-400 rounded-xl text-left">
+                <button id="diff-btn-hard" onclick="chooseBattleDifficulty('hard')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-red-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-red-400">【按 3】困難</span>
-                    <span class="text-sm text-gray-300">5 命 • 回合制</span>
+                    <span id="diff-hard-meta" class="text-sm text-gray-300">5 命 • 回合制</span>
                 </button>
             </div>
         </div>
@@ -1877,9 +1877,16 @@
         try {
             const raw = localStorage.getItem(MAP_STORAGE_KEY);
             const data = raw ? JSON.parse(raw) : null;
-            if (data && Array.isArray(data.cleared)) return { cleared: data.cleared };
+            if (data) {
+                // Migrate old { cleared: [...] } → treat as easy clears
+                const easy = Array.isArray(data.easy) ? data.easy.slice()
+                    : (Array.isArray(data.cleared) ? data.cleared.slice() : []);
+                const normal = Array.isArray(data.normal) ? data.normal.slice() : [];
+                const hard = Array.isArray(data.hard) ? data.hard.slice() : [];
+                return { easy, normal, hard };
+            }
         } catch (e) {}
-        return { cleared: [] };
+        return { easy: [], normal: [], hard: [] };
     }
 
     function saveMapProgress(progress) {
@@ -1897,27 +1904,64 @@
     }
 
     function isMapStageCleared(stageId) {
-        return loadMapProgress().cleared.indexOf(stageId) !== -1;
+        const p = loadMapProgress();
+        return p.easy.indexOf(stageId) !== -1 || p.normal.indexOf(stageId) !== -1 || p.hard.indexOf(stageId) !== -1;
     }
 
-    function clearMapStage(stageId) {
+    function isEasyCleared(stageId) {
+        return loadMapProgress().easy.indexOf(stageId) !== -1;
+    }
+
+    function clearMapStage(stageId, diff) {
         const progress = loadMapProgress();
-        if (progress.cleared.indexOf(stageId) === -1) {
-            progress.cleared.push(stageId);
-            saveMapProgress(progress);
+        const key = (diff === 'normal' || diff === 'hard') ? diff : 'easy';
+        if (progress[key].indexOf(stageId) === -1) {
+            progress[key].push(stageId);
         }
+        // Beating any difficulty also counts as map progress; beating higher still unlocks higher only after easy
+        if (key !== 'easy' && progress.easy.indexOf(stageId) === -1) {
+            progress.easy.push(stageId);
+        }
+        saveMapProgress(progress);
     }
 
     function isMapStageUnlocked(stageId) {
-        const stages = allMapStages();
-        const idx = stages.findIndex((s) => s.id === stageId);
-        if (idx <= 0) return true;
-        return isMapStageCleared(stages[idx - 1].id);
+        // All stages open by default; difficulty gates harder modes
+        return !!findMapStage(stageId);
+    }
+
+    function isDifficultyUnlocked(diff, stageId) {
+        if (diff === 'easy') return true;
+        if (!stageId) return true; // free battle path without map stage
+        return isEasyCleared(stageId);
     }
 
     function chapterProgress(chapter) {
         const cleared = chapter.stages.filter((s) => isMapStageCleared(s.id)).length;
         return { cleared, total: chapter.stages.length };
+    }
+
+    function updateDifficultyButtons() {
+        const stageId = selectedMapStage ? selectedMapStage.id : null;
+        const higherOpen = isDifficultyUnlocked('normal', stageId);
+        [
+            { id: 'diff-btn-normal', meta: 'diff-normal-meta', openLabel: '6 命 • 回合制' },
+            { id: 'diff-btn-hard', meta: 'diff-hard-meta', openLabel: '5 命 • 回合制' }
+        ].forEach((item) => {
+            const btn = document.getElementById(item.id);
+            const meta = document.getElementById(item.meta);
+            if (!btn) return;
+            btn.disabled = !higherOpen;
+            btn.style.opacity = higherOpen ? '' : '0.45';
+            btn.setAttribute('aria-disabled', higherOpen ? 'false' : 'true');
+            if (meta) meta.textContent = higherOpen ? item.openLabel : '🔒 先打通簡單';
+        });
+        const hint = document.getElementById('battlediff-hint');
+        if (hint && selectedMapStage) {
+            hint.innerHTML = higherOpen
+                ? `關卡 <strong class="text-yellow-400">${selectedMapStage.code} ${selectedMapStage.label}</strong> 已解鎖全部難度。<br>請按 <strong class="text-red-400">1、2、3</strong> 選擇難度，或按 Esc 返回地圖。`
+                : `關卡 <strong class="text-yellow-400">${selectedMapStage.code} ${selectedMapStage.label}</strong>：而家淨係開<strong class="text-green-400">簡單</strong>。<br>打通簡單之後，先可以揀普通／困難。`;
+        }
     }
 
     function pickRandomMonster() {
@@ -1958,32 +2002,25 @@
             stageTotal += prog.total;
             const panel = document.createElement('div');
             panel.className = 'kq-panel kq-chapter';
-            const unlockedChapter = chapter.stages.some((s) => isMapStageUnlocked(s.id));
             let stagesHtml = '';
             chapter.stages.forEach((stage) => {
-                const unlocked = isMapStageUnlocked(stage.id);
                 const cleared = isMapStageCleared(stage.id);
+                const easyDone = isEasyCleared(stage.id);
                 const classes = ['kq-stage-btn'];
                 if (stage.boss) classes.push('boss');
                 if (cleared) classes.push('cleared');
-                let right = '';
-                let leftPrefix = '';
-                if (!unlockedChapter || !unlocked) {
-                    right = '<span class="lock">🔒</span>';
-                    stagesHtml += `<button type="button" class="${classes.join(' ')}" disabled aria-disabled="true"><span>${stage.code} ${stage.label}</span>${right}</button>`;
-                    return;
-                }
-                leftPrefix = `<span class="sid">【${choiceNo}】</span>`;
+                const leftPrefix = `<span class="sid">【${choiceNo}】</span>`;
                 mapChoiceIds.push(stage.id);
                 choiceNo += 1;
-                right = cleared ? '<span class="lock">✔</span>' : (stage.boss ? '<span class="lock">BOSS</span>' : '<span class="lock">▶</span>');
-                stagesHtml += `<button type="button" class="${classes.join(' ')}" onclick="selectMapStage('${stage.id}')"><span>${leftPrefix}${stage.code} ${stage.label}</span>${right}</button>`;
+                let right = stage.boss ? 'BOSS · 簡單' : '▶ · 簡單';
+                if (easyDone) right = '✔ 可打更高難度';
+                stagesHtml += `<button type="button" class="${classes.join(' ')}" onclick="selectMapStage('${stage.id}')"><span>${leftPrefix}${stage.code} ${stage.label}</span><span class="lock">${right}</span></button>`;
             });
 
             panel.innerHTML = `
                 <h3 class="kq-chapter-title">${chapter.title}</h3>
-                <p class="kq-chapter-desc">${unlockedChapter ? chapter.desc : '先完成上一章才可以進入。'}</p>
-                <div class="kq-chapter-meta">進度 ${prog.cleared} / ${prog.total}</div>
+                <p class="kq-chapter-desc">${chapter.desc}</p>
+                <div class="kq-chapter-meta">進度 ${prog.cleared} / ${prog.total}（全部關卡已開放，先打簡單）</div>
                 <div class="kq-stage-list">${stagesHtml}</div>
             `;
             host.appendChild(panel);
@@ -1994,16 +2031,13 @@
     }
 
     function selectMapStage(stageId) {
-        if (!isMapStageUnlocked(stageId)) {
-            speakText('呢關未解鎖。', 'zh-HK', true);
-            return;
-        }
         const stage = findMapStage(stageId);
         if (!stage) return;
         selectedMapStage = stage;
         battleKeyPool = stage.keys.slice();
         battleCategoryLabel = `${stage.code} ${stage.label}`;
         battleSelectingKeys = false;
+        updateDifficultyButtons();
         showScreen('battlediff');
     }
 
@@ -2319,7 +2353,13 @@
     }
 
     function chooseBattleDifficulty(diff) {
-        battleDifficulty = BATTLE_DIFFICULTY[diff] ? diff : 'normal';
+        const chosen = BATTLE_DIFFICULTY[diff] ? diff : 'normal';
+        const stageId = selectedMapStage ? selectedMapStage.id : null;
+        if (!isDifficultyUnlocked(chosen, stageId)) {
+            speakText('請先打通呢關嘅簡單模式，先可以揀普通或者困難。', 'zh-HK', true);
+            return;
+        }
+        battleDifficulty = chosen;
         if (selectedMapStage) {
             startBattle();
             return;
@@ -2593,7 +2633,7 @@
         }
         if (won) {
             playVictorySound();
-            if (selectedMapStage) clearMapStage(selectedMapStage.id);
+            if (selectedMapStage) clearMapStage(selectedMapStage.id, battleDifficulty);
         } else {
             playErrorSound();
         }
@@ -2646,8 +2686,12 @@
             optionsText += "按 Esc 鍵返回上一頁。";
             speakText(optionsText, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlediff') {
+            const stageId = selectedMapStage ? selectedMapStage.id : null;
+            const higherOpen = isDifficultyUnlocked('normal', stageId);
             const stageHint = selectedMapStage
-                ? `已選 ${selectedMapStage.code} ${selectedMapStage.label}。按 1 簡單，按 2 普通，按 3 困難，就開始戰鬥。按 Esc 返回地圖。`
+                ? (higherOpen
+                    ? `已選 ${selectedMapStage.code} ${selectedMapStage.label}。按 1 簡單，按 2 普通，按 3 困難，就開始戰鬥。按 Esc 返回地圖。`
+                    : `已選 ${selectedMapStage.code} ${selectedMapStage.label}。而家淨係開簡單，按 1 開始。打通簡單之後先可以揀普通同困難。按 Esc 返回地圖。`)
                 : '按 1 簡單，按 2 普通，按 3 困難，之後再揀打邊組鍵。按 Esc 返回。';
             speakText(`冒險模式。打啱字母就攻擊，打錯就會捱打。冇限時。${stageHint}`, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlehand') {
@@ -2779,6 +2823,7 @@
         document.getElementById(`screen-${screenId}`).classList.remove('hidden');
         updateVoiceShortcutHints();
         if (screenId === 'map') renderAdventureMap();
+        if (screenId === 'battlediff') updateDifficultyButtons();
 
         if (announce) {
             setTimeout(() => {
