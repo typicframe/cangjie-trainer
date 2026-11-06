@@ -287,8 +287,10 @@
         .monster.hit {
             animation: mon-recoil 0.32s steps(4);
         }
-        .monster.hit .m-figure { animation: kq-flash 0.12s step-end 3; }
-        .monster.crit .m-figure { animation: kq-flash 80ms step-end 5; }
+        .monster.hit .m-figure,
+        .monster.hit .m-figure svg { animation: kq-flash 0.12s step-end 3; }
+        .monster.crit .m-figure,
+        .monster.crit .m-figure svg { animation: kq-flash 80ms step-end 5; }
         .monster.crit { animation: kq-shake 0.3s steps(4); }
         .monster.die { animation: kq-defeat 0.55s ease forwards; }
         .sr-only {
@@ -645,35 +647,49 @@
             position: absolute;
             left: 50%;
             right: auto;
-            bottom: 1.2rem;
-            width: 9.5rem;
-            height: 9.5rem;
+            bottom: 1.15rem;
+            width: 9rem;
+            height: 9rem;
             transform: translateX(-50%);
             transform-origin: 50% 90%;
             z-index: 5;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .monster[data-kind="oni"] {
+            width: 10.5rem;
+            height: 10.5rem;
+            bottom: 0.85rem;
         }
         .m-shadow {
             position: absolute;
             left: 50%;
-            bottom: 0.15rem;
-            width: 5.4rem;
-            height: 0.85rem;
+            bottom: 0.05rem;
+            width: 4.2rem;
+            height: 0.7rem;
             border-radius: 50%;
             background: rgba(0,0,0,0.55);
             transform: translateX(-50%) scale(var(--shadow, 1));
             filter: blur(1px);
+            z-index: 0;
         }
         .m-figure {
-            position: absolute;
-            inset: 0 0 0.7rem 0;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
         }
-        .fig { display: none; position: absolute; inset: 0; }
-        .monster[data-kind="slime"] .fig-slime,
-        .monster[data-kind="spider"] .fig-spider,
-        .monster[data-kind="zombie"] .fig-zombie,
-        .monster[data-kind="skel"] .fig-skel,
-        .monster[data-kind="creeper"] .fig-creeper,
-        .monster[data-kind="dragon"] .fig-dragon { display: block; }
+        .m-figure svg.sprite {
+            width: 100%;
+            height: auto;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            shape-rendering: crispEdges;
+        }
 
         .mc-eye {
             position: absolute;
@@ -1010,20 +1026,13 @@
         }
 
         .monster.idle { animation: kq-float 1.6s ease-in-out infinite; }
-        .monster[data-kind="slime"].idle { animation-duration: 1.15s; }
-        .monster[data-kind="spider"].idle { animation-duration: 0.95s; }
-        .monster[data-kind="creeper"].idle { animation-duration: 1.8s; }
-        .monster[data-kind="dragon"].idle { animation-duration: 1.4s; }
+        .monster[data-kind="hitodama"].idle { animation-duration: 1.25s; }
+        .monster[data-kind="kinoko"].idle { animation-duration: 1.5s; }
+        .monster[data-kind="kodama"].idle { animation-duration: 1.7s; }
+        .monster[data-kind="tanuki"].idle { animation-duration: 1.35s; }
+        .monster[data-kind="karakasa"].idle { animation-duration: 1.15s; }
+        .monster[data-kind="oni"].idle { animation-duration: 1.9s; }
         .monster.idle .m-shadow { animation: shadow-breathe 1.6s ease-in-out infinite; }
-        .monster[data-kind="spider"].idle .spider-leg.l1,
-        .monster[data-kind="spider"].idle .spider-leg.l3 { animation: spider-leg-l 0.45s ease-in-out infinite; }
-        .monster[data-kind="spider"].idle .spider-leg.r1,
-        .monster[data-kind="spider"].idle .spider-leg.r3 { animation: spider-leg-r 0.45s ease-in-out infinite; }
-        .monster[data-kind="dragon"].idle .dragon-wing.l { animation: wing-l 0.55s ease-in-out infinite; }
-        .monster[data-kind="dragon"].idle .dragon-wing.r { animation: wing-r 0.55s ease-in-out infinite; }
-        .monster[data-kind="skel"].idle .skel-jaw { animation: jaw 0.9s ease-in-out infinite; }
-        .monster[data-kind="slime"].idle .slime-blob { animation: slime-jiggle 1.15s ease-in-out infinite; }
-        .monster[data-kind="creeper"].idle .creeper-body { animation: creeper-pulse 1.8s ease-in-out infinite; }
 
         .monster.windup {
             animation: mon-windup 0.28s ease-in-out infinite;
@@ -1267,68 +1276,15 @@
 
             <div id="battle-arena" class="kq-panel kq-stage-wrap" aria-live="polite">
                 <div class="enemy-plate">
-                    <span id="battle-monster-name">史萊姆</span>
+                    <span id="battle-monster-name">鬼火</span>
                     <div class="kq-enemy-bar" aria-hidden="true"><div id="monster-hp-fill"></div></div>
                     <span id="battle-monster-hp" class="sr-only">3 / 3</span>
                 </div>
                 <div class="battle-stage" aria-hidden="true">
                     <div class="battle-floor"></div>
-                    <div id="battle-monster" class="monster idle" data-kind="slime">
+                    <div id="battle-monster" class="monster idle" data-kind="hitodama">
                         <div class="m-shadow"></div>
-                        <div class="m-figure">
-                            <div class="fig fig-slime">
-                                <div class="slime-blob">
-                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
-                                    <span class="slime-mouth"></span>
-                                </div>
-                            </div>
-                            <div class="fig fig-spider">
-                                <div class="spider-leg l1"></div><div class="spider-leg l2"></div>
-                                <div class="spider-leg l3"></div><div class="spider-leg l4"></div>
-                                <div class="spider-leg r1"></div><div class="spider-leg r2"></div>
-                                <div class="spider-leg r3"></div><div class="spider-leg r4"></div>
-                                <div class="spider-body"></div>
-                                <div class="spider-head">
-                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
-                                    <span class="mc-eye ml"></span><span class="mc-eye mr"></span>
-                                </div>
-                            </div>
-                            <div class="fig fig-zombie">
-                                <div class="zomb-arm l"></div>
-                                <div class="zomb-arm r"></div>
-                                <div class="zomb-head">
-                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
-                                </div>
-                                <div class="zomb-body"></div>
-                                <div class="zomb-legs"></div>
-                            </div>
-                            <div class="fig fig-skel">
-                                <div class="skel-bow"></div>
-                                <div class="skel-skull">
-                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
-                                </div>
-                                <div class="skel-jaw"></div>
-                                <div class="skel-ribs"></div>
-                                <div class="skel-legs"></div>
-                            </div>
-                            <div class="fig fig-creeper">
-                                <div class="creeper-leg l"></div>
-                                <div class="creeper-leg r"></div>
-                                <div class="creeper-body"></div>
-                                <div class="creeper-head">
-                                    <div class="creeper-face"></div>
-                                </div>
-                            </div>
-                            <div class="fig fig-dragon">
-                                <div class="dragon-wing l"></div>
-                                <div class="dragon-wing r"></div>
-                                <div class="dragon-head">
-                                    <span class="mc-eye l"></span><span class="mc-eye r"></span>
-                                </div>
-                                <div class="dragon-fire"></div>
-                                <div class="dragon-body"></div>
-                            </div>
-                        </div>
+                        <div class="m-figure" id="battle-monster-sprite" aria-hidden="true"></div>
                     </div>
                 </div>
             </div>
@@ -1712,14 +1668,42 @@
     const HOME_KEYS = ['a', 's', 'd', 'f', 'j', 'k', 'l'];
     const HOME_WIDE_KEYS = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
     const LETTER_KEYS = ['a','s','d','f','g','q','w','e','r','t','z','x','c','v','b','h','j','k','l','y','u','i','o','p','n','m'];
+    const YOKAI_SPRITES = {"hitodama":{"palette":{"k":"#1b0d4a","c":"#5a6cff","l":"#9ff0ff","w":"#fffbe0"},"rows":["..........k.....",".........kck....","....k....kck....","...kck..kcck....","...kcck.kclck...","....kcckkclck...","....kccclllck...","...kccllllllck..","..kccllwwllllck.","..kcllwwwwlllck.",".kccwwkwwkwwlck.",".kclwwkwwkwwllck",".kclwwwwwwwwllck",".kcllwwwwwwlllck","..kcclllllllcck.","...kkccccccckk.."]},"kinoko":{"palette":{"k":"#3a1010","r":"#e23b3b","w":"#fff6e8","s":"#f6dfb5","m":"#b0303a"},"rows":["....kkkkkkkk....","..kkrrrrrrrrkk..",".krrwwrrrrwwrrk.",".krwwwrrrrwwwrk.","krrwwrrrrrrwwrrk","krrrrrrwwrrrrrrk","krrrrrwwwwrrrrrk",".kkkkkkkkkkkkkk.","...kssssssssk...","...kskssssksk...","...kskssssksk...","...kssssssssk...","...ksssmmsssk...","...kssssssssk...","..kksssssssskk..","..kkkkkkkkkkkk.."]},"kodama":{"palette":{"k":"#2c3a2c","w":"#e4f5d0","g":"#5cbf4a","p":"#ffb0b0"},"rows":["......g..g......",".......gg.......",".....kkkkkk.....","...kkwwwwwwkk...","..kwwwwwwwwwwk..",".kwwwwwwwwwwwwk.",".kwwwkwwwwkwwwk.","kwwwwkwwwwkwwwwk","kwpwwwwwwwwwwpwk","kwwwwwwkkwwwwwwk",".kwwwwwwwwwwwwk.","..kwwwwwwwwwwk..","...kkwwwwwwkk...","....kwwwwwwk....","...gkwwwwwwkg...","..ggkkkkkkkkgg.."]},"tanuki":{"palette":{"k":"#2a1a0a","b":"#a8784a","d":"#4a3020","w":"#f4ead8","l":"#e8d0a8","g":"#4ac040"},"rows":["................",".kk....gg....kk.","kbbk..kggk..kbbk","kbbbkkbbbbkkbbbk",".kbbbbbbbbbbbbk.",".kbddddbbddddbk.","kbddwkdbbdkwddbk","kbbddddbbddddbbk","kbbbwwwwwwwwbbbk",".kbbwwwkkwwwbbk.",".kbbbwwwwwwbbbk.","..kbbbbbbbbbbk..",".kbbbllllllbbbk.","kbbkbllllllbkbbk","kbbkbllllllbkbbk",".kk.kkkkkkkk.kk."]},"karakasa":{"palette":{"k":"#20102a","p":"#8a4ad0","w":"#ffffff","r":"#ff4a6a","h":"#a0602a"},"rows":[".......kk.......","......kppk......",".....kppppk.....","....kppppppk....","...kppppppppk...","..kppppwwppppk..",".kpppwwkkwwpppk.","kpppppwwwwpppppk","kkpkpkpkkpkpkpkk",".....krrrrk.....","......krrk......",".......hh.......",".......hh.......",".......hh.......","......hhhh......",".....kkkkkk....."]},"oni":{"palette":{"k":"#1a0505","y":"#f0e0b0","h":"#2a1a3a","r":"#e04030","n":"#a02018","e":"#ffd84a","w":"#ffffff","s":"#f0c040"},"rows":["..k..................k..","..ykk..............kky..","..yyk..............kyy..","...yyk..kkkkkkkk..kyy...","...kyykkhhhhhhhhkkyyk...","..khhhhhhhhhhhhhhhhhhk..",".khhhhhhhhhhhhhhhhhhhhk.",".khhrrrrrrrrrrrrrrrrhhk.","khhrrrrrrrrrrrrrrrrrrhhk","khrrkkkrrrrrrrrrrkkkrrhk","khrreeerrrrrrrrrreeerrhk","khrrekkrrrrrrrrrrkkerrhk","khrrrrrrrrnnnnrrrrrrrrhk","khrrrrrrrrnnnnrrrrrrrrhk","khrrrrrrrrrrrrrrrrrrrrhk",".khrrkwwkkkkkkkkwwkrrhk.",".khrrkkwkkkkkkkkwkkrrhk.","..khrrrrrrrrrrrrrrrrhk..","...kkrrrrrrrrrrrrrrkk...","..kssksssssssssssskssk..",".kssksssskssssksssskssk.","ksssskssssskkssssskssssk","kssksssskssssssksssskssk","kkkkkkkkkkkkkkkkkkkkkkkk"]}};
+
     const BATTLE_MONSTERS = [
-        { name: '史萊姆', kind: 'slime', hp: 3, keys: HOME_KEYS },
-        { name: '蜘蛛', kind: 'spider', hp: 4, keys: HOME_WIDE_KEYS },
-        { name: '殭屍', kind: 'zombie', hp: 5, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','u','i','o']) },
-        { name: '骷髏', kind: 'skel', hp: 6, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','t','y','u','i','o','p']) },
-        { name: '苦力怕', kind: 'creeper', hp: 8, keys: LETTER_KEYS },
-        { name: '終界龍', kind: 'dragon', hp: 12, keys: LETTER_KEYS }
+        { name: '鬼火', kind: 'hitodama', hp: 3, keys: HOME_KEYS },
+        { name: '蘑菇怪', kind: 'kinoko', hp: 4, keys: HOME_WIDE_KEYS },
+        { name: '樹精', kind: 'kodama', hp: 5, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','u','i','o']) },
+        { name: '狸貓', kind: 'tanuki', hp: 6, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','t','y','u','i','o','p']) },
+        { name: '傘妖', kind: 'karakasa', hp: 8, keys: LETTER_KEYS },
+        { name: '鬼', kind: 'oni', hp: 12, keys: LETTER_KEYS }
     ];
+
+    function renderYokaiSprite(kind, size = 144) {
+        const sprite = YOKAI_SPRITES[kind] || YOKAI_SPRITES.hitodama;
+        const paths = new Map();
+        sprite.rows.forEach((row, y) => {
+            [...row].forEach((ch, x) => {
+                const color = sprite.palette[ch];
+                if (!color) return;
+                if (!paths.has(color)) paths.set(color, []);
+                paths.get(color).push(`M${x} ${y}h1v1h-1z`);
+            });
+        });
+        const w = Math.max(...sprite.rows.map((r) => r.length));
+        const h = sprite.rows.length;
+        const pathHtml = [...paths].map(([color, ds]) =>
+            `<path d="${ds.join('')}" fill="${color}"></path>`
+        ).join('');
+        return `<svg class="sprite" width="${size}" height="${Math.round(size * h / w)}" viewBox="0 0 ${w} ${h}" role="img" aria-hidden="true">${pathHtml}</svg>`;
+    }
+
+    function paintBattleMonster(kind) {
+        const host = document.getElementById('battle-monster-sprite');
+        const el = monsterEl();
+        if (el) el.dataset.kind = kind;
+        if (host) host.innerHTML = renderYokaiSprite(kind, kind === 'oni' ? 168 : 144);
+    }
     const BATTLE_DIFFICULTY = {
         easy: { label: '簡單', playerHp: 8 },
         normal: { label: '普通', playerHp: 6 },
@@ -2149,8 +2133,7 @@
 
     function updateBattleUI() {
         const mon = currentMonster();
-        const el = monsterEl();
-        if (el) el.dataset.kind = mon.kind;
+        paintBattleMonster(mon.kind);
         document.getElementById('battle-wave-title').textContent = `${monsterIndex + 1}/${BATTLE_MONSTERS.length} · ${BATTLE_DIFFICULTY[battleDifficulty].label}`;
         document.getElementById('battle-monster-name').textContent = mon.name;
         document.getElementById('battle-monster-hp').textContent = `${monsterHp}/${monsterMaxHp}`;
