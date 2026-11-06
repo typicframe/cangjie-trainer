@@ -106,7 +106,7 @@
         .text-black { color: #111; }
         header h1, .text-yellow-400.text-3xl { color: #f59e0b; }
         #screen-welcome, #screen-battlediff, #screen-battlehand, #screen-battle,
-        #screen-timeset, #screen-countset, #screen-subselect,
+        #screen-map, #screen-timeset, #screen-countset, #screen-subselect,
         #screen-practice, #screen-summary {
             background: #1e1e1e;
         }
@@ -114,8 +114,96 @@
         #screen-subselect, #screen-practice, #screen-summary {
             border-color: #f59e0b;
         }
-        #screen-battlediff, #screen-battlehand, #screen-battle { border-color: #ef4444; }
+        #screen-battlediff, #screen-battlehand, #screen-battle, #screen-map { border-color: #ef4444; }
         #screen-battle { background: #16120e; }
+        #screen-map.kq-map {
+            background: transparent !important;
+            border: 0;
+            max-width: 28rem;
+            width: 100%;
+            padding: 0.35rem;
+            gap: 0.65rem;
+            box-shadow: none;
+        }
+        .kq-map-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .kq-map-head h2 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #facc15;
+            letter-spacing: 0.04em;
+        }
+        .kq-map-head .kq-map-back {
+            border: 2px solid #fff;
+            background: #000;
+            color: #fff;
+            border-radius: 6px;
+            padding: 0.45rem 0.75rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .kq-map-progress {
+            font-size: 0.85rem;
+            color: #a3a3a3;
+        }
+        .kq-chapter {
+            width: 100%;
+        }
+        .kq-chapter-title {
+            color: #facc15;
+            font-size: 1.05rem;
+            font-weight: 900;
+            margin: 0 0 0.35rem;
+        }
+        .kq-chapter-desc {
+            color: #d4d4d4;
+            font-size: 0.88rem;
+            margin: 0 0 0.55rem;
+            line-height: 1.45;
+        }
+        .kq-chapter-meta {
+            color: #a3a3a3;
+            font-size: 0.8rem;
+            margin-bottom: 0.55rem;
+        }
+        .kq-stage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .kq-stage-btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: left;
+            border: 2px solid #fff;
+            background: #000;
+            color: #fff;
+            border-radius: 8px;
+            padding: 0.7rem 0.85rem;
+            font-weight: 700;
+        }
+        .kq-stage-btn:hover:not(:disabled) { filter: brightness(1.15); }
+        .kq-stage-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            color: #a3a3a3;
+        }
+        .kq-stage-btn .sid {
+            color: #facc15;
+            margin-right: 0.35rem;
+        }
+        .kq-stage-btn.cleared .sid { color: #4ade80; }
+        .kq-stage-btn.boss { border-color: #f87171; }
+        .kq-stage-btn .lock { color: #facc15; }
         button:hover { filter: brightness(1.12); }
         .hover\:border-yellow-400:hover { border-color: #f59e0b; }
         .hover\:border-red-400:hover { border-color: #f87171; }
@@ -1203,9 +1291,9 @@
             </p>
             
             <div class="space-y-4">
-                <button onclick="openBattleDifficulty()" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-red-800 hover:border-red-400 rounded-xl transition-all group text-left">
+                <button onclick="openAdventureMap()" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-red-800 hover:border-red-400 rounded-xl transition-all group text-left">
                     <span class="text-xl font-bold text-red-400 group-hover:translate-x-1 transition-transform">【按 1】⚔️ 冒險模式</span>
-                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">打字攻擊 • 連擊 • 關卡怪物</span>
+                    <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">世界地圖 • 關卡 • 打怪</span>
                 </button>
                 <button onclick="selectHand('left')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl transition-all group text-left">
                     <span class="text-xl font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">【按 2】👈 左手專用鍵盤範圍</span>
@@ -1220,6 +1308,18 @@
                     <span class="text-sm bg-zinc-800 px-3 py-1 rounded text-gray-300">全鍵盤綜合打字</span>
                 </button>
             </div>
+        </div>
+
+        <div id="screen-map" class="hidden kq-map flex flex-col items-center mx-auto">
+            <div class="kq-panel">
+                <div class="kq-map-head">
+                    <button type="button" class="kq-map-back" onclick="goBack()">◀ 返回</button>
+                    <h2>世界地圖</h2>
+                    <span id="map-overall-progress" class="kq-map-progress">0/16</span>
+                </div>
+            </div>
+            <div id="map-chapters" class="w-full flex flex-col gap-3"></div>
+            <p class="text-sm text-gray-400 text-center mt-1">按數字鍵揀關卡，已通關會解鎖下一關。Esc 返回。</p>
         </div>
 
         <div id="screen-battlediff" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
@@ -1691,17 +1791,193 @@
         { name: '苦力怕', kind: 'creeper', hp: 8 },
         { name: '終界龍', kind: 'dragon', hp: 12 }
     ];
-    const BATTLE_WAVE_COUNT = 6;
+    let BATTLE_WAVE_COUNT = 6;
     let battleRoster = [];
     let currentBattleMonster = null;
     let usedMonsterKinds = [];
+    let selectedMapStage = null;
+    let mapChoiceIds = [];
+    const MAP_STORAGE_KEY = 'a11y-typing-map-v1';
+
+    const ADVENTURE_CHAPTERS = [
+        {
+            id: 'c1',
+            title: '第一章 基準鍵草原',
+            desc: '由 ASDF／HJKL 開始學打字，打倒草原之主「史萊姆」！',
+            stages: [
+                { id: 'c1-1', code: 'C1-1', label: '左手基準鍵', keys: ['a','s','d','f','g'], waves: 3 },
+                { id: 'c1-2', code: 'C1-2', label: '右手基準鍵', keys: ['h','j','k','l',';'], waves: 3 },
+                { id: 'c1-3', code: 'C1-3', label: '雙手基準鍵', keys: ['a','s','d','f','g','h','j','k','l',';'], waves: 4 },
+                { id: 'c1-boss', code: 'BOSS', label: '草原之主・史萊姆', keys: ['a','s','d','f','g','h','j','k','l',';'], waves: 1, boss: true, bossKind: 'slime', bossHp: 10 }
+            ]
+        },
+        {
+            id: 'c2',
+            title: '第二章 上排山林',
+            desc: '上排鍵位的妖怪好敏捷。打倒山林之主「蜘蛛」！',
+            stages: [
+                { id: 'c2-1', code: 'C2-1', label: '左手上排', keys: ['q','w','e','r','t'], waves: 3 },
+                { id: 'c2-2', code: 'C2-2', label: '右手上排', keys: ['y','u','i','o','p'], waves: 3 },
+                { id: 'c2-3', code: 'C2-3', label: '雙手上排', keys: ['q','w','e','r','t','y','u','i','o','p'], waves: 4 },
+                { id: 'c2-boss', code: 'BOSS', label: '山林之主・蜘蛛', keys: ['q','w','e','r','t','y','u','i','o','p'], waves: 1, boss: true, bossKind: 'spider', bossHp: 12 }
+            ]
+        },
+        {
+            id: 'c3',
+            title: '第三章 下排洞窟',
+            desc: '下排鍵又暗又窄。打倒洞窟之主「苦力怕」！',
+            stages: [
+                { id: 'c3-1', code: 'C3-1', label: '左手下排', keys: ['z','x','c','v','b'], waves: 3 },
+                { id: 'c3-2', code: 'C3-2', label: '右手下排', keys: ['n','m',',','.','/'], waves: 3 },
+                { id: 'c3-3', code: 'C3-3', label: '雙手下排', keys: ['z','x','c','v','b','n','m',',','.','/'], waves: 4 },
+                { id: 'c3-boss', code: 'BOSS', label: '洞窟之主・苦力怕', keys: ['z','x','c','v','b','n','m',',','.','/'], waves: 1, boss: true, bossKind: 'creeper', bossHp: 14 }
+            ]
+        },
+        {
+            id: 'c4',
+            title: '第四章 全鍵迷宮',
+            desc: '全鍵盤大亂鬥。打倒迷宮之主「終界龍」！',
+            stages: [
+                { id: 'c4-1', code: 'C4-1', label: '左手混合', keys: ['a','s','d','f','g','q','w','e','r','t','z','x','c','v','b'], waves: 4 },
+                { id: 'c4-2', code: 'C4-2', label: '右手混合', keys: ['h','j','k','l',';','y','u','i','o','p','n','m',',','.','/'], waves: 4 },
+                { id: 'c4-3', code: 'C4-3', label: '全鍵盤', keys: LETTER_KEYS.concat([';',',','.','/']), waves: 5 },
+                { id: 'c4-boss', code: 'BOSS', label: '迷宮之主・終界龍', keys: LETTER_KEYS.concat([';',',','.','/']), waves: 1, boss: true, bossKind: 'dragon', bossHp: 18 }
+            ]
+        }
+    ];
+
+    function loadMapProgress() {
+        try {
+            const raw = localStorage.getItem(MAP_STORAGE_KEY);
+            const data = raw ? JSON.parse(raw) : null;
+            if (data && Array.isArray(data.cleared)) return { cleared: data.cleared };
+        } catch (e) {}
+        return { cleared: [] };
+    }
+
+    function saveMapProgress(progress) {
+        try {
+            localStorage.setItem(MAP_STORAGE_KEY, JSON.stringify(progress));
+        } catch (e) {}
+    }
+
+    function allMapStages() {
+        return ADVENTURE_CHAPTERS.flatMap((ch) => ch.stages);
+    }
+
+    function findMapStage(stageId) {
+        return allMapStages().find((s) => s.id === stageId) || null;
+    }
+
+    function isMapStageCleared(stageId) {
+        return loadMapProgress().cleared.indexOf(stageId) !== -1;
+    }
+
+    function clearMapStage(stageId) {
+        const progress = loadMapProgress();
+        if (progress.cleared.indexOf(stageId) === -1) {
+            progress.cleared.push(stageId);
+            saveMapProgress(progress);
+        }
+    }
+
+    function isMapStageUnlocked(stageId) {
+        const stages = allMapStages();
+        const idx = stages.findIndex((s) => s.id === stageId);
+        if (idx <= 0) return true;
+        return isMapStageCleared(stages[idx - 1].id);
+    }
+
+    function chapterProgress(chapter) {
+        const cleared = chapter.stages.filter((s) => isMapStageCleared(s.id)).length;
+        return { cleared, total: chapter.stages.length };
+    }
 
     function pickRandomMonster() {
+        if (selectedMapStage && selectedMapStage.boss) {
+            const kind = selectedMapStage.bossKind || 'slime';
+            const base = MONSTER_POOL.find((m) => m.kind === kind) || MONSTER_POOL[0];
+            return {
+                name: selectedMapStage.label.replace(/^.*・/, '') || base.name,
+                kind,
+                hp: selectedMapStage.bossHp || base.hp * 2
+            };
+        }
         const available = MONSTER_POOL.filter((m) => usedMonsterKinds.indexOf(m.kind) === -1);
         const pool = available.length ? available : MONSTER_POOL.slice();
         const mon = pool[Math.floor(Math.random() * pool.length)];
         usedMonsterKinds.push(mon.kind);
         return { name: mon.name, kind: mon.kind, hp: mon.hp };
+    }
+
+    function openAdventureMap() {
+        selectedMapStage = null;
+        renderAdventureMap();
+        showScreen('map');
+    }
+
+    function renderAdventureMap() {
+        const host = document.getElementById('map-chapters');
+        if (!host) return;
+        host.innerHTML = '';
+        mapChoiceIds = [];
+        let choiceNo = 1;
+        let clearedTotal = 0;
+        let stageTotal = 0;
+
+        ADVENTURE_CHAPTERS.forEach((chapter) => {
+            const prog = chapterProgress(chapter);
+            clearedTotal += prog.cleared;
+            stageTotal += prog.total;
+            const panel = document.createElement('div');
+            panel.className = 'kq-panel kq-chapter';
+            const unlockedChapter = chapter.stages.some((s) => isMapStageUnlocked(s.id));
+            let stagesHtml = '';
+            chapter.stages.forEach((stage) => {
+                const unlocked = isMapStageUnlocked(stage.id);
+                const cleared = isMapStageCleared(stage.id);
+                const classes = ['kq-stage-btn'];
+                if (stage.boss) classes.push('boss');
+                if (cleared) classes.push('cleared');
+                let right = '';
+                let leftPrefix = '';
+                if (!unlockedChapter || !unlocked) {
+                    right = '<span class="lock">🔒</span>';
+                    stagesHtml += `<button type="button" class="${classes.join(' ')}" disabled aria-disabled="true"><span>${stage.code} ${stage.label}</span>${right}</button>`;
+                    return;
+                }
+                leftPrefix = `<span class="sid">【${choiceNo}】</span>`;
+                mapChoiceIds.push(stage.id);
+                choiceNo += 1;
+                right = cleared ? '<span class="lock">✔</span>' : (stage.boss ? '<span class="lock">BOSS</span>' : '<span class="lock">▶</span>');
+                stagesHtml += `<button type="button" class="${classes.join(' ')}" onclick="selectMapStage('${stage.id}')"><span>${leftPrefix}${stage.code} ${stage.label}</span>${right}</button>`;
+            });
+
+            panel.innerHTML = `
+                <h3 class="kq-chapter-title">${chapter.title}</h3>
+                <p class="kq-chapter-desc">${unlockedChapter ? chapter.desc : '先完成上一章才可以進入。'}</p>
+                <div class="kq-chapter-meta">進度 ${prog.cleared} / ${prog.total}</div>
+                <div class="kq-stage-list">${stagesHtml}</div>
+            `;
+            host.appendChild(panel);
+        });
+
+        const overall = document.getElementById('map-overall-progress');
+        if (overall) overall.textContent = `${clearedTotal}/${stageTotal}`;
+    }
+
+    function selectMapStage(stageId) {
+        if (!isMapStageUnlocked(stageId)) {
+            speakText('呢關未解鎖。', 'zh-HK', true);
+            return;
+        }
+        const stage = findMapStage(stageId);
+        if (!stage) return;
+        selectedMapStage = stage;
+        battleKeyPool = stage.keys.slice();
+        battleCategoryLabel = `${stage.code} ${stage.label}`;
+        battleSelectingKeys = false;
+        showScreen('battlediff');
     }
 
     function renderYokaiSprite(kind, size = 144) {
@@ -2012,13 +2288,15 @@
     }
 
     function openBattleDifficulty() {
-        selectedHand = 'both';
-        selectedCategory = 'battle';
-        showScreen('battlediff');
+        openAdventureMap();
     }
 
     function chooseBattleDifficulty(diff) {
         battleDifficulty = BATTLE_DIFFICULTY[diff] ? diff : 'normal';
+        if (selectedMapStage) {
+            startBattle();
+            return;
+        }
         battleSelectingKeys = true;
         showScreen('battlehand');
     }
@@ -2046,6 +2324,11 @@
         usedMonsterKinds = [];
         battleRoster = [];
         currentBattleMonster = null;
+        BATTLE_WAVE_COUNT = selectedMapStage && selectedMapStage.waves ? selectedMapStage.waves : 6;
+        if (selectedMapStage) {
+            battleKeyPool = selectedMapStage.keys.slice();
+            battleCategoryLabel = `${selectedMapStage.code} ${selectedMapStage.label}`;
+        }
         startTimeStamp = Date.now();
         spawnMonster(true);
         showScreen('battle', { announce: false });
@@ -2281,21 +2564,27 @@
             clearInterval(timerInterval);
             timerInterval = null;
         }
-        if (won) playVictorySound();
-        else playErrorSound();
+        if (won) {
+            playVictorySound();
+            if (selectedMapStage) clearMapStage(selectedMapStage.id);
+        } else {
+            playErrorSound();
+        }
         showScreen('summary', { announce: false });
         const title = document.getElementById('summary-title');
         title.textContent = won ? '🎉 你打敗晒所有怪物！' : '💀 戰鬥結束';
         title.classList.toggle('text-green-400', won);
         title.classList.toggle('text-red-400', !won);
-        document.getElementById('summary-category-txt').textContent = `冒險模式（${BATTLE_DIFFICULTY[battleDifficulty].label}）· ${battleCategoryLabel}：打倒 ${monstersDefeated} / ${battleWaveTotal()} 隻`;
+        const stageTxt = selectedMapStage ? `${selectedMapStage.code} ${selectedMapStage.label}` : battleCategoryLabel;
+        document.getElementById('summary-category-txt').textContent = `冒險模式（${BATTLE_DIFFICULTY[battleDifficulty].label}）· ${stageTxt}：打倒 ${monstersDefeated} / ${battleWaveTotal()} 隻`;
         document.getElementById('summary-correct').textContent = correctCount;
         document.getElementById('summary-errors').textContent = errorCount;
         document.getElementById('summary-accuracy').textContent = `${calculateAccuracy()}%`;
         const { elapsedSeconds, cpm } = calculateTypingSpeed();
         document.getElementById('summary-speed').textContent = `最大連擊 ${maxCombo} · ${cpm} 字/分鐘 · ${Math.round(elapsedSeconds)} 秒`;
         const result = reason || (won ? '勝利' : '失敗');
-        speakText(`${result}。打倒 ${monstersDefeated} 隻怪物，最大連擊 ${maxCombo}，正確 ${correctCount}，失誤 ${errorCount}。按 1 再打，按 Esc 返回選單。`, 'zh-HK', true);
+        const backHint = selectedMapStage ? '按 Esc 返回地圖' : '按 Esc 返回選單';
+        speakText(`${result}。打倒 ${monstersDefeated} 隻怪物，最大連擊 ${maxCombo}，正確 ${correctCount}，失誤 ${errorCount}。按 1 再打，${backHint}。`, 'zh-HK', true);
     }
 
     function speakInstruction(cancelPrevious = true) {
@@ -2306,7 +2595,13 @@
         const countText = targetCountSetting === 0 ? "不設練習字數限制。" : `目前設定每組練習 ${targetCountSetting} 個字。`;
 
         if (currentScreen === 'welcome') {
-            speakText(`歡迎使用無障礙打字訓練。${limitText} ${countText} 按英文字母 T 鍵自訂限時，按 C 鍵自訂字數。請在鍵盤按數字鍵：一，冒險模式。二，選擇左手。三，選擇右手。四，選擇雙手。`, 'zh-HK', cancelPrevious);
+            speakText(`歡迎使用無障礙打字訓練。${limitText} ${countText} 按英文字母 T 鍵自訂限時，按 C 鍵自訂字數。請在鍵盤按數字鍵：一，冒險地圖。二，選擇左手。三，選擇右手。四，選擇雙手。`, 'zh-HK', cancelPrevious);
+        } else if (currentScreen === 'map') {
+            const unlocked = mapChoiceIds.map((id, i) => {
+                const s = findMapStage(id);
+                return s ? `按 ${i + 1} 選擇 ${s.code} ${s.label}` : '';
+            }).filter(Boolean).join('。');
+            speakText(`世界地圖。${unlocked || '而家未有可選關卡'}。按 Esc 返回。`, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'timeset') {
             const timeDesc = tempTimeLimit === 0 ? "不限時" : formatChineseTime(tempTimeLimit);
             speakText(`自訂限時設定頁面。目前設定為 ${timeDesc}。按 1 增加一分鐘，按 2 減少一分鐘，按 3 增加十秒，按 4 減少十秒，按 5 設定不限時。設定後按 Enter 鍵確認，或按 Esc 鍵取消。`, 'zh-HK', cancelPrevious);
@@ -2324,7 +2619,10 @@
             optionsText += "按 Esc 鍵返回上一頁。";
             speakText(optionsText, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlediff') {
-            speakText('冒險模式。打啱字母就攻擊，打錯就會捱打。冇限時。按 1 簡單，按 2 普通，按 3 困難，之後再揀打邊組鍵。按 Esc 返回。', 'zh-HK', cancelPrevious);
+            const stageHint = selectedMapStage
+                ? `已選 ${selectedMapStage.code} ${selectedMapStage.label}。按 1 簡單，按 2 普通，按 3 困難，就開始戰鬥。按 Esc 返回地圖。`
+                : '按 1 簡單，按 2 普通，按 3 困難，之後再揀打邊組鍵。按 Esc 返回。';
+            speakText(`冒險模式。打啱字母就攻擊，打錯就會捱打。冇限時。${stageHint}`, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlehand') {
             speakText('請選擇冒險鍵盤範圍。按 1 左手，按 2 右手，按 3 雙手。按 Esc 返回難度。', 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battle') {
@@ -2441,6 +2739,7 @@
         currentScreen = screenId;
         
         document.getElementById('screen-welcome').classList.add('hidden');
+        document.getElementById('screen-map').classList.add('hidden');
         document.getElementById('screen-battlediff').classList.add('hidden');
         document.getElementById('screen-battlehand').classList.add('hidden');
         document.getElementById('screen-battle').classList.add('hidden');
@@ -2452,6 +2751,7 @@
         
         document.getElementById(`screen-${screenId}`).classList.remove('hidden');
         updateVoiceShortcutHints();
+        if (screenId === 'map') renderAdventureMap();
 
         if (announce) {
             setTimeout(() => {
@@ -2805,15 +3105,29 @@
 
         if (currentScreen === 'timeset' || currentScreen === 'countset') {
             showScreen(previousScreen);
+        } else if (currentScreen === 'map') {
+            selectedMapStage = null;
+            showScreen('welcome');
         } else if (currentScreen === 'subselect' && battleSelectingKeys) {
             showScreen('battlehand');
         } else if (currentScreen === 'battlehand') {
             showScreen('battlediff');
-        } else if (currentScreen === 'subselect' || currentScreen === 'battlediff') {
+        } else if (currentScreen === 'battlediff') {
+            if (selectedMapStage) {
+                showScreen('map');
+            } else {
+                battleSelectingKeys = false;
+                showScreen('welcome');
+            }
+        } else if (currentScreen === 'subselect') {
             battleSelectingKeys = false;
             showScreen('welcome');
         } else if (currentScreen === 'summary') {
-            showScreen('welcome');
+            if (lastGameMode === 'battle') {
+                showScreen('map');
+            } else {
+                showScreen('welcome');
+            }
         }
     }
 
@@ -2893,7 +3207,7 @@
         }
 
         if (key.toLowerCase() === 't') {
-            if (currentScreen === 'welcome' || currentScreen === 'subselect' || currentScreen === 'battlediff' || currentScreen === 'battlehand') {
+            if (currentScreen === 'welcome' || currentScreen === 'map' || currentScreen === 'subselect' || currentScreen === 'battlediff' || currentScreen === 'battlehand') {
                 event.preventDefault();
                 openTimeSettings();
                 return;
@@ -2901,7 +3215,7 @@
         }
 
         if (key.toLowerCase() === 'c') {
-            if (currentScreen === 'welcome' || currentScreen === 'subselect' || currentScreen === 'battlediff' || currentScreen === 'battlehand') {
+            if (currentScreen === 'welcome' || currentScreen === 'map' || currentScreen === 'subselect' || currentScreen === 'battlediff' || currentScreen === 'battlehand') {
                 event.preventDefault();
                 openCountSettings();
                 return;
@@ -2911,7 +3225,7 @@
         if (currentScreen === 'welcome') {
             if (key === '1') {
                 event.preventDefault();
-                openBattleDifficulty();
+                openAdventureMap();
             } else if (key === '2') {
                 event.preventDefault();
                 selectHand('left');
@@ -2921,6 +3235,13 @@
             } else if (key === '4') {
                 event.preventDefault();
                 selectHand('both');
+            }
+        }
+        else if (currentScreen === 'map') {
+            const numVal = parseInt(key, 10);
+            if (!isNaN(numVal) && numVal >= 1 && numVal <= mapChoiceIds.length) {
+                event.preventDefault();
+                selectMapStage(mapChoiceIds[numVal - 1]);
             }
         }
         else if (currentScreen === 'battlediff') {
@@ -3014,7 +3335,7 @@
 
     window.onload = function() {
         setTimeout(() => {
-            speakText("歡迎使用無障礙打字訓練。請點擊螢幕任何地方，或按下 Enter 鍵以啟用語音導航指引。按一可以進入冒險模式。按下 T 鍵可自訂限時時間，按下 C 鍵可自訂練習字數。", 'zh-HK');
+            speakText("歡迎使用無障礙打字訓練。請點擊螢幕任何地方，或按下 Enter 鍵以啟用語音導航指引。按一可以進入冒險地圖。按下 T 鍵可自訂限時時間，按下 C 鍵可自訂練習字數。", 'zh-HK');
         }, 1000);
 
         if ('speechSynthesis' in window) {
