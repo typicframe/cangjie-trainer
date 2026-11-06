@@ -657,7 +657,8 @@
             align-items: flex-end;
             justify-content: center;
         }
-        .monster[data-kind="oni"] {
+        .monster[data-kind="oni"],
+        .monster[data-kind="dragon"] {
             width: 10.5rem;
             height: 10.5rem;
             bottom: 0.85rem;
@@ -1032,6 +1033,12 @@
         .monster[data-kind="tanuki"].idle { animation-duration: 1.35s; }
         .monster[data-kind="karakasa"].idle { animation-duration: 1.15s; }
         .monster[data-kind="oni"].idle { animation-duration: 1.9s; }
+        .monster[data-kind="slime"].idle { animation-duration: 1.1s; }
+        .monster[data-kind="spider"].idle { animation-duration: 0.95s; }
+        .monster[data-kind="zombie"].idle { animation-duration: 1.45s; }
+        .monster[data-kind="skel"].idle { animation-duration: 1.3s; }
+        .monster[data-kind="creeper"].idle { animation-duration: 1.8s; }
+        .monster[data-kind="dragon"].idle { animation-duration: 1.4s; }
         .monster.idle .m-shadow { animation: shadow-breathe 1.6s ease-in-out infinite; }
 
         .monster.windup {
@@ -1668,16 +1675,38 @@
     const HOME_KEYS = ['a', 's', 'd', 'f', 'j', 'k', 'l'];
     const HOME_WIDE_KEYS = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
     const LETTER_KEYS = ['a','s','d','f','g','q','w','e','r','t','z','x','c','v','b','h','j','k','l','y','u','i','o','p','n','m'];
-    const YOKAI_SPRITES = {"hitodama":{"palette":{"k":"#1b0d4a","c":"#5a6cff","l":"#9ff0ff","w":"#fffbe0"},"rows":["..........k.....",".........kck....","....k....kck....","...kck..kcck....","...kcck.kclck...","....kcckkclck...","....kccclllck...","...kccllllllck..","..kccllwwllllck.","..kcllwwwwlllck.",".kccwwkwwkwwlck.",".kclwwkwwkwwllck",".kclwwwwwwwwllck",".kcllwwwwwwlllck","..kcclllllllcck.","...kkccccccckk.."]},"kinoko":{"palette":{"k":"#3a1010","r":"#e23b3b","w":"#fff6e8","s":"#f6dfb5","m":"#b0303a"},"rows":["....kkkkkkkk....","..kkrrrrrrrrkk..",".krrwwrrrrwwrrk.",".krwwwrrrrwwwrk.","krrwwrrrrrrwwrrk","krrrrrrwwrrrrrrk","krrrrrwwwwrrrrrk",".kkkkkkkkkkkkkk.","...kssssssssk...","...kskssssksk...","...kskssssksk...","...kssssssssk...","...ksssmmsssk...","...kssssssssk...","..kksssssssskk..","..kkkkkkkkkkkk.."]},"kodama":{"palette":{"k":"#2c3a2c","w":"#e4f5d0","g":"#5cbf4a","p":"#ffb0b0"},"rows":["......g..g......",".......gg.......",".....kkkkkk.....","...kkwwwwwwkk...","..kwwwwwwwwwwk..",".kwwwwwwwwwwwwk.",".kwwwkwwwwkwwwk.","kwwwwkwwwwkwwwwk","kwpwwwwwwwwwwpwk","kwwwwwwkkwwwwwwk",".kwwwwwwwwwwwwk.","..kwwwwwwwwwwk..","...kkwwwwwwkk...","....kwwwwwwk....","...gkwwwwwwkg...","..ggkkkkkkkkgg.."]},"tanuki":{"palette":{"k":"#2a1a0a","b":"#a8784a","d":"#4a3020","w":"#f4ead8","l":"#e8d0a8","g":"#4ac040"},"rows":["................",".kk....gg....kk.","kbbk..kggk..kbbk","kbbbkkbbbbkkbbbk",".kbbbbbbbbbbbbk.",".kbddddbbddddbk.","kbddwkdbbdkwddbk","kbbddddbbddddbbk","kbbbwwwwwwwwbbbk",".kbbwwwkkwwwbbk.",".kbbbwwwwwwbbbk.","..kbbbbbbbbbbk..",".kbbbllllllbbbk.","kbbkbllllllbkbbk","kbbkbllllllbkbbk",".kk.kkkkkkkk.kk."]},"karakasa":{"palette":{"k":"#20102a","p":"#8a4ad0","w":"#ffffff","r":"#ff4a6a","h":"#a0602a"},"rows":[".......kk.......","......kppk......",".....kppppk.....","....kppppppk....","...kppppppppk...","..kppppwwppppk..",".kpppwwkkwwpppk.","kpppppwwwwpppppk","kkpkpkpkkpkpkpkk",".....krrrrk.....","......krrk......",".......hh.......",".......hh.......",".......hh.......","......hhhh......",".....kkkkkk....."]},"oni":{"palette":{"k":"#1a0505","y":"#f0e0b0","h":"#2a1a3a","r":"#e04030","n":"#a02018","e":"#ffd84a","w":"#ffffff","s":"#f0c040"},"rows":["..k..................k..","..ykk..............kky..","..yyk..............kyy..","...yyk..kkkkkkkk..kyy...","...kyykkhhhhhhhhkkyyk...","..khhhhhhhhhhhhhhhhhhk..",".khhhhhhhhhhhhhhhhhhhhk.",".khhrrrrrrrrrrrrrrrrhhk.","khhrrrrrrrrrrrrrrrrrrhhk","khrrkkkrrrrrrrrrrkkkrrhk","khrreeerrrrrrrrrreeerrhk","khrrekkrrrrrrrrrrkkerrhk","khrrrrrrrrnnnnrrrrrrrrhk","khrrrrrrrrnnnnrrrrrrrrhk","khrrrrrrrrrrrrrrrrrrrrhk",".khrrkwwkkkkkkkkwwkrrhk.",".khrrkkwkkkkkkkkwkkrrhk.","..khrrrrrrrrrrrrrrrrhk..","...kkrrrrrrrrrrrrrrkk...","..kssksssssssssssskssk..",".kssksssskssssksssskssk.","ksssskssssskkssssskssssk","kssksssskssssssksssskssk","kkkkkkkkkkkkkkkkkkkkkkkk"]}};
+    const YOKAI_SPRITES = {"hitodama":{"palette":{"k":"#1b0d4a","c":"#5a6cff","l":"#9ff0ff","w":"#fffbe0"},"rows":["..........k.....",".........kck....","....k....kck....","...kck..kcck....","...kcck.kclck...","....kcckkclck...","....kccclllck...","...kccllllllck..","..kccllwwllllck.","..kcllwwwwlllck.",".kccwwkwwkwwlck.",".kclwwkwwkwwllck",".kclwwwwwwwwllck",".kcllwwwwwwlllck","..kcclllllllcck.","...kkccccccckk.."]},"kinoko":{"palette":{"k":"#3a1010","r":"#e23b3b","w":"#fff6e8","s":"#f6dfb5","m":"#b0303a"},"rows":["....kkkkkkkk....","..kkrrrrrrrrkk..",".krrwwrrrrwwrrk.",".krwwwrrrrwwwrk.","krrwwrrrrrrwwrrk","krrrrrrwwrrrrrrk","krrrrrwwwwrrrrrk",".kkkkkkkkkkkkkk.","...kssssssssk...","...kskssssksk...","...kskssssksk...","...kssssssssk...","...ksssmmsssk...","...kssssssssk...","..kksssssssskk..","..kkkkkkkkkkkk.."]},"kodama":{"palette":{"k":"#2c3a2c","w":"#e4f5d0","g":"#5cbf4a","p":"#ffb0b0"},"rows":["......g..g......",".......gg.......",".....kkkkkk.....","...kkwwwwwwkk...","..kwwwwwwwwwwk..",".kwwwwwwwwwwwwk.",".kwwwkwwwwkwwwk.","kwwwwkwwwwkwwwwk","kwpwwwwwwwwwwpwk","kwwwwwwkkwwwwwwk",".kwwwwwwwwwwwwk.","..kwwwwwwwwwwk..","...kkwwwwwwkk...","....kwwwwwwk....","...gkwwwwwwkg...","..ggkkkkkkkkgg.."]},"tanuki":{"palette":{"k":"#2a1a0a","b":"#a8784a","d":"#4a3020","w":"#f4ead8","l":"#e8d0a8","g":"#4ac040"},"rows":["................",".kk....gg....kk.","kbbk..kggk..kbbk","kbbbkkbbbbkkbbbk",".kbbbbbbbbbbbbk.",".kbddddbbddddbk.","kbddwkdbbdkwddbk","kbbddddbbddddbbk","kbbbwwwwwwwwbbbk",".kbbwwwkkwwwbbk.",".kbbbwwwwwwbbbk.","..kbbbbbbbbbbk..",".kbbbllllllbbbk.","kbbkbllllllbkbbk","kbbkbllllllbkbbk",".kk.kkkkkkkk.kk."]},"karakasa":{"palette":{"k":"#20102a","p":"#8a4ad0","w":"#ffffff","r":"#ff4a6a","h":"#a0602a"},"rows":[".......kk.......","......kppk......",".....kppppk.....","....kppppppk....","...kppppppppk...","..kppppwwppppk..",".kpppwwkkwwpppk.","kpppppwwwwpppppk","kkpkpkpkkpkpkpkk",".....krrrrk.....","......krrk......",".......hh.......",".......hh.......",".......hh.......","......hhhh......",".....kkkkkk....."]},"oni":{"palette":{"k":"#1a0505","y":"#f0e0b0","h":"#2a1a3a","r":"#e04030","n":"#a02018","e":"#ffd84a","w":"#ffffff","s":"#f0c040"},"rows":["..k..................k..","..ykk..............kky..","..yyk..............kyy..","...yyk..kkkkkkkk..kyy...","...kyykkhhhhhhhhkkyyk...","..khhhhhhhhhhhhhhhhhhk..",".khhhhhhhhhhhhhhhhhhhhk.",".khhrrrrrrrrrrrrrrrrhhk.","khhrrrrrrrrrrrrrrrrrrhhk","khrrkkkrrrrrrrrrrkkkrrhk","khrreeerrrrrrrrrreeerrhk","khrrekkrrrrrrrrrrkkerrhk","khrrrrrrrrnnnnrrrrrrrrhk","khrrrrrrrrnnnnrrrrrrrrhk","khrrrrrrrrrrrrrrrrrrrrhk",".khrrkwwkkkkkkkkwwkrrhk.",".khrrkkwkkkkkkkkwkkrrhk.","..khrrrrrrrrrrrrrrrrhk..","...kkrrrrrrrrrrrrrrkk...","..kssksssssssssssskssk..",".kssksssskssssksssskssk.","ksssskssssskkssssskssssk","kssksssskssssssksssskssk","kkkkkkkkkkkkkkkkkkkkkkkk"]},"slime":{"palette":{"k":"#0b2e0b","g":"#55c233","d":"#3a9a1a","w":"#ffffff","e":"#1a1a1a","m":"#145214"},"rows":["................","....kkkkkkkk....","...kggggggggk...","..kggwwggwwggk..","..kggekggekggk..","..kggggggggggk..","..kgggmmmmgggk..","..kggddddddggk..","..kggggggggggk..","...kggggggggk...","....kkkkkkkk....","......dddd......","................","................","................","................"]},"spider":{"palette":{"k":"#1a0505","b":"#3a1010","r":"#8b1a1a","e":"#ff3333","w":"#ffaaaa","l":"#2a0808"},"rows":["l..l........l..l",".l.l........l.l.","..ll.kkkkkk.ll..","..lkkbbbbbbkkl..",".lkbbwwbbwwbbkl.","lkbbbkkbbkkbbbkl","lkbbbbbbbbbbbbkl",".lkbbbbbbbbbbkl.","..lkbbbbbbbbkl..","l.l.kkkkkkkk.l.l","l.l..........l.l","ll............ll","l..............l","................","................","................"]},"zombie":{"palette":{"k":"#0a1a0a","s":"#5a8f3a","d":"#3d6b28","t":"#3b5f8a","p":"#2a4566","e":"#1a1a1a","w":"#c8e0a0"},"rows":["................","....kkkkkkkk....","...kssssssssk...","..ksswwsswwssk..","..kssekssekssk..","..kssssssssssk..","..kssddddddssk..","...kssssssssk...","..ktptptptptk...",".ktttttttttttk..","kttkttttttktttk.","ktk.tttttt.kttk.","....pppppppp....","....p.p..p.p....","....p.p..p.p....","....kkk..kkk...."]},"skel":{"palette":{"k":"#1a1a1a","b":"#e8e0d0","d":"#b0a890","e":"#2a2a2a","w":"#ffffff","o":"#8b5a2b","n":"#5c3a1e"},"rows":["................",".....kkkkkk.....","....kbbbbbbk....","...kbwwbbwwbk...","...kbeekkeebk...","...kbbbbbbbbk...","....kbddddbk....",".....kbbbbk.....","..ookbbbbbbkoo..",".onk.bbbbbb.kno.",".onk..bbbb..kno.","..nk..bdbd..kn..","......b..b......","......b..b......",".....kb..bk.....",".....kk..kk....."]},"creeper":{"palette":{"k":"#0a1a0a","g":"#4a7a3a","d":"#2d4a24","e":"#0a0a0a","f":"#1a2a14"},"rows":["....kkkkkkkk....","...kggggggggk...","..kggggggggggk..","..kggeekkgeegk..","..kggeekkgeegk..","..kggggffggggk..","..kgggfeefgggk..","..kgggfeefgggk..","..kggggffggggk..","..kggggggggggk..","...kggddddggk...","...kgdd..ddgk...","...kgd....dgk...","...kgd....dgk...","....kd....dk....","....kk....kk...."]},"dragon":{"palette":{"k":"#1a0530","p":"#6b21a8","d":"#4c1d95","l":"#c084fc","e":"#f0abfc","w":"#ffffff","f":"#a855f7","b":"#2e1065"},"rows":["l..............l","pl............lp","ppl...kkkk...lpp",".ppl.kppppk.lpp.","..ppkppwwppkpp..","..kppekkeppkpp..","..kppppppppppk..","..kppffffffppk..",".lkpppffffpppkl.","llkppppppppppkll","l.kppppbbppppk.l","..kppppppppppk..","..kkppddddppkk..","....kppppppk....",".....kppppk.....","......kkkk......"]}};
 
-    const BATTLE_MONSTERS = [
-        { name: '鬼火', kind: 'hitodama', hp: 3, keys: HOME_KEYS },
-        { name: '蘑菇怪', kind: 'kinoko', hp: 4, keys: HOME_WIDE_KEYS },
-        { name: '樹精', kind: 'kodama', hp: 5, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','u','i','o']) },
-        { name: '狸貓', kind: 'tanuki', hp: 6, keys: HOME_WIDE_KEYS.concat(['q','w','e','r','t','y','u','i','o','p']) },
-        { name: '傘妖', kind: 'karakasa', hp: 8, keys: LETTER_KEYS },
-        { name: '鬼', kind: 'oni', hp: 12, keys: LETTER_KEYS }
+    const MONSTER_POOL = [
+        { name: '鬼火', kind: 'hitodama', hp: 3 },
+        { name: '蘑菇怪', kind: 'kinoko', hp: 4 },
+        { name: '樹精', kind: 'kodama', hp: 5 },
+        { name: '狸貓', kind: 'tanuki', hp: 6 },
+        { name: '傘妖', kind: 'karakasa', hp: 7 },
+        { name: '鬼', kind: 'oni', hp: 10 },
+        { name: '史萊姆', kind: 'slime', hp: 3 },
+        { name: '蜘蛛', kind: 'spider', hp: 4 },
+        { name: '殭屍', kind: 'zombie', hp: 5 },
+        { name: '骷髏', kind: 'skel', hp: 6 },
+        { name: '苦力怕', kind: 'creeper', hp: 8 },
+        { name: '終界龍', kind: 'dragon', hp: 12 }
     ];
+    const BATTLE_WAVE_COUNT = 6;
+    let battleRoster = [];
+
+    function shuffleArray(list) {
+        const arr = list.slice();
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function buildBattleRoster() {
+        // Random unique monsters each run (prefer mix of yokai + Minecraft mobs)
+        return shuffleArray(MONSTER_POOL).slice(0, BATTLE_WAVE_COUNT);
+    }
 
     function renderYokaiSprite(kind, size = 144) {
         const sprite = YOKAI_SPRITES[kind] || YOKAI_SPRITES.hitodama;
@@ -1702,7 +1731,8 @@
         const host = document.getElementById('battle-monster-sprite');
         const el = monsterEl();
         if (el) el.dataset.kind = kind;
-        if (host) host.innerHTML = renderYokaiSprite(kind, kind === 'oni' ? 168 : 144);
+        const big = kind === 'oni' || kind === 'dragon';
+        if (host) host.innerHTML = renderYokaiSprite(kind, big ? 168 : 144);
     }
     const BATTLE_DIFFICULTY = {
         easy: { label: '簡單', playerHp: 8 },
@@ -1964,7 +1994,11 @@
     }
 
     function currentMonster() {
-        return BATTLE_MONSTERS[monsterIndex] || BATTLE_MONSTERS[BATTLE_MONSTERS.length - 1];
+        return battleRoster[monsterIndex] || battleRoster[battleRoster.length - 1] || MONSTER_POOL[0];
+    }
+
+    function battleWaveTotal() {
+        return battleRoster.length || BATTLE_WAVE_COUNT;
     }
 
     function currentBattleKeys() {
@@ -2013,6 +2047,7 @@
         monstersDefeated = 0;
         correctCount = 0;
         errorCount = 0;
+        battleRoster = buildBattleRoster();
         startTimeStamp = Date.now();
         spawnMonster(true);
         showScreen('battle', { announce: false });
@@ -2132,7 +2167,7 @@
     function updateBattleUI() {
         const mon = currentMonster();
         paintBattleMonster(mon.kind);
-        document.getElementById('battle-wave-title').textContent = `${monsterIndex + 1}/${BATTLE_MONSTERS.length} · ${BATTLE_DIFFICULTY[battleDifficulty].label}`;
+        document.getElementById('battle-wave-title').textContent = `${monsterIndex + 1}/${battleWaveTotal()} · ${BATTLE_DIFFICULTY[battleDifficulty].label}`;
         document.getElementById('battle-monster-name').textContent = mon.name;
         document.getElementById('battle-monster-hp').textContent = `${monsterHp}/${monsterMaxHp}`;
         document.getElementById('monster-hp-fill').style.width = `${Math.max(0, monsterHp / monsterMaxHp) * 100}%`;
@@ -2210,7 +2245,7 @@
                 clearBattleTimers();
                 setMonsterPose('die');
                 document.getElementById('battle-status').textContent = `打倒${currentMonster().name}！`;
-                if (monsterIndex >= BATTLE_MONSTERS.length - 1) {
+                if (monsterIndex >= battleWaveTotal() - 1) {
                     setTimeout(() => endBattle(true, '你打敗晒所有怪物'), 520);
                     return;
                 }
@@ -2251,7 +2286,7 @@
         title.textContent = won ? '🎉 你打敗晒所有怪物！' : '💀 戰鬥結束';
         title.classList.toggle('text-green-400', won);
         title.classList.toggle('text-red-400', !won);
-        document.getElementById('summary-category-txt').textContent = `冒險模式（${BATTLE_DIFFICULTY[battleDifficulty].label}）· ${battleCategoryLabel}：打倒 ${monstersDefeated} / ${BATTLE_MONSTERS.length} 隻`;
+        document.getElementById('summary-category-txt').textContent = `冒險模式（${BATTLE_DIFFICULTY[battleDifficulty].label}）· ${battleCategoryLabel}：打倒 ${monstersDefeated} / ${battleWaveTotal()} 隻`;
         document.getElementById('summary-correct').textContent = correctCount;
         document.getElementById('summary-errors').textContent = errorCount;
         document.getElementById('summary-accuracy').textContent = `${calculateAccuracy()}%`;
