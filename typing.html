@@ -122,11 +122,21 @@
         #screen-map.kq-map {
             background: transparent !important;
             border: 0;
-            max-width: 28rem;
+            max-width: 42rem; /* same as welcome max-w-2xl */
             width: 100%;
-            padding: 0.35rem;
+            padding: 0;
             gap: 0.65rem;
             box-shadow: none;
+            align-items: stretch;
+            align-self: center;
+            box-sizing: border-box;
+        }
+        #screen-map.kq-map > .kq-panel,
+        #screen-map #map-chapters,
+        #screen-map #map-chapters > .kq-panel {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .kq-map-head {
             display: grid;
@@ -1341,7 +1351,7 @@
             </div>
         </div>
 
-        <div id="screen-map" class="hidden kq-map flex flex-col items-center mx-auto">
+        <div id="screen-map" class="hidden kq-map flex flex-col mx-auto w-full">
             <div class="kq-panel">
                 <div class="kq-map-head">
                     <button type="button" class="kq-map-back" onclick="goBack()">◀ 返回</button>
@@ -1350,7 +1360,7 @@
                 </div>
                 <p id="map-open-banner">全部關卡已開放 · 先打簡單 · 打通先開普通／困難</p>
             </div>
-            <div id="map-chapters" class="w-full flex flex-col gap-3"></div>
+            <div id="map-chapters" class="flex flex-col gap-3"></div>
             <p class="text-sm text-gray-400 text-center mt-1">按數字鍵揀關卡。Esc 返回。</p>
         </div>
 
