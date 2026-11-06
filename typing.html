@@ -1072,21 +1072,21 @@
         <div id="screen-battlediff" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 class="text-2xl font-bold text-center mb-6 text-white">⚔️ 打怪模式：選擇難度</h2>
             <p class="text-gray-300 text-center mb-6 text-lg">
-                打啱字母就攻擊怪物。打錯或者太慢，怪物會打返你。<br>
+                打啱字母就攻擊怪物。打錯就會捱打。冇限時，慢慢打都得。<br>
                 請按 <strong class="text-red-400">1、2、3</strong> 選擇難度，之後再揀打邊組鍵，或按 Esc 返回。
             </p>
             <div class="space-y-4">
                 <button onclick="chooseBattleDifficulty('easy')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-green-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-green-400">【按 1】簡單</span>
-                    <span class="text-sm text-gray-300">8 命 • 6 秒攻擊</span>
+                    <span class="text-sm text-gray-300">8 命 • 回合制</span>
                 </button>
                 <button onclick="chooseBattleDifficulty('normal')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-yellow-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-yellow-400">【按 2】普通</span>
-                    <span class="text-sm text-gray-300">6 命 • 4 秒攻擊</span>
+                    <span class="text-sm text-gray-300">6 命 • 回合制</span>
                 </button>
                 <button onclick="chooseBattleDifficulty('hard')" class="w-full flex justify-between items-center p-5 bg-zinc-900 border border-zinc-700 hover:border-red-400 rounded-xl text-left">
                     <span class="text-xl font-bold text-red-400">【按 3】困難</span>
-                    <span class="text-sm text-gray-300">5 命 • 2.5 秒攻擊</span>
+                    <span class="text-sm text-gray-300">5 命 • 回合制</span>
                 </button>
             </div>
         </div>
@@ -1206,7 +1206,7 @@
             <div class="rpg-hud">
                 <div class="rpg-commands">
                     <p class="rpg-cmd-title">COMMAND · ATTACK</p>
-                    <p class="text-sm text-gray-300 mb-2">打呢個鍵攻擊！</p>
+                    <p class="text-sm text-gray-300 mb-2">打呢個鍵攻擊！（冇限時）</p>
                     <div class="flex items-center gap-4 flex-wrap">
                         <div id="battle-key-box" class="w-28 h-28 flex items-center justify-center bg-black border-4 border-yellow-500 rounded-2xl">
                             <span id="battle-key-char" class="text-6xl font-black text-yellow-400 select-none">A</span>
@@ -1227,8 +1227,7 @@
                         <span class="text-yellow-300">連擊 <span id="battle-combo">0</span></span>
                     </div>
                     <div class="hp-track" aria-hidden="true"><div id="player-hp-fill" class="hp-fill hp-player"></div></div>
-                    <p class="text-xs text-gray-400 mt-3 mb-1">敵人下次攻擊</p>
-                    <div class="hp-track" aria-hidden="true"><div id="strike-fill" class="hp-fill hp-strike"></div></div>
+                    <p id="battle-turn-hint" class="text-xs text-gray-400 mt-3 mb-1">你嘅回合：打啱先攻擊，打錯先捱打</p>
                 </div>
             </div>
         </div>
@@ -1597,9 +1596,9 @@
         { name: '終界龍', kind: 'dragon', hp: 12, keys: LETTER_KEYS }
     ];
     const BATTLE_DIFFICULTY = {
-        easy: { label: '簡單', playerHp: 8, strikeMs: 6000 },
-        normal: { label: '普通', playerHp: 6, strikeMs: 4000 },
-        hard: { label: '困難', playerHp: 5, strikeMs: 2500 }
+        easy: { label: '簡單', playerHp: 8 },
+        normal: { label: '普通', playerHp: 6 },
+        hard: { label: '困難', playerHp: 5 }
     };
 
     let battleActive = false;
@@ -1916,7 +1915,7 @@
         return cueId === battleCueId && currentScreen === 'battle' && battleActive;
     }
 
-    function freezeStrikeBar() {
+    function freezePlayerTurn() {
         battleStrikeArmed = false;
         clearBattleTimers();
         battleAcceptInput = false;
@@ -1925,9 +1924,9 @@
             turn.textContent = '準備回合';
             turn.style.color = '';
         }
-        const fill = document.getElementById('strike-fill');
+        const hint = document.getElementById('battle-turn-hint');
+        if (hint) hint.textContent = '讀完提示先打字';
         const el = monsterEl();
-        if (fill) fill.style.width = '100%';
         if (el) {
             el.style.setProperty('--threat', '0');
             el.classList.remove('windup', 'attack');
@@ -1936,7 +1935,7 @@
 
     async function announceBattlePrompt(includeMonster) {
         const cueId = ++battleCueId;
-        freezeStrikeBar();
+        freezePlayerTurn();
         if (voiceEnabled && 'speechSynthesis' in window) {
             speakGeneration += 1;
             window.speechSynthesis.cancel();
@@ -1952,7 +1951,7 @@
             await delayMs(180);
         }
         if (!isBattleCueCurrent(cueId)) return;
-        armMonsterStrike();
+        beginPlayerTurn();
     }
 
     function spawnMonster(isFirst) {
@@ -1977,55 +1976,28 @@
         if (pose === 'hurt' || pose === 'attack') {
             window.setTimeout(() => {
                 if (currentScreen === 'battle' && !el.classList.contains('die')) {
-                    const threat = Number(el.style.getPropertyValue('--threat') || 0);
                     el.classList.remove('hurt', 'attack');
-                    el.classList.add(threat >= 0.72 ? 'windup' : 'idle');
+                    el.classList.add('idle');
                 }
             }, 360);
         }
     }
 
-    function armMonsterStrike() {
+    function beginPlayerTurn() {
         clearBattleTimers();
-        battleStrikeArmed = true;
-        const ms = BATTLE_DIFFICULTY[battleDifficulty].strikeMs;
-        battleStrikeStartedAt = Date.now();
-        const fill = document.getElementById('strike-fill');
-        const el = monsterEl();
-        if (fill) fill.style.width = '100%';
-        if (el) el.style.setProperty('--threat', '0');
+        battleStrikeArmed = false;
         setMonsterPose('idle');
-
-        const tick = () => {
-            if (!battleStrikeArmed || currentScreen !== 'battle') return;
-            const left = Math.max(0, 1 - ((Date.now() - battleStrikeStartedAt) / ms));
-            if (fill) fill.style.width = `${left * 100}%`;
-            if (el) {
-                const threat = 1 - left;
-                el.style.setProperty('--threat', String(threat));
-                if (threat >= 0.72 && !el.classList.contains('attack') && !el.classList.contains('hurt') && !el.classList.contains('die')) {
-                    el.classList.remove('idle');
-                    el.classList.add('windup');
-                    const turn = document.getElementById('battle-turn-label');
-                    if (turn) {
-                        turn.textContent = '敵人回合';
-                        turn.style.color = '#fca5a5';
-                    }
-                }
-            }
-            if (left > 0) battleStrikeAnim = requestAnimationFrame(tick);
-        };
-        battleStrikeAnim = requestAnimationFrame(tick);
-
-        battleStrikeTimer = setTimeout(() => {
-            if (currentScreen !== 'battle') return;
-            takeBattleDamage('太慢！怪物打中你。');
-        }, ms);
         battleAcceptInput = true;
         const turn = document.getElementById('battle-turn-label');
         if (turn) {
-            turn.textContent = '攻擊回合';
+            turn.textContent = '你的回合';
             turn.style.color = '';
+        }
+        const hint = document.getElementById('battle-turn-hint');
+        if (hint) hint.textContent = '你嘅回合：打啱先攻擊，打錯先捱打';
+        const status = document.getElementById('battle-status');
+        if (status && (!status.textContent || status.textContent === '準備戰鬥')) {
+            status.textContent = '勇者要怎樣做？';
         }
     }
 
@@ -2060,6 +2032,11 @@
         playErrorSound();
         flashBattle('hurt');
         document.getElementById('battle-status').textContent = reason;
+        const turn = document.getElementById('battle-turn-label');
+        if (turn) {
+            turn.textContent = '敵人回合';
+            turn.style.color = '#fca5a5';
+        }
         updateBattleUI();
         if (playerHp <= 0) {
             endBattle(false, '你被打倒咗');
@@ -2088,6 +2065,8 @@
             playSuccessSound();
             flashBattle('hit');
             document.getElementById('battle-status').textContent = note;
+            const turn = document.getElementById('battle-turn-label');
+            if (turn) turn.textContent = '攻擊命中';
             if (monsterHp <= 0) {
                 monstersDefeated += 1;
                 playKillSound();
@@ -2171,7 +2150,7 @@
             optionsText += "按 Esc 鍵返回上一頁。";
             speakText(optionsText, 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlediff') {
-            speakText('打怪模式。打啱字母就攻擊，打錯或者太慢就會捱打。按 1 簡單，按 2 普通，按 3 困難，之後再揀打邊組鍵。按 Esc 返回。', 'zh-HK', cancelPrevious);
+            speakText('打怪模式。打啱字母就攻擊，打錯就會捱打。冇限時。按 1 簡單，按 2 普通，按 3 困難，之後再揀打邊組鍵。按 Esc 返回。', 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battlehand') {
             speakText('請選擇打怪鍵盤範圍。按 1 左手，按 2 右手，按 3 雙手。按 Esc 返回難度。', 'zh-HK', cancelPrevious);
         } else if (currentScreen === 'battle') {
