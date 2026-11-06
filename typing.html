@@ -1693,19 +1693,15 @@
     ];
     const BATTLE_WAVE_COUNT = 6;
     let battleRoster = [];
+    let currentBattleMonster = null;
+    let usedMonsterKinds = [];
 
-    function shuffleArray(list) {
-        const arr = list.slice();
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-    }
-
-    function buildBattleRoster() {
-        // Random unique monsters each run (prefer mix of yokai + Minecraft mobs)
-        return shuffleArray(MONSTER_POOL).slice(0, BATTLE_WAVE_COUNT);
+    function pickRandomMonster() {
+        const available = MONSTER_POOL.filter((m) => usedMonsterKinds.indexOf(m.kind) === -1);
+        const pool = available.length ? available : MONSTER_POOL.slice();
+        const mon = pool[Math.floor(Math.random() * pool.length)];
+        usedMonsterKinds.push(mon.kind);
+        return { name: mon.name, kind: mon.kind, hp: mon.hp };
     }
 
     function renderYokaiSprite(kind, size = 144) {
@@ -1994,11 +1990,11 @@
     }
 
     function currentMonster() {
-        return battleRoster[monsterIndex] || battleRoster[battleRoster.length - 1] || MONSTER_POOL[0];
+        return currentBattleMonster || MONSTER_POOL[0];
     }
 
     function battleWaveTotal() {
-        return battleRoster.length || BATTLE_WAVE_COUNT;
+        return BATTLE_WAVE_COUNT;
     }
 
     function currentBattleKeys() {
@@ -2047,7 +2043,9 @@
         monstersDefeated = 0;
         correctCount = 0;
         errorCount = 0;
-        battleRoster = buildBattleRoster();
+        usedMonsterKinds = [];
+        battleRoster = [];
+        currentBattleMonster = null;
         startTimeStamp = Date.now();
         spawnMonster(true);
         showScreen('battle', { announce: false });
@@ -2097,12 +2095,16 @@
     }
 
     function spawnMonster(isFirst) {
-        const mon = currentMonster();
+        currentBattleMonster = pickRandomMonster();
+        battleRoster[monsterIndex] = currentBattleMonster;
+        const mon = currentBattleMonster;
         monsterMaxHp = mon.hp;
         monsterHp = mon.hp;
         pickBattleKey();
         setMonsterPose('idle');
         updateBattleUI();
+        const status = document.getElementById('battle-status');
+        if (status) status.textContent = `隨機遭遇：${mon.name}！`;
         announceBattlePrompt(true);
     }
 
