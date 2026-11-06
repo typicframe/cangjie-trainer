@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>無障礙英文打字練習 (A11y Typing Trainer)</title>
     <style>
         html, body {
@@ -1332,9 +1335,10 @@
                     <h2>世界地圖</h2>
                     <span id="map-overall-progress" class="kq-map-progress">0/16</span>
                 </div>
+                <p id="map-open-banner" class="kq-chapter-meta" style="margin:0.55rem 0 0;color:#4ade80;font-weight:700;">全部關卡已開放 · 先打簡單 · 打通先開普通／困難</p>
             </div>
             <div id="map-chapters" class="w-full flex flex-col gap-3"></div>
-            <p class="text-sm text-gray-400 text-center mt-1">按數字鍵揀關卡，已通關會解鎖下一關。Esc 返回。</p>
+            <p class="text-sm text-gray-400 text-center mt-1">按數字鍵揀關卡。Esc 返回。</p>
         </div>
 
         <div id="screen-battlediff" class="hidden w-full max-w-2xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 md:p-8 shadow-2xl">
@@ -2012,15 +2016,15 @@
                 const leftPrefix = `<span class="sid">【${choiceNo}】</span>`;
                 mapChoiceIds.push(stage.id);
                 choiceNo += 1;
-                let right = stage.boss ? 'BOSS · 簡單' : '▶ · 簡單';
-                if (easyDone) right = '✔ 可打更高難度';
+                let right = stage.boss ? 'BOSS' : '開放';
+                if (easyDone) right = '✔ 更高難度';
                 stagesHtml += `<button type="button" class="${classes.join(' ')}" onclick="selectMapStage('${stage.id}')"><span>${leftPrefix}${stage.code} ${stage.label}</span><span class="lock">${right}</span></button>`;
             });
 
             panel.innerHTML = `
                 <h3 class="kq-chapter-title">${chapter.title}</h3>
                 <p class="kq-chapter-desc">${chapter.desc}</p>
-                <div class="kq-chapter-meta">進度 ${prog.cleared} / ${prog.total}（全部關卡已開放，先打簡單）</div>
+                <div class="kq-chapter-meta">進度 ${prog.cleared} / ${prog.total}</div>
                 <div class="kq-stage-list">${stagesHtml}</div>
             `;
             host.appendChild(panel);
