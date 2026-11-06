@@ -1167,13 +1167,13 @@
             </button>
             <!-- Voice Mode Control Button -->
             <button onclick="toggleVoiceMode()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-cyan-400" aria-label="切換語音模式，選單按 M，練習時按 Alt 加 M">
-                💬 模式：<span id="btn-voice-mode">全語音</span> <span id="btn-voice-mode-hint">(按 M)</span>
+                💬 模式：<span id="btn-voice-mode">單純字母</span> <span id="btn-voice-mode-hint">(按 M)</span>
             </button>
             <button onclick="openTimeSettings()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-yellow-400" aria-label="設定練習限時模式">
                 ⏱️ 限時：<span id="btn-timer-label">不限時</span> (按 T)
             </button>
             <button onclick="openCountSettings()" class="bg-gray-800 hover:bg-gray-700 text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition flex items-center gap-2 text-cyan-400" aria-label="設定目標練習字數">
-                🎯 字數：<span id="btn-count-label">10字</span> (按 C)
+                🎯 字數：<span id="btn-count-label">不限字數</span> (按 C)
             </button>
             <button onclick="toggleContrast()" class="bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-3 py-2 rounded-lg border border-gray-700 transition" aria-label="切換高對比色彩">
                 🌓 切換對比色
@@ -1589,7 +1589,7 @@
     
     // Voice Master Settings
     let voiceEnabled = true;       // Global Voice Switch
-    let voiceMode = 'full';        // 'full' = Menus + sentences, 'letter-only' = ONLY speak target letter when typing
+    let voiceMode = 'letter-only'; // 'full' = Menus + sentences, 'letter-only' = ONLY speak target letter when typing
     let speechChain = Promise.resolve();
     let speakGeneration = 0;
 
@@ -1601,7 +1601,7 @@
     let startTimeStamp = null;     // Used to calculate characters per minute
 
     // Target Letter Count configurations
-    let targetCountSetting = 10;   // 0 = Infinite free practice, otherwise specific count
+    let targetCountSetting = 0;    // 0 = Infinite free practice, otherwise specific count
     let tempTargetCount = 10;
 
     let highContrast = false;
@@ -1860,16 +1860,15 @@
 
     function speakCueAndWait(text, lang) {
         if (!('speechSynthesis' in window) || !voiceEnabled) return Promise.resolve();
-        const minMs = estimateSpeakMs(text, lang);
+        const failSafeMs = estimateSpeakMs(text, lang) + 2500;
         return new Promise((resolve) => {
-            const startedAt = Date.now();
             let started = false;
             let finished = false;
             const finish = () => {
                 if (finished) return;
                 finished = true;
-                const remain = Math.max(120, minMs - (Date.now() - startedAt));
-                setTimeout(resolve, remain);
+                // Resolve as soon as speech ends — no forced extra wait
+                setTimeout(resolve, 40);
             };
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = lang;
@@ -1893,11 +1892,11 @@
                     clearInterval(poll);
                     finish();
                 }
-            }, 80);
+            }, 50);
             setTimeout(() => {
                 clearInterval(poll);
                 finish();
-            }, minMs + 2500);
+            }, failSafeMs);
         });
     }
 
@@ -2048,16 +2047,15 @@
         if (voiceEnabled && 'speechSynthesis' in window) {
             speakGeneration += 1;
             window.speechSynthesis.cancel();
-            await delayMs(220);
+            await delayMs(60);
             if (!isBattleCueCurrent(cueId)) return;
-            if (includeMonster) {
+            if (includeMonster && voiceMode !== 'letter-only') {
                 await speakCueAndWait(`${currentMonster().name}。`, 'zh-HK');
                 if (!isBattleCueCurrent(cueId)) return;
             }
             const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
             await speakCueAndWait(nameObj.text, 'en-GB');
             if (!isBattleCueCurrent(cueId)) return;
-            await delayMs(180);
         }
         if (!isBattleCueCurrent(cueId)) return;
         beginPlayerTurn();
@@ -2542,7 +2540,7 @@
     function confirmCountSettings() {
         targetCountSetting = tempTargetCount;
         
-        const labelText = targetCountSetting === 0 ? "無限字數" : `${targetCountSetting}字`;
+        const labelText = targetCountSetting === 0 ? "不限字數" : `${targetCountSetting}字`;
         document.getElementById('btn-count-label').textContent = labelText;
 
         playSuccessSound();
