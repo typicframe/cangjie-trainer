@@ -255,94 +255,271 @@
         body.high-contrast .hp-fill.hp-player { background: #00ff00 !important; }
         body.high-contrast .hp-fill.hp-monster { background: #ff3333 !important; }
         body.high-contrast .hp-fill.hp-strike { background: #ffff00 !important; }
-        @keyframes battle-hit {
-            0%, 100% { transform: scale(1); }
-            40% { transform: scale(1.06); }
+        @keyframes kq-shake {
+            0%, 100% { transform: translateX(-50%); }
+            25% { transform: translateX(calc(-50% - 8px)); }
+            75% { transform: translateX(calc(-50% + 8px)); }
         }
-        @keyframes battle-hurt {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            75% { transform: translateX(8px); }
+        @keyframes kq-flash {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.15; filter: brightness(3); }
         }
-        .battle-hit { animation: battle-hit 0.18s ease; }
-        .battle-hurt { animation: battle-hurt 0.22s ease; }
+        @keyframes kq-screen-hit {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-6px, 4px); }
+            40% { transform: translate(6px, -4px); }
+            60% { transform: translate(-4px, -2px); }
+            80% { transform: translate(4px, 2px); }
+        }
+        @keyframes kq-defeat {
+            100% { opacity: 0; filter: brightness(3); transform: translateX(-50%) scaleY(0.2) translateY(40%); }
+        }
+        @keyframes kq-float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-6px); }
+        }
+        @keyframes kq-dmg-float {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -42px) scale(1.15); }
+        }
+        .battle-hit { animation: kq-screen-hit 0.28s steps(5); }
+        .battle-hurt { animation: kq-screen-hit 0.35s steps(5); }
+        .monster.hit {
+            animation: mon-recoil 0.32s steps(4);
+        }
+        .monster.hit .m-figure { animation: kq-flash 0.12s step-end 3; }
+        .monster.crit .m-figure { animation: kq-flash 80ms step-end 5; }
+        .monster.crit { animation: kq-shake 0.3s steps(4); }
+        .monster.die { animation: kq-defeat 0.55s ease forwards; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
 
-        .rpg-topbar {
+        #screen-battle.kq-battle {
+            background: transparent !important;
+            border: 0;
+            border-radius: 0;
+            gap: 0.65rem;
+            max-width: 26rem;
+            width: 100%;
+            padding: 0.35rem;
+            box-shadow: none;
+        }
+        .kq-panel {
+            width: 100%;
+            background: #000;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 0.7rem 0.85rem;
+        }
+        .kq-player-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: 0.75rem;
-            width: 100%;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.45rem;
         }
-        .rpg-mission {
-            font-size: 0.95rem;
-            font-weight: 800;
+        .kq-hero-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #fff;
             letter-spacing: 0.04em;
-            color: #fde68a;
-            border: 2px solid #f59e0b;
-            background: rgba(0,0,0,0.55);
-            padding: 0.4rem 0.85rem;
-            border-radius: 0.45rem;
         }
-        .rpg-turn {
+        .kq-hero-title span { color: #facc15; font-size: 1rem; margin-left: 0.35rem; }
+        .kq-wave {
+            font-size: 0.8rem;
+            color: #a3a3a3;
+            white-space: nowrap;
+        }
+        .kq-stat-row {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            margin-top: 0.35rem;
+        }
+        .kq-stat-label {
+            width: 4.8rem;
+            font-size: 0.85rem;
             font-weight: 800;
-            color: #86efac;
-            font-size: 1rem;
+            color: #fff;
+            flex-shrink: 0;
         }
-        .rpg-arena {
-            width: 100%;
-            border: 3px solid #92400e;
-            border-radius: 1rem;
+        .kq-stat-label.mp { color: #7dd3fc; }
+        .kq-bar {
+            flex: 1;
+            height: 0.85rem;
+            border: 2px solid #fff;
+            border-radius: 3px;
+            background: #111;
             overflow: hidden;
-            margin-bottom: 0.8rem;
-            background: #000;
+        }
+        .kq-bar > div { height: 100%; transition: width 0.2s ease; }
+        .kq-bar .hp { background: #4ade80; }
+        .kq-bar .combo { background: #facc15; }
+        .kq-stage-wrap {
+            position: relative;
+            padding: 0;
+            overflow: hidden;
         }
         .battle-stage {
             position: relative;
-            height: 20rem;
+            height: 13.5rem;
             margin: 0;
             overflow: hidden;
             border-radius: 0;
             background:
-                repeating-linear-gradient(90deg, #5d9c2f 0 22px, #4f8a27 22px 44px) 0 100% / 100% 18% no-repeat,
-                repeating-linear-gradient(90deg, #8b5a2b 0 22px, #6f4722 22px 44px) 0 100% / 100% 30% no-repeat,
-                linear-gradient(#78b7ff 0%, #9eccff 48%, #d8eeff 78%);
+                repeating-linear-gradient(90deg, #163016 0 14px, #0f220f 14px 28px),
+                linear-gradient(#0a140a, #132013);
             image-rendering: pixelated;
         }
         .rpg-hills { display: none; }
         .battle-floor {
             position: absolute;
-            left: 6%;
-            right: 6%;
-            bottom: 1rem;
-            height: 1.6rem;
+            left: 18%;
+            right: 18%;
+            bottom: 0.85rem;
+            height: 1.1rem;
             border-radius: 50%;
-            background: radial-gradient(ellipse, rgba(255,255,255,0.16), transparent 70%);
+            background: radial-gradient(ellipse, rgba(255,255,255,0.12), transparent 70%);
         }
         .enemy-plate {
             position: absolute;
-            top: 0.7rem;
-            right: 0.7rem;
-            min-width: 11rem;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #fca5a5;
-            border-radius: 0.55rem;
-            padding: 0.45rem 0.7rem;
-            text-align: left;
-            z-index: 1;
+            top: 0.55rem;
+            left: 0.55rem;
+            right: 0.55rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            padding: 0;
+            z-index: 6;
             pointer-events: none;
         }
-        .enemy-plate .hp-track { margin-top: 0.25rem; }
-        .hero {
+        .enemy-plate #battle-monster-name {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #fff;
+            min-width: 3.5rem;
+            margin: 0;
+        }
+        .enemy-plate .kq-enemy-bar {
+            flex: 1;
+            height: 0.7rem;
+            border: 2px solid #fff;
+            border-radius: 2px;
+            background: #111;
+            overflow: hidden;
+        }
+        .enemy-plate .kq-enemy-bar > div {
+            height: 100%;
+            background: #ef4444;
+            transition: width 0.2s ease;
+        }
+        .enemy-plate #battle-monster-hp {
+            display: none;
+        }
+        .kq-cmd-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+        .kq-cmd-prompt {
+            font-size: 0.95rem;
+            color: #fff;
+            margin: 0;
+        }
+        .kq-speak-btn {
+            border: 2px solid #fff;
+            background: #000;
+            color: #fff;
+            border-radius: 6px;
+            width: 2.2rem;
+            height: 2.2rem;
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .kq-key-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.55rem 0 0.35rem;
+        }
+        .kq-key-box {
+            width: auto;
+            height: auto;
+            min-width: 4rem;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+        }
+        .kq-key-box #battle-key-char {
+            font-size: 4.6rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: 0.04em;
+        }
+        .kq-key-meta {
+            color: #a3a3a3;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .kq-log {
+            min-height: 2.6rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+        .kq-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .kq-actions button {
+            border: 2px solid #fff;
+            background: #000;
+            color: #fff;
+            border-radius: 6px;
+            padding: 0.55rem 0.9rem;
+            font-weight: 700;
+        }
+        .damage-float {
             position: absolute;
-            left: 8%;
-            bottom: 1.55rem;
-            width: 6.6rem;
-            height: 9.4rem;
-            z-index: 4;
-            transform-origin: 50% 92%;
+            left: 50%;
+            top: 28%;
+            z-index: 8;
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.6rem;
+            text-shadow: 2px 2px 0 #000;
+            animation: kq-dmg-float 0.7s ease forwards;
+            pointer-events: none;
+        }
+        .damage-float.miss { color: #fca5a5; font-size: 1.2rem; }
+        .hero {
+            display: none;
         }
         .hero-shadow {
             position: absolute;
@@ -463,46 +640,15 @@
             30% { transform: translateX(-14px) rotate(-8deg); }
             60% { transform: translateX(-4px); }
         }
-        .rpg-hud {
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 0.75rem;
-            width: 100%;
-        }
-        .rpg-commands, .rpg-party {
-            border-radius: 0.7rem;
-            padding: 0.85rem 1rem;
-        }
-        .rpg-commands {
-            background: rgba(12, 18, 34, 0.94);
-            border: 3px solid #f59e0b;
-        }
-        .rpg-party {
-            background: rgba(0, 0, 0, 0.78);
-            border: 3px solid #d6d3d1;
-        }
-        .rpg-cmd-title {
-            font-size: 0.75rem;
-            letter-spacing: 0.16em;
-            color: #fbbf24;
-            font-weight: 800;
-            margin-bottom: 0.4rem;
-        }
-        @media (max-width: 700px) {
-            .rpg-hud { grid-template-columns: 1fr; }
-            .battle-stage { height: 16rem; }
-            .hero { transform: scale(0.86); transform-origin: 20% 100%; }
-            .monster { transform: scale(0.86); transform-origin: 80% 100%; }
-        }
         .monster {
             --threat: 0;
             position: absolute;
-            right: 6%;
-            left: auto;
-            bottom: 1.55rem;
+            left: 50%;
+            right: auto;
+            bottom: 1.2rem;
             width: 9.5rem;
             height: 9.5rem;
-            transform: none;
+            transform: translateX(-50%);
             transform-origin: 50% 90%;
             z-index: 5;
         }
@@ -863,7 +1009,7 @@
             opacity: 0;
         }
 
-        .monster.idle { animation: mon-idle 1.6s ease-in-out infinite; }
+        .monster.idle { animation: kq-float 1.6s ease-in-out infinite; }
         .monster[data-kind="slime"].idle { animation-duration: 1.15s; }
         .monster[data-kind="spider"].idle { animation-duration: 0.95s; }
         .monster[data-kind="creeper"].idle { animation-duration: 1.8s; }
@@ -883,15 +1029,10 @@
             animation: mon-windup 0.28s ease-in-out infinite;
             filter: saturate(1.3);
         }
-        .monster.attack { animation: mon-lunge 0.38s ease; }
+        .monster.attack { animation: mon-lunge 0.38s steps(4); }
         .monster.attack .dragon-fire { animation: fire-spit 0.38s ease; }
-        .monster.hurt { animation: mon-recoil 0.32s ease; }
-        .monster.die { animation: mon-die 0.55s ease forwards; }
+        .monster.hurt { animation: mon-recoil 0.32s steps(4); }
 
-        @keyframes mon-idle {
-            0%, 100% { transform: translateX(calc(var(--threat) * -10px)) translateY(0) rotate(calc(var(--threat) * -4deg)); }
-            50% { transform: translateX(calc(var(--threat) * 8px)) translateY(-10px) rotate(calc(var(--threat) * 3deg)); }
-        }
         @keyframes shadow-breathe {
             0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.55; }
             50% { transform: translateX(-50%) scale(0.78); opacity: 0.35; }
@@ -925,22 +1066,18 @@
             50% { filter: brightness(1.15); }
         }
         @keyframes mon-windup {
-            0%, 100% { transform: translateX(-10px) translateY(2px) rotate(-6deg); }
-            50% { transform: translateX(8px) translateY(-6px) rotate(5deg); }
+            0%, 100% { transform: translateX(calc(-50% - 6px)) translateY(2px); }
+            50% { transform: translateX(calc(-50% + 8px)) translateY(-4px); }
         }
         @keyframes mon-lunge {
-            0% { transform: translateX(0) scale(1); }
-            35% { transform: translateX(-36px) translateY(10px) scale(1.08, 0.9); }
-            100% { transform: translateX(0) scale(1); }
+            0% { transform: translateX(-50%) scale(1); }
+            35% { transform: translateX(calc(-50% - 18px)) translateY(8px) scale(1.08, 0.9); }
+            100% { transform: translateX(-50%) scale(1); }
         }
         @keyframes mon-recoil {
-            0% { transform: translateX(0) scale(1); }
-            30% { transform: translateX(18px) translateY(-10px) rotate(8deg) scale(0.92); filter: brightness(1.4); }
-            100% { transform: translateX(0) scale(1); }
-        }
-        @keyframes mon-die {
-            0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(16px) translateY(24px) rotate(70deg) scale(0.7); opacity: 0; }
+            0% { transform: translateX(-50%) scale(1); }
+            30% { transform: translateX(calc(-50% + 14px)) translateY(-8px) scale(0.92); filter: brightness(1.5); }
+            100% { transform: translateX(-50%) scale(1); }
         }
         @keyframes fire-spit {
             0% { height: 0; opacity: 0; }
@@ -1112,31 +1249,30 @@
             </div>
         </div>
 
-        <div id="screen-battle" class="hidden w-full max-w-5xl bg-zinc-900 border-2 border-red-500 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col items-center">
-            <div class="rpg-topbar">
-                <span id="battle-wave-title" class="rpg-mission">第 1 關</span>
-                <span id="battle-turn-label" class="rpg-turn">準備回合</span>
-                <button onclick="goBack()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-sm px-4 py-2 rounded-lg border border-zinc-700">
-                    【Esc】撤退並結算
-                </button>
+        <div id="screen-battle" class="hidden kq-battle flex flex-col items-center mx-auto">
+            <div class="kq-panel">
+                <div class="kq-player-row">
+                    <div class="kq-hero-title">勇者 <span id="battle-turn-label">準備</span></div>
+                    <div id="battle-wave-title" class="kq-wave">第 1 / 6 關</div>
+                </div>
+                <div class="kq-stat-row">
+                    <span class="kq-stat-label">HP <span id="battle-player-hp">8/8</span></span>
+                    <div class="kq-bar" aria-hidden="true"><div id="player-hp-fill" class="hp"></div></div>
+                </div>
+                <div class="kq-stat-row">
+                    <span class="kq-stat-label mp">連擊 <span id="battle-combo">0</span></span>
+                    <div class="kq-bar" aria-hidden="true"><div id="battle-combo-fill" class="combo" style="width:0%"></div></div>
+                </div>
             </div>
 
-            <div id="battle-arena" class="rpg-arena" aria-live="polite">
+            <div id="battle-arena" class="kq-panel kq-stage-wrap" aria-live="polite">
+                <div class="enemy-plate">
+                    <span id="battle-monster-name">史萊姆</span>
+                    <div class="kq-enemy-bar" aria-hidden="true"><div id="monster-hp-fill"></div></div>
+                    <span id="battle-monster-hp" class="sr-only">3 / 3</span>
+                </div>
                 <div class="battle-stage" aria-hidden="true">
-                    <div class="rpg-hills"></div>
                     <div class="battle-floor"></div>
-                    <div id="battle-hero" class="hero idle">
-                        <div class="hero-shadow"></div>
-                        <div class="hero-arms"></div>
-                        <div class="hero-head">
-                            <span class="hero-hair"></span>
-                            <span class="hero-eye l"></span>
-                            <span class="hero-eye r"></span>
-                        </div>
-                        <div class="hero-torso"></div>
-                        <div class="hero-legs"></div>
-                        <div class="hero-pick"></div>
-                    </div>
                     <div id="battle-monster" class="monster idle" data-kind="slime">
                         <div class="m-shadow"></div>
                         <div class="m-figure">
@@ -1194,42 +1330,31 @@
                             </div>
                         </div>
                     </div>
-                    <div class="enemy-plate">
-                        <p id="battle-monster-name" class="text-lg font-black text-red-300 mb-1">史萊姆</p>
-                        <p class="text-xs text-gray-400">HP</p>
-                        <div class="hp-track" aria-hidden="true"><div id="monster-hp-fill" class="hp-fill hp-monster"></div></div>
-                        <p id="battle-monster-hp" class="text-sm text-red-200 mt-1">3 / 3</p>
-                    </div>
                 </div>
             </div>
 
-            <div class="rpg-hud">
-                <div class="rpg-commands">
-                    <p class="rpg-cmd-title">COMMAND · ATTACK</p>
-                    <p class="text-sm text-gray-300 mb-2">打呢個鍵攻擊！（冇限時）</p>
-                    <div class="flex items-center gap-4 flex-wrap">
-                        <div id="battle-key-box" class="w-28 h-28 flex items-center justify-center bg-black border-4 border-yellow-500 rounded-2xl">
-                            <span id="battle-key-char" class="text-6xl font-black text-yellow-400 select-none">A</span>
-                        </div>
-                        <div>
-                            <p id="battle-key-pronunciation" class="text-2xl text-yellow-200 font-semibold">A</p>
-                            <button onclick="playTargetVoice(true)" class="mt-2 p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs">
-                                🔊 重聽 (空白鍵)
-                            </button>
-                            <p id="battle-status" class="text-sm text-gray-300 mt-2 min-h-[1.5rem]">準備戰鬥</p>
-                        </div>
-                    </div>
+            <div class="kq-panel">
+                <div class="kq-cmd-top">
+                    <p class="kq-cmd-prompt">打呢個鍵攻擊！</p>
+                    <button type="button" onclick="playTargetVoice(true)" class="kq-speak-btn" aria-label="重聽">🔊</button>
                 </div>
-                <div class="rpg-party">
-                    <p class="rpg-cmd-title">PARTY</p>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="text-green-300">你 HP <span id="battle-player-hp">8 / 8</span></span>
-                        <span class="text-yellow-300">連擊 <span id="battle-combo">0</span></span>
+                <div class="kq-key-wrap">
+                    <div id="battle-key-box" class="kq-key-box">
+                        <span id="battle-key-char" class="select-none">A</span>
                     </div>
-                    <div class="hp-track" aria-hidden="true"><div id="player-hp-fill" class="hp-fill hp-player"></div></div>
-                    <p id="battle-turn-hint" class="text-xs text-gray-400 mt-3 mb-1">你嘅回合：打啱先攻擊，打錯先捱打</p>
+                    <p id="battle-key-pronunciation" class="kq-key-meta">A</p>
                 </div>
             </div>
+
+            <div class="kq-panel kq-log">
+                <p id="battle-status">準備戰鬥</p>
+            </div>
+
+            <div class="kq-actions">
+                <button onclick="goBack()">【Esc】逃走</button>
+                <button onclick="playTargetVoice(true)">空白鍵重聽</button>
+            </div>
+            <p id="battle-turn-hint" class="sr-only">你嘅回合：打啱先攻擊，打錯先捱打</p>
         </div>
 
         <!-- SCREEN: Custom Time Limit Setting -->
@@ -1971,16 +2096,37 @@
     function setMonsterPose(pose) {
         const el = monsterEl();
         if (!el) return;
-        el.classList.remove('idle', 'windup', 'attack', 'hurt', 'die');
+        el.classList.remove('idle', 'windup', 'attack', 'hurt', 'hit', 'crit', 'die');
         el.classList.add(pose);
-        if (pose === 'hurt' || pose === 'attack') {
+        if (pose === 'hurt' || pose === 'attack' || pose === 'hit' || pose === 'crit') {
             window.setTimeout(() => {
                 if (currentScreen === 'battle' && !el.classList.contains('die')) {
-                    el.classList.remove('hurt', 'attack');
+                    el.classList.remove('hurt', 'attack', 'hit', 'crit');
                     el.classList.add('idle');
                 }
-            }, 360);
+            }, pose === 'crit' ? 320 : 360);
         }
+    }
+
+    function spawnDamageFloat(text, isMiss = false) {
+        const stage = document.querySelector('#battle-arena .battle-stage') || document.getElementById('battle-arena');
+        if (!stage) return;
+        const float = document.createElement('div');
+        float.className = 'damage-float' + (isMiss ? ' miss' : '');
+        float.textContent = text;
+        stage.appendChild(float);
+        window.setTimeout(() => float.remove(), 750);
+    }
+
+    function shakeBattleScreen(kind) {
+        const screen = document.getElementById('screen-battle');
+        const arena = document.getElementById('battle-arena');
+        [screen, arena].forEach((node) => {
+            if (!node) return;
+            node.classList.remove('battle-hit', 'battle-hurt');
+            void node.offsetWidth;
+            node.classList.add(kind === 'hit' || kind === 'crit' ? 'battle-hit' : 'battle-hurt');
+        });
     }
 
     function beginPlayerTurn() {
@@ -1990,13 +2136,13 @@
         battleAcceptInput = true;
         const turn = document.getElementById('battle-turn-label');
         if (turn) {
-            turn.textContent = '你的回合';
+            turn.textContent = 'Lv ' + (monsterIndex + 1);
             turn.style.color = '';
         }
         const hint = document.getElementById('battle-turn-hint');
         if (hint) hint.textContent = '你嘅回合：打啱先攻擊，打錯先捱打';
         const status = document.getElementById('battle-status');
-        if (status && (!status.textContent || status.textContent === '準備戰鬥')) {
+        if (status && (!status.textContent || status.textContent === '準備戰鬥' || status.textContent.includes('打倒'))) {
             status.textContent = '勇者要怎樣做？';
         }
     }
@@ -2005,24 +2151,34 @@
         const mon = currentMonster();
         const el = monsterEl();
         if (el) el.dataset.kind = mon.kind;
-        document.getElementById('battle-wave-title').textContent = `第 ${monsterIndex + 1} / ${BATTLE_MONSTERS.length} 關 · ${BATTLE_DIFFICULTY[battleDifficulty].label} · ${battleCategoryLabel}`;
+        document.getElementById('battle-wave-title').textContent = `${monsterIndex + 1}/${BATTLE_MONSTERS.length} · ${BATTLE_DIFFICULTY[battleDifficulty].label}`;
         document.getElementById('battle-monster-name').textContent = mon.name;
-        document.getElementById('battle-monster-hp').textContent = `${monsterHp} / ${monsterMaxHp}`;
+        document.getElementById('battle-monster-hp').textContent = `${monsterHp}/${monsterMaxHp}`;
         document.getElementById('monster-hp-fill').style.width = `${Math.max(0, monsterHp / monsterMaxHp) * 100}%`;
-        document.getElementById('battle-player-hp').textContent = `${playerHp} / ${playerMaxHp}`;
+        document.getElementById('battle-player-hp').textContent = `${playerHp}/${playerMaxHp}`;
         document.getElementById('player-hp-fill').style.width = `${Math.max(0, playerHp / playerMaxHp) * 100}%`;
         document.getElementById('battle-combo').textContent = String(combo);
+        const comboFill = document.getElementById('battle-combo-fill');
+        if (comboFill) {
+            const pct = combo <= 0 ? 0 : (combo % 5 === 0 ? 100 : ((combo % 5) / 5) * 100);
+            comboFill.style.width = `${pct}%`;
+        }
+        const turn = document.getElementById('battle-turn-label');
+        if (turn && !turn.textContent.startsWith('敵人')) turn.textContent = 'Lv ' + (monsterIndex + 1);
         const nameObj = pronunciationMap[currentBattleKey] || { text: currentBattleKey, zh: currentBattleKey };
         document.getElementById('battle-key-char').textContent = currentBattleKey.toUpperCase();
         document.getElementById('battle-key-pronunciation').textContent = nameObj.text;
     }
 
-    function flashBattle(kind) {
-        const arena = document.getElementById('battle-arena');
-        arena.classList.remove('battle-hit', 'battle-hurt');
-        void arena.offsetWidth;
-        arena.classList.add(kind === 'hit' ? 'battle-hit' : 'battle-hurt');
-        setMonsterPose(kind === 'hit' ? 'hurt' : 'attack');
+    function flashBattle(kind, dmgText) {
+        shakeBattleScreen(kind);
+        if (kind === 'hit' || kind === 'crit') {
+            setMonsterPose(kind === 'crit' ? 'crit' : 'hit');
+            if (dmgText) spawnDamageFloat(dmgText, false);
+        } else {
+            setMonsterPose('attack');
+            spawnDamageFloat(dmgText || 'MISS', true);
+        }
     }
 
     function takeBattleDamage(reason) {
@@ -2030,7 +2186,7 @@
         combo = 0;
         playerHp -= 1;
         playErrorSound();
-        flashBattle('hurt');
+        flashBattle('hurt', '-1');
         document.getElementById('battle-status').textContent = reason;
         const turn = document.getElementById('battle-turn-label');
         if (turn) {
@@ -2055,18 +2211,18 @@
             combo += 1;
             if (combo > maxCombo) maxCombo = combo;
             let dmg = 1;
-            let note = `打中${currentMonster().name}`;
+            let isCrit = false;
+            let note = `打中${currentMonster().name}！`;
             if (combo > 0 && combo % 5 === 0) {
                 dmg += 1;
+                isCrit = true;
                 playerHp = Math.min(playerMaxHp, playerHp + 1);
-                note = `${combo} 連擊！額外傷害，回復 1 命`;
+                note = `${combo} 連擊！暴擊傷害，回復 1 命`;
             }
             monsterHp -= dmg;
             playSuccessSound();
-            flashBattle('hit');
+            flashBattle(isCrit ? 'crit' : 'hit', isCrit ? `CRIT ${dmg}` : `-${dmg}`);
             document.getElementById('battle-status').textContent = note;
-            const turn = document.getElementById('battle-turn-label');
-            if (turn) turn.textContent = '攻擊命中';
             if (monsterHp <= 0) {
                 monstersDefeated += 1;
                 playKillSound();
